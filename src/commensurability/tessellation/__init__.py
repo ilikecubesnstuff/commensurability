@@ -15,7 +15,7 @@ class Tessellation:
             return generic.Tessellation(points, *args, **kwargs)
 
     @classmethod
-    def from_galpy_orbit(cls, orbit, dims=('x', 'y', 'z')):
+    def from_galpy_orbit(cls, orbit, *args, dims=('x', 'y', 'z'), **kwargs):
         axes = [getattr(orbit, dim) for dim in dims]
         points = np.array([ax(orbit.t) for ax in axes]).T
-        return cls(points)
+        return cls(points, *args, **kwargs)

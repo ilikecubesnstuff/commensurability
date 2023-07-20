@@ -10,7 +10,7 @@ from utils import example, main
 @example('MW random')
 def random_MW_orbit_3d():
     p = potential.MWPotential2014
-    o = orbit.Orbit([ # some kinda 3D resonance
+    o = orbit.Orbit([
         8 * np.random.random() * u.kpc, 
         50 * np.random.random() * u.km/u.s, 
         200 * np.random.random() * u.km/u.s, 
@@ -22,7 +22,6 @@ def random_MW_orbit_3d():
     o.integrate(ts, p, progressbar=True)
 
     tess = Tessellation.from_galpy_orbit(o, dims=('x', 'y', 'z'))
-    tess.calculate_trimming(axis_ratio=10)
     print(tess.volume)
     tess.plot_tessellation_trimming(plot_included=False, plot_points=True)
     tess.plot_tessellation_trimming(plot_included=True, plot_points=False)
@@ -43,7 +42,6 @@ def commensurate():
     o.integrate(ts, p, progressbar=True)
 
     tess = Tessellation.from_galpy_orbit(o, dims=('x', 'y', 'z'))
-    tess.calculate_trimming(axis_ratio=10)
     print(tess.volume)
     tess.plot_tessellation_trimming(plot_included=False, plot_points=True)
     tess.plot_tessellation_trimming(plot_included=True, plot_points=False)

@@ -47,5 +47,5 @@ class Tessellation(generic.Tessellation):
         if plot_included:
             plt.triplot(x, y, self.tri.simplices, mask=~self.mask, color='green')
         if plot_points:
-            plt.plot(x, y, 'k.', markersize=0.1)
+            plt.plot(x, y, 'k.', markersize=0.5)
         plt.show()

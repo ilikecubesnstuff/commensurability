@@ -9,6 +9,7 @@ except ImportError:
     PLOTTING = False
 
 from . import generic
+# from .dim2 import Tessellation as Tess2D
 
 
 class Tessellation(generic.Tessellation):
@@ -24,6 +25,16 @@ class Tessellation(generic.Tessellation):
     @staticmethod
     def simplex_sides(*vertices):
         v1, v2, v3, v4 = vertices
+        # return [
+            # norm(np.cross(v2-v1, v3-v1)),
+            # norm(np.cross(v2-v1, v4-v1)),
+            # norm(np.cross(v3-v1, v4-v1)),
+            # norm(np.cross(v3-v2, v4-v2)),
+            # Tess2D.simplex_measure(v1, v2-v1, v3-v1),
+            # Tess2D.simplex_measure(v1, v2-v1, v4-v1),
+            # Tess2D.simplex_measure(v1, v3-v1, v4-v1),
+            # Tess2D.simplex_measure(v2, v3-v2, v4-v2),
+        # ]
         return [
             norm(v2 - v1),
             norm(v3 - v1),
@@ -65,16 +76,21 @@ class Tessellation(generic.Tessellation):
         ax = plt.figure().add_subplot(projection='3d')
         if plot_removed:
             r_lines = [(self.points[i1], self.points[i2]) for i1, i2 in r_conns]
+            print(len(r_lines), 'lines added')
             line_collection = a3.art3d.Poly3DCollection(r_lines)
             line_collection.set_edgecolor('r')
+            line_collection.set_linewidths(0.1)
             ax.add_collection3d(line_collection)
         if plot_included:
             g_lines = [(self.points[i1], self.points[i2]) for i1, i2 in g_conns]
             line_collection = a3.art3d.Poly3DCollection(g_lines)
+            print(len(g_lines), 'lines added')
             line_collection.set_edgecolor('g')
+            line_collection.set_linewidths(0.1)
             ax.add_collection3d(line_collection)
         if plot_points:
             ax.scatter(x, y, z, marker='.')
+            print(len(x), 'points added')
         ax_lim = 1.1 * max(max(x), max(y), max(z))
         ax_lim = (-ax_lim, ax_lim)
         ax.set(

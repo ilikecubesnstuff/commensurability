@@ -8,12 +8,16 @@ from scipy.linalg import norm, det
 
 class Tessellation:
 
-    def __init__(self, points):
+    def __init__(self, points, trim=10):
         points = np.array(points)
         self.points = points
 
         # tessellation
         self.tri = Delaunay(points)
+
+        # trimming
+        if trim:
+            self.calculate_trimming(axis_ratio=trim)
 
     def calculate_trimming(self, axis_ratio=10):
         # compute important quantities (stored in "tracers")
