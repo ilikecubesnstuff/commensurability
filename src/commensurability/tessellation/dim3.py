@@ -1,5 +1,8 @@
+from itertools import pairwise
+
 import numpy as np
 from scipy.linalg import norm
+from scipy.spatial import ConvexHull
 
 try:
     import matplotlib.pyplot as plt
@@ -15,8 +18,40 @@ from . import generic
 class Tessellation(generic.Tessellation):
 
     def normalization(self):
-        r = norm(self.points, axis=1)
-        return 4/3 * np.pi * np.max(r)**3
+        # r = norm(self.points, axis=1)
+        # return 4/3 * np.pi * np.max(r)**3
+
+        # x, y, z = self.points.T
+        # return np.pi * np.max(x**2 + y**2) * (np.max(z) - np.min(z))
+
+        # x, y, z = self.points.T
+        # R = np.sqrt(x**2 + y**2)
+        # points = np.array([R, z]).T
+        # points = np.array([*points, [0, max(z)], [0, min(z)]])
+        # hull = ConvexHull(points)
+
+        # poly = points[hull.vertices]
+        # start = poly[0]
+        # poly = poly[1:] - start
+
+        # centroids = [start + (t1 + t2)/3 for t1, t2 in pairwise(poly)]
+        # areas = [np.linalg.det([t1, t2]) for t1, t2 in pairwise(poly)]
+
+        # centroid = np.sum([a*c for c, a in zip(centroids, areas)], axis=0)
+        # return 2 * np.pi * np.linalg.norm(centroid[:2])
+
+        # hull = ConvexHull(self.points)
+        # return hull.volume
+
+        x, y, z = self.points.T
+        r000 = np.array([ x,  y, z]).T
+        r090 = np.array([-y,  x, z]).T
+        r180 = np.array([-x, -y, z]).T
+        r270 = np.array([ y, -x, z]).T
+
+        points = np.array([*r000, *r090, *r180, *r270])
+        hull = ConvexHull(points)
+        return hull.volume
 
     @property
     def volume(self):
