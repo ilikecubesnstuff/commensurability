@@ -43,10 +43,10 @@ class Tessellation(generic.Tessellation):
         # return hull.volume
 
         x, y, z = self.points.T
-        r000 = np.array([ x,  y, z]).T
-        r090 = np.array([-y,  x, z]).T
+        r000 = np.array([+x, +y, z]).T
+        r090 = np.array([-y, +x, z]).T
         r180 = np.array([-x, -y, z]).T
-        r270 = np.array([ y, -x, z]).T
+        r270 = np.array([+y, -x, z]).T
 
         points = np.array([*r000, *r090, *r180, *r270])
         hull = ConvexHull(points)
@@ -60,14 +60,14 @@ class Tessellation(generic.Tessellation):
     def simplex_sides(*vertices):
         v1, v2, v3, v4 = vertices
         # return [
-            # norm(np.cross(v2-v1, v3-v1)),
-            # norm(np.cross(v2-v1, v4-v1)),
-            # norm(np.cross(v3-v1, v4-v1)),
-            # norm(np.cross(v3-v2, v4-v2)),
-            # Tess2D.simplex_measure(v1, v2-v1, v3-v1),
-            # Tess2D.simplex_measure(v1, v2-v1, v4-v1),
-            # Tess2D.simplex_measure(v1, v3-v1, v4-v1),
-            # Tess2D.simplex_measure(v2, v3-v2, v4-v2),
+        #     norm(np.cross(v2-v1, v3-v1)),
+        #     norm(np.cross(v2-v1, v4-v1)),
+        #     norm(np.cross(v3-v1, v4-v1)),
+        #     norm(np.cross(v3-v2, v4-v2)),
+        #     Tess2D.simplex_measure(v1, v2-v1, v3-v1),
+        #     Tess2D.simplex_measure(v1, v2-v1, v4-v1),
+        #     Tess2D.simplex_measure(v1, v3-v1, v4-v1),
+        #     Tess2D.simplex_measure(v2, v3-v2, v4-v2),
         # ]
         return [
             norm(v2 - v1),

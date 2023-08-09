@@ -1,5 +1,7 @@
-
 from itertools import islice
+import astropy.units as u
+
+
 def clump(iterable, size=10):
     while True:
         c = tuple(islice(iterable, size))
@@ -7,7 +9,7 @@ def clump(iterable, size=10):
             return
         yield c
 
-import astropy.units as u
+
 def make_quantity(obj, unit=u.dimensionless_unscaled):
     if isinstance(obj, u.Quantity):
         return obj
