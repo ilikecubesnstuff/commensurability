@@ -4,8 +4,12 @@ Utilities for showcasing examples in modules.
 import sys
 
 examples_namespace = {}
-def example(name = None, aliases = tuple()):
+_default = None
+def example(name = None, aliases = tuple(), default=False):
     def deco(f):
+        global _default
+        if default:
+            _default = f
         if name:
             examples_namespace[name] = f
         else:
@@ -17,6 +21,7 @@ def example(name = None, aliases = tuple()):
 
 def resolve_example(default = None):
     if len(sys.argv) == 1:
+        default = default or _default
         if default is None:
             raise ValueError('No default example set - you must provide an example name. Type "list" for a list of available names.')
         return default()

@@ -1,5 +1,3 @@
-from itertools import pairwise
-
 import numpy as np
 from scipy.linalg import norm
 from scipy.spatial import ConvexHull
@@ -34,6 +32,7 @@ class Tessellation(generic.Tessellation):
         # start = poly[0]
         # poly = poly[1:] - start
 
+        # # NOTE: requires "pairwise" from itertools (recent python version)
         # centroids = [start + (t1 + t2)/3 for t1, t2 in pairwise(poly)]
         # areas = [np.linalg.det([t1, t2]) for t1, t2 in pairwise(poly)]
 
