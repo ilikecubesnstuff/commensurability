@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import MutableMapping
 from collections.abc import Collection
+from typing import MutableMapping
 
 import numpy as np
 import astropy.units as u
@@ -31,51 +31,44 @@ class CoordinateMeta(type):
         namespace['transforms'] = transforms = {}
         for attr, obj in vars(transforms_class).items():
             if callable(obj):
-                # print('TRANSFORM FUNCTION', obj.__annotations__)
                 namespace[attr] = obj
                 transforms[obj.__annotations__['return']] = obj
         namespace.pop('Transforms', None)
-        # print('TRANSFORMS', transforms_class.__dict__)
 
         init_params = ', '.join(f'{axis}: {dtype.__name__}' for axis in axes)
-        init_body = '\n'.join(
-f'''
-    {axis} = make_collection({axis})
-    {axis} = make_quantity({axis}, unit={unit})
-    self.{axis} = {axis}
-'''
-for axis, unit in axes.items()
-        )
+        init_body = '\n'.join((
+            f'    {axis} = make_collection({axis})\n'
+            f'    {axis} = make_quantity({axis}, unit={unit})\n'
+            f'    self.{axis} = {axis}\n'
+        ) for axis, unit in axes.items())
+        repr_body = f'{name}Coordinates({{", ".join(f"{{axis}}={{getattr(self, axis)}}" for axis in self.axes)}})'
         body = (
-f'''
-def __init__(self, {init_params}):
-    {init_body}
-    self.shape = tuple(getattr(self, axis).size for axis in self.axes)
-
-def __repr__(self):
-    return f"{name}Coordinates(" + ", ".join(f"{{axis}}={{getattr(self, axis)}}" for axis in self.axes) + ")"
-'''
+            f'def __init__(self, {init_params}):\n'
+            f'{init_body}\n'
+            f'    self.shape = tuple(getattr(self, axis).size for axis in self.axes)\n'
+            f'\n'
+            f'def __repr__(self):\n'
+            f'    return f\'{name}Coordinates({repr_body})\'\n'
         )
         exec(body, globals(), namespace)
-
-        # print('NEW CLASS', name, bases, namespace)
         return super().__new__(metacls, name, bases, namespace)
 
 
-coordinate_registry = {}
 class CoordinateType(metaclass=CoordinateMeta):
+    registry = {}
 
     def __init_subclass__(cls, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
-        coordinate_registry[cls.__name__] = cls
+        CoordinateType.registry[cls.__name__] = cls
 
     def to(self, ctype: CoordinateType) -> CoordinateType:
-        if ctype.__name__ not in coordinate_registry:
+        if ctype.__name__ not in CoordinateType.registry:
             raise TypeError(f'Unrecognized coordinate type {ctype}')
         if ctype.__name__ not in self.transforms:
             available_transforms = ', '.join(self.transforms.keys())
-            message = f'Chained transformations/tree traversal is not implemented. Available coordinate transformations are to {available_transforms}'
-            raise NotImplemented(message)
+            message = 'Chained transformations/tree traversal is not implemented.' \
+                + f'Available coordinate transformations are to {available_transforms}'
+            raise NotImplementedError(message)
         return self.transforms[ctype.__name__](self)
 
 
@@ -108,9 +101,20 @@ class Cylindrical(CoordinateType):
         def to_cartesian(self) -> Cartesian:
             x = self.R * np.cos(self.phi)
             y = self.R * np.sin(self.phi)
+
             vx = self.vR * np.cos(self.phi) - self.vT * np.sin(self.phi)
             vy = self.vT * np.cos(self.phi) + self.vR * np.sin(self.phi)
+
             return Cartesian(x=x, y=y, z=self.z, vx=vx, vy=vy, vz=self.vz)
+
+        def to_cylindrical(self) -> Cylindrical:
+            R = np.sqrt(self.R**2 + self.z**2)
+            theta = np.arctan2(self.R, self.z)
+
+            vR = (self.R * self.vR + self.z * self.vz)/R
+            v_alt = (self.z * self.vR - self.R * self.vz)/R
+
+            return Spherical(R=R, phi=self.phi, theta=theta, vR=vR, v_alt=v_alt, v_az=self.vT)
 
 
 class Spherical(CoordinateType):
@@ -122,8 +126,11 @@ class Spherical(CoordinateType):
     v_az: u.km / u.s
 
     class Transforms:
-        def to_cartesian(self) -> Cartesian:
-            pass
+        def to_cylindrical(self) -> Cylindrical:
+            R = self.R * np.sin(self.theta)
+            z = self.R * np.cos(self.theta)
 
+            vR = np.sin(self.theta) * self.vR + np.cos(self.theta) * self.v_alt
+            vz = np.cos(self.theta) * self.vR - np.sin(self.theta) * self.v_alt
 
-
+            return Cylindrical(R=R, phi=self.phi, z=z, vR=vR, vT=self.v_az, vz=vz)
