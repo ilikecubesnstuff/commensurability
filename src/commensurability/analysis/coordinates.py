@@ -1,34 +1,25 @@
 from __future__ import annotations
-from collections.abc import Collection
-from typing import MutableMapping
+from collections.abc import Collection, Sequence
+from dataclasses import make_dataclass
+from math import prod
+from typing import Mapping, MutableMapping
 
 import numpy as np
 import astropy.units as u
 
-
-def make_quantity(obj, unit=u.dimensionless_unscaled):
-    if isinstance(obj, u.Quantity):
-        return obj
-    return obj * unit
+from ..utils import make_collection, make_quantity
 
 
-def make_collection(obj, cls=list):
-    if not issubclass(cls, Collection):
-        raise ValueError('Class provided must subclass collections.abc.Collection')
-
-    if not isinstance(obj, Collection):
-        obj = cls([obj])
-    return obj
-
-
-class CoordinateMeta(type):
+class CoordinateCollectionMeta(type):
 
     def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping, dtype=float):
         axes = namespace.get('__annotations__', {})
         namespace['axes'] = tuple(axes.keys())
 
         transforms_class = namespace.get('Transforms', type('Transforms', (), {}))
-        namespace['transforms'] = transforms = {}
+        namespace['transforms'] = transforms = {
+            name: (lambda self: self)
+        }
         for attr, obj in vars(transforms_class).items():
             if callable(obj):
                 namespace[attr] = obj
@@ -46,23 +37,42 @@ class CoordinateMeta(type):
             f'def __init__(self, {init_params}):\n'
             f'{init_body}\n'
             f'    self.shape = tuple(getattr(self, axis).size for axis in self.axes)\n'
+            f'    self.Coordinate = make_dataclass(f"{name}Coordinate", self.axes, bases=(Coordinate,))'
             f'\n'
             f'def __repr__(self):\n'
-            f'    return f\'{name}Coordinates({repr_body})\'\n'
+            f'    return f\'{repr_body}\'\n'
         )
+        # print(body)
         exec(body, globals(), namespace)
         return super().__new__(metacls, name, bases, namespace)
 
 
-class CoordinateType(metaclass=CoordinateMeta):
-    registry = {}
+class CoordinateCollection(metaclass=CoordinateCollectionMeta):
+    class Coordinate:
+        pass
+    type_registry = {}
 
     def __init_subclass__(cls, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
-        CoordinateType.registry[cls.__name__] = cls
+        CoordinateCollection.type_registry[cls.__name__] = cls
+    
+    def __contains__(self, item):
+        if isinstance(item, Mapping):
+            return all(item[axis] in getattr(self, axis) for axis in self.axes)
+        if isinstance(item, Sequence):
+            return all(item[i] in getattr(self, axis) for i, axis in enumerate(self.axes))
+        raise NotImplementedError('Membership can only be tested on Mapping or Sequence types.')
 
-    def to(self, ctype: CoordinateType) -> CoordinateType:
-        if ctype.__name__ not in CoordinateType.registry:
+    def __len__(self):
+        return prod(self.shape)
+    
+    def __iter__(self):
+        for indices in np.ndindex(self.shape):
+            coords = {axis: getattr(self, axis)[i] for i, axis in zip(indices, self.axes)}
+            yield self.Coordinate(**coords)
+
+    def to(self, ctype: CoordinateCollection) -> CoordinateCollection:
+        if ctype.__name__ not in CoordinateCollection.type_registry:
             raise TypeError(f'Unrecognized coordinate type {ctype}')
         if ctype.__name__ not in self.transforms:
             available_transforms = ', '.join(self.transforms.keys())
@@ -70,9 +80,10 @@ class CoordinateType(metaclass=CoordinateMeta):
                 + f'Available coordinate transformations are to {available_transforms}'
             raise NotImplementedError(message)
         return self.transforms[ctype.__name__](self)
+Coordinate = CoordinateCollection.Coordinate
 
 
-class Cartesian(CoordinateType):
+class Cartesian(CoordinateCollection):
     x: u.kpc
     y: u.kpc
     z: u.kpc
@@ -89,7 +100,7 @@ class Cartesian(CoordinateType):
             return Cylindrical(R=R, vR=vR, vT=vT, z=self.z, vz=self.vz, phi=phi)
 
 
-class Cylindrical(CoordinateType):
+class Cylindrical(CoordinateCollection):
     R: u.kpc
     vR: u.km / u.s
     vT: u.km / u.s
@@ -117,7 +128,7 @@ class Cylindrical(CoordinateType):
             return Spherical(R=R, phi=self.phi, theta=theta, vR=vR, v_alt=v_alt, v_az=self.vT)
 
 
-class Spherical(CoordinateType):
+class Spherical(CoordinateCollection):
     R: u.kpc
     phi: u.deg
     theta: u.deg
