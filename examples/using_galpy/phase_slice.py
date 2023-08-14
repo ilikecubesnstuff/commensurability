@@ -3,6 +3,7 @@ import astropy.units as u
 import galpy.potential as p
 
 from commensurability.analysis import Analysis
+from commensurability.analysis.coordinates import Cylindrical
 
 # rotating bar potential
 omega = 30 * u.km/u.s/u.kpc
@@ -13,7 +14,7 @@ pot = [halo, disc, bar]
 
 
 SIZE = 10
-coords = dict(
+coords = Cylindrical(
     R   = np.linspace(0, 10, SIZE + 1)[1:]  * u.kpc,
     vR  = np.linspace(0, 0, 1)  * u.km/u.s,
     vT  = np.linspace(0, 300, SIZE + 1)[1:]  * u.km/u.s,
@@ -21,8 +22,10 @@ coords = dict(
     vz  = np.linspace(0, 0, 1)  * u.km/u.s,
     phi = np.linspace(0, 0, 1)  * u.deg,
 )
-ts = np.linspace(0, 1, 501) * u.Gyr
-canal = Analysis(pot, ts, pattern_speed=omega, **coords)
-canal.construct_image()
-canal.save_image('test.hdf5')
-canal.display_image()
+dt = 0.01 * u.Gyr
+steps = 500
+canal = Analysis(pot, dt, steps, pattern_speed=omega)
+canal.construct_image(coords, chunksize=10)
+canal.launch_interactive_plot()
+# canal.save_image('test.hdf5')
+# canal.display_image()

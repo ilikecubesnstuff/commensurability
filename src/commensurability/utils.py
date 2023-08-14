@@ -1,15 +1,42 @@
-from collections.abc import Collection, Sequence
+import inspect
+from math import ceil
+
+from collections.abc import Collection, Sequence, Iterator
 from itertools import islice
 
 import astropy.units as u
 
 
-def clump(iterable, size=10):
-    while True:
-        c = tuple(islice(iterable, size))
+class clump(Iterator):
+
+    def __init__(self, iterable, clumpsize):
+        self.iterable = iterable
+        self.it = iter(iterable)
+        self.size = clumpsize
+
+    def __len__(self):
+        return ceil(len(self.iterable)/self.size)
+
+    def __next__(self):
+        c = tuple(islice(self.it, self.size))
         if not c:
-            return
-        yield c
+            raise StopIteration()
+        return c
+
+
+# def clump(iterable, size=10):
+#     while True:
+#         c = tuple(islice(iterable, size))
+#         if not c:
+#             return
+#         yield c
+
+
+def get_top_level_package(obj):
+    obj = make_collection(obj)[0]
+    module = inspect.getmodule(obj)
+    pkg, *rest = module.__name__.partition('.')
+    return pkg
 
 
 def make_quantity(obj, unit: u.Unit=u.dimensionless_unscaled):
@@ -24,6 +51,7 @@ def make_collection(obj, cls: Collection=list):
     if not isinstance(obj, Collection):
         obj = cls([obj])
     return obj
+
 
 def make_sequence(obj, cls: Sequence=list):
     if not issubclass(obj, Sequence):

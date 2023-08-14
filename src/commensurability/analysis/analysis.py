@@ -1,89 +1,60 @@
+from abc import abstractmethod
 from math import prod
 from tqdm import tqdm
-
-import numpy as np
-import astropy.units as u
-import matplotlib.pyplot as plt
-
-from ..tessellation import Tessellation
-from ..utils import clump, make_quantity
+from pathlib import Path
 
 import h5py
+import numpy as np
 
+from ..tessellation import Tessellation
+from ..utils import clump, get_top_level_package
+from .backends import Backend
+from .backends import GalpyBackend
+from .backends import GalaBackend
+from .backends import AgamaBackend
+from .interactive import InteractivePhasePlot
 
-NO_UNIT = u.dimensionless_unscaled
-KPC = u.kpc
-KMS = u.km / u.s
-DEG = u.deg
-ANGF = KMS/KPC
-
-CYLINDRICAL_DEFAULTS = dict(R=KPC, vR=KMS, vT=KMS, z=KPC, vz=KMS, phi=DEG)
-
-
-# TODO: implement variable pattern speeds
-# TODO: implement variable integration time parameters (step size, total time)
 
 class Analysis:
 
-    def __init__(self, pot, ts, *, pattern_speed=0, backend='galpy', **coords):
+    def __init__(self, pot, dt, steps, *, pattern_speed=0, backend=None):
         self.pot = pot
-        self.pattern_speed = make_quantity(pattern_speed, unit=ANGF)
-        self.phi_offset = (pattern_speed * ts).to(NO_UNIT)
+        self.dt = dt
+        self.steps = steps
+        self.pattern_speed = pattern_speed
 
-        # for now, only parse input in cylindrical coordinates
-        if not all(key in coords for key in CYLINDRICAL_DEFAULTS):
-            raise ValueError('Requires all cylindrical components specificied as keyword arguments.')
-        self.variables = []
-        for key, value in coords.items():
-            coords[key] = quantity = make_quantity(value)
-            if quantity.size != 1:
-                self.variables.append(key)
+        if backend is None:
+            backend = get_top_level_package(pot)
+        if not isinstance(backend, Backend):
+            if backend == 'galpy':
+                self.backend = GalpyBackend()
+            if backend == 'gala':
+                self.backend = GalaBackend()
+            if backend == 'agama':
+                self.backend = AgamaBackend()
 
+    def evaluate(self, points):
+        tess = Tessellation(points)
+        return tess.calculate_measure()
+
+    def construct_image(self, coords, chunksize=200, progressbar=True):
         self.coords = coords
+        varaxes = tuple(s > 1 for s in coords.shape)
+        self.axes = tuple(axis for isvar, axis in zip(varaxes, coords.axes) if isvar)
+        self.shape = tuple(s for isvar, s in zip(varaxes, coords.shape) if isvar)
+        self.image = np.zeros(prod(self.shape))
 
-        if backend == 'galpy':
-            import galpy
-            self.backend = galpy
-            self.evaluator = self.eval_with_galpy_backend
-            self.ts = ts
-
-    def eval_with_galpy_backend(self, *indices):
-        N = len(indices[0])
-        iter_inds = iter(indices)
-        initial_conditions = [
-            self.coords[key][next(iter_inds)]
-            if key in self.variables
-            else self.coords[key]*np.ones(N)
-            for key in CYLINDRICAL_DEFAULTS
-        ]
-
-        orbits = self.backend.orbit.Orbit(initial_conditions)
-        orbits.integrate(self.ts, self.pot)
-        orbits.turn_physical_on()
-        for orbit in orbits:
-            R = orbit.R(self.ts)
-            phi = orbit.phi(self.ts) + self.phi_offset
-
-            x = R * np.cos(phi.value)
-            y = R * np.sin(phi.value)
-            z = orbit.z(self.ts)
-
-            points = np.array([x, y, z]).T
-            tess = Tessellation(points)
-            yield tess.volume
-
-    def construct_image(self, chunksize=200, progressbar=True):
-        self.shape = tuple(coord.size for coord in self.coords.values() if coord.size != 1)
-        self.image = np.zeros(self.shape)
-
-        indices = np.ndindex(self.shape)
-        chunked_indices = clump(indices, size=chunksize)
-        for chunk in tqdm(chunked_indices, size=prod(self.shape)//chunksize, disable=~progressbar):
-            chunk = np.array(chunk)
-            values = self.evaluator(*chunk.T)
-            for i, value in zip(chunk, values):
-                self.image[tuple(i)] = value
-
+        coords = clump(coords, chunksize)
+        i = 0
+        for coords_chunk in tqdm(coords):
+            orb_it = self.backend.iter_orbits(self.pot, coords_chunk, self.dt, self.steps, pattern_speed=self.pattern_speed)
+            for points in orb_it:
+                value = self.evaluate(points)
+                self.image[i] = value
+                i += 1
+        
+        self.image = self.image.reshape(self.shape)
+    
     def save_image(self, filename):
         with h5py.File(filename, 'w-') as f:
             dset = f.create_dataset('image', data=self.image)
@@ -95,7 +66,14 @@ class Analysis:
             dset.attrs['phi'] = self.coords['phi']
             dset.attrs['omega'] = self.pattern_speed
             dset.attrs['times'] = self.ts
+    
+    def launch_interactive_plot(self):
+        plot = InteractivePhasePlot(self)
+        plot.show()
 
-    def display_image(self):
-        plt.imshow(self.image, origin='lower')
-        plt.show()
+
+class TessEval:
+
+    def evaluate(self, points):
+        tess = Tessellation(points)
+        return tess.calculate_measure()

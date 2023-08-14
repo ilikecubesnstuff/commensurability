@@ -4,6 +4,10 @@ from commensurability.analysis.coordinates import Cylindrical
 from commensurability.analysis.backends import GalpyBackend, GalaBackend
 
 import galpy.potential as gp
+# import galpy.orbit as go
+
+# o = go.Orbit()
+# o.integrate()
 
 # print(vars(GalpyBackend))
 # print(vars(GalpyBackend()))
@@ -21,14 +25,17 @@ g = GalpyBackend()
 
 print('=== ITER_EXAMPLE ===')
 
-for p in g.iter_compute_orbits(gp.MWPotential2014, c, 0.01, 5):
+# for p in g.iter_compute_orbits(gp.MWPotential2014, c, 0.01, 5):
+#     print(p)
+
+for p in g.iter_orbits(gp.MWPotential2014, c, 0.01, 5):
     print(p)
 
 print()
 print()
 print('=== ITER_SLICE_EXAMPLE ===')
 
-for iter_p in g.iter_compute_orbit_slices(gp.MWPotential2014, c, 0.01, 5, 10):
+for iter_p in g.iter_orbit_slices(gp.MWPotential2014, c, 0.01, 5, 10):
     print('== SLICE ==')
     for p in iter_p:
         print(p)

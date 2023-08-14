@@ -70,6 +70,9 @@ class CoordinateCollection(metaclass=CoordinateCollectionMeta):
         for indices in np.ndindex(self.shape):
             coords = {axis: getattr(self, axis)[i] for i, axis in zip(indices, self.axes)}
             yield self.Coordinate(**coords)
+    
+    def __getitem__(self, ax):
+        return getattr(self, ax)
 
     def to(self, ctype: CoordinateCollection) -> CoordinateCollection:
         if ctype.__name__ not in CoordinateCollection.type_registry:
