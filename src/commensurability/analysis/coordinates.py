@@ -1,8 +1,8 @@
 from __future__ import annotations
-from collections.abc import Collection, Sequence
+from collections.abc import Sequence
 from dataclasses import make_dataclass
 from math import prod
-from typing import Mapping, MutableMapping
+from typing import Union, Mapping, MutableMapping
 
 import numpy as np
 import astropy.units as u
@@ -55,8 +55,8 @@ class CoordinateCollection(metaclass=CoordinateCollectionMeta):
     def __init_subclass__(cls, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
         CoordinateCollection.type_registry[cls.__name__] = cls
-    
-    def __contains__(self, item):
+
+    def __contains__(self, item: Union[Mapping, Sequence]):
         if isinstance(item, Mapping):
             return all(item[axis] in getattr(self, axis) for axis in self.axes)
         if isinstance(item, Sequence):
@@ -65,13 +65,13 @@ class CoordinateCollection(metaclass=CoordinateCollectionMeta):
 
     def __len__(self):
         return prod(self.shape)
-    
+
     def __iter__(self):
         for indices in np.ndindex(self.shape):
             coords = {axis: getattr(self, axis)[i] for i, axis in zip(indices, self.axes)}
             yield self.Coordinate(**coords)
-    
-    def __getitem__(self, ax):
+
+    def __getitem__(self, ax: str):
         return getattr(self, ax)
 
     def to(self, ctype: CoordinateCollection) -> CoordinateCollection:

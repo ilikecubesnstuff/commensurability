@@ -24,14 +24,6 @@ class clump(Iterator):
         return c
 
 
-# def clump(iterable, size=10):
-#     while True:
-#         c = tuple(islice(iterable, size))
-#         if not c:
-#             return
-#         yield c
-
-
 def get_top_level_package(obj):
     obj = make_collection(obj)[0]
     module = inspect.getmodule(obj)
@@ -39,13 +31,13 @@ def get_top_level_package(obj):
     return pkg
 
 
-def make_quantity(obj, unit: u.Unit=u.dimensionless_unscaled):
+def make_quantity(obj, unit: u.Unit = u.dimensionless_unscaled):
     if isinstance(obj, u.Quantity):
         return obj
     return obj * unit
 
 
-def make_collection(obj, cls: Collection=list):
+def make_collection(obj, cls: Collection = list):
     if not issubclass(cls, Collection):
         raise ValueError('Class provided must subclass collections.abc.Collection')
     if not isinstance(obj, Collection):
@@ -53,7 +45,7 @@ def make_collection(obj, cls: Collection=list):
     return obj
 
 
-def make_sequence(obj, cls: Sequence=list):
+def make_sequence(obj, cls: Sequence = list):
     if not issubclass(obj, Sequence):
         raise ValueError('Class provided must subclass collections.abc.Sequence')
     if not isinstance(obj, Sequence):

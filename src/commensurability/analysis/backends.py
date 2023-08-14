@@ -1,6 +1,6 @@
 from __future__ import annotations
 from abc import ABCMeta, abstractmethod, abstractstaticmethod
-from typing import Any, Union, Sequence, Iterable, Collection, MutableMapping
+from typing import Any, Union, Collection, MutableMapping
 from importlib import import_module
 from itertools import pairwise, islice
 
@@ -8,15 +8,11 @@ import numpy as np
 import astropy.units as u
 
 from .coordinates import Coordinate, CoordinateCollection, Cylindrical
-from ..utils import make_quantity, make_collection, make_sequence
-
-
-DT_TYPE = Union[float, Collection]
-
+from ..utils import make_quantity
 
 
 class BackendMeta(ABCMeta):
-    def unavailable(e):
+    def unavailable(e: Exception):
         class Unavailable:
             def __init__(self):
                 raise e
@@ -37,7 +33,7 @@ class BackendMeta(ABCMeta):
 class Backend(metaclass=BackendMeta):
 
     @abstractstaticmethod
-    def _extract_points_from_orbit(self, orbit, **kwargs):
+    def _extract_points_from_orbit(self, orbit: Any, **kwargs):
         pass
 
     @abstractmethod
@@ -51,18 +47,21 @@ class Backend(metaclass=BackendMeta):
     def _precompute_namespace_hook(self, namespace: MutableMapping):
         return {}, {}
 
-    def get_orbit(self, pot, coord, dt, steps, *, pattern_speed=0):
+    def get_orbit(self, pot: Any, coord: Coordinate,
+                  dt: Union[float, Collection], steps: int, *, pattern_speed: u.Quantity = 0):
         computing_kwargs, extracting_kwargs = self._precompute_namespace_hook(locals())
         orbit = self._compute_orbit(coord, **computing_kwargs)
         return self._extract_points_from_orbit(orbit, **extracting_kwargs)
 
-    def iter_orbits(self, pot, coords, dt, steps, *, pattern_speed = 0):
+    def iter_orbits(self, pot: Any, coords: CoordinateCollection,
+                    dt: Union[float, Collection], steps: int, *, pattern_speed: u.Quantity = 0):
         computing_kwargs, extracting_kwargs = self._precompute_namespace_hook(locals())
         orbits = self._compute_orbits(coords, **computing_kwargs)
         for orbit in orbits:
             yield self._extract_points_from_orbit(orbit, **extracting_kwargs)
-    
-    def iter_orbit_slices(self, pot, coords, dt, *steps, pattern_speed = 0):
+
+    def iter_orbit_slices(self, pot: Any, coords: CoordinateCollection,
+                          dt: Union[float, Collection], *steps: int, pattern_speed: u.Quantity = 0):
         steps = [0] + sorted(steps)
         computing_kwargs, extracting_kwargs = self._precompute_namespace_hook(locals())
         orbits = self._compute_orbits(coords, **computing_kwargs)
@@ -88,7 +87,7 @@ class GalpyBackend(Backend):
             ]
         raise NotImplementedError('Only cylindrical coordinates accepted for galpy backend')
 
-    def _extract_points_from_orbit(self, orbit, *, t, phi_offset):
+    def _extract_points_from_orbit(self, orbit: Any, *, t: u.Quantity, phi_offset: u.Quantity):
         R = orbit.R(t)
         phi = orbit.phi(t) + phi_offset
 
@@ -98,13 +97,13 @@ class GalpyBackend(Backend):
 
         return np.array([x, y, z]).T
 
-    def _compute_orbit(self, coord: Coordinate, *, t, pot, **kwargs):
+    def _compute_orbit(self, coord: Coordinate, *, t: u.Quantity, pot: Any, **kwargs):
         initial_condition = self.format_coordinate(coord)
         orbit = self.galpy.orbit.Orbit(initial_condition)
         orbit.integrate(t, pot, **kwargs)
         return orbit
 
-    def _compute_orbits(self, coords: CoordinateCollection, *, t, pot, **kwargs):
+    def _compute_orbits(self, coords: CoordinateCollection, *, t: u.Quantity, pot: Any, **kwargs):
         initial_conditions = tuple(map(self.format_coordinate, coords))
         orbits = self.galpy.orbit.Orbit(initial_conditions)
         orbits.integrate(t, pot, **kwargs)

@@ -1,7 +1,5 @@
-from abc import abstractmethod
 from math import prod
 from tqdm import tqdm
-from pathlib import Path
 
 import h5py
 import numpy as np
@@ -47,14 +45,20 @@ class Analysis:
         coords = clump(coords, chunksize)
         i = 0
         for coords_chunk in tqdm(coords):
-            orb_it = self.backend.iter_orbits(self.pot, coords_chunk, self.dt, self.steps, pattern_speed=self.pattern_speed)
+            orb_it = self.backend.iter_orbits(
+                pot=self.pot,
+                coords=coords_chunk,
+                dt=self.dt,
+                steps=self.steps,
+                pattern_speed=self.pattern_speed
+            )
             for points in orb_it:
                 value = self.evaluate(points)
                 self.image[i] = value
                 i += 1
-        
+
         self.image = self.image.reshape(self.shape)
-    
+
     def save_image(self, filename):
         with h5py.File(filename, 'w-') as f:
             dset = f.create_dataset('image', data=self.image)
@@ -66,7 +70,7 @@ class Analysis:
             dset.attrs['phi'] = self.coords['phi']
             dset.attrs['omega'] = self.pattern_speed
             dset.attrs['times'] = self.ts
-    
+
     def launch_interactive_plot(self):
         plot = InteractivePhasePlot(self)
         plot.show()
