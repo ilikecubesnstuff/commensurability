@@ -48,23 +48,23 @@ class Backend(metaclass=BackendMeta):
         return {}, {}
 
     def get_orbit(self, pot: Any, coord: Coordinate,
-                  dt: Union[float, Collection], steps: int, *, pattern_speed: u.Quantity = 0):
+                  dt: Union[float, Collection], steps: int, *, pattern_speed: u.Quantity = 0, **kwargs):
         computing_kwargs, extracting_kwargs = self._precompute_namespace_hook(locals())
-        orbit = self._compute_orbit(coord, **computing_kwargs)
+        orbit = self._compute_orbit(coord, **computing_kwargs, **kwargs)
         return self._extract_points_from_orbit(orbit, **extracting_kwargs)
 
     def iter_orbits(self, pot: Any, coords: CoordinateCollection,
-                    dt: Union[float, Collection], steps: int, *, pattern_speed: u.Quantity = 0):
+                    dt: Union[float, Collection], steps: int, *, pattern_speed: u.Quantity = 0, **kwargs):
         computing_kwargs, extracting_kwargs = self._precompute_namespace_hook(locals())
-        orbits = self._compute_orbits(coords, **computing_kwargs)
+        orbits = self._compute_orbits(coords, **computing_kwargs, **kwargs)
         for orbit in orbits:
             yield self._extract_points_from_orbit(orbit, **extracting_kwargs)
 
     def iter_orbit_slices(self, pot: Any, coords: CoordinateCollection,
-                          dt: Union[float, Collection], *steps: int, pattern_speed: u.Quantity = 0):
+                          dt: Union[float, Collection], *steps: int, pattern_speed: u.Quantity = 0, **kwargs):
         steps = [0] + sorted(steps)
         computing_kwargs, extracting_kwargs = self._precompute_namespace_hook(locals())
-        orbits = self._compute_orbits(coords, **computing_kwargs)
+        orbits = self._compute_orbits(coords, **computing_kwargs, **kwargs)
         for orbit in orbits:
             points = self._extract_points_from_orbit(orbit, **extracting_kwargs)
             iter_points = iter(points)

@@ -12,7 +12,7 @@ from ..utils import make_collection, make_quantity
 
 class CoordinateCollectionMeta(type):
 
-    def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping, dtype=float):
+    def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping, dtype: type = float):
         axes = namespace.get('__annotations__', {})
         namespace['axes'] = tuple(axes.keys())
 
@@ -29,7 +29,7 @@ class CoordinateCollectionMeta(type):
         init_params = ', '.join(f'{axis}: {dtype.__name__}' for axis in axes)
         init_body = '\n'.join((
             f'    {axis} = make_collection({axis})\n'
-            f'    {axis} = make_quantity({axis}, unit={unit})\n'
+            f'    {axis} = make_quantity({axis}, unit=u.Unit("{str(unit).replace("u.", "")}"))\n'
             f'    self.{axis} = {axis}\n'
         ) for axis, unit in axes.items())
         repr_body = f'{name}Coordinates({{", ".join(f"{{axis}}={{getattr(self, axis)}}" for axis in self.axes)}})'
@@ -37,7 +37,7 @@ class CoordinateCollectionMeta(type):
             f'def __init__(self, {init_params}):\n'
             f'{init_body}\n'
             f'    self.shape = tuple(getattr(self, axis).size for axis in self.axes)\n'
-            f'    self.Coordinate = make_dataclass(f"{name}Coordinate", self.axes, bases=(Coordinate,))'
+            f'    self.Coordinate = make_dataclass(f"{name}Coordinate", self.axes, bases=(Coordinate,))\n'
             f'\n'
             f'def __repr__(self):\n'
             f'    return f\'{repr_body}\'\n'
@@ -73,6 +73,14 @@ class CoordinateCollection(metaclass=CoordinateCollectionMeta):
 
     def __getitem__(self, ax: str):
         return getattr(self, ax)
+    
+    def __save__(self):
+        return [], {axis: self[axis] for axis in self.axes}
+
+    @classmethod
+    def __read__(cls, file):
+        params = {axis: file.attrs[axis] for axis in cls.axes}
+        return cls(**params)
 
     def to(self, ctype: CoordinateCollection) -> CoordinateCollection:
         if ctype.__name__ not in CoordinateCollection.type_registry:
