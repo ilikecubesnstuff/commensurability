@@ -27,6 +27,8 @@ class InteractivePhasePlot:
         values = {ax: self.analysis.coords[ax][0] for ax in self.analysis.coords.axes}
         values[self.a1] = event.xdata * values[self.a1].unit
         values[self.a2] = event.ydata * values[self.a2].unit
+        for ax, index in self.indices.items():
+            values[ax] = self.analysis.coords[ax][index]
         new_coord = self.analysis.coords.Coordinate(**values)
         print(new_coord)
         points = self.analysis.backend.get_orbit(
