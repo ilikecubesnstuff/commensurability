@@ -12,7 +12,7 @@ class serializer(latent_type_hierarchy):
     """
 
     @classmethod
-    def create(cls, func: typing.Callable) -> 'serializer':
+    def create(cls, func: typing.Callable):
         """
         [This docstring is AI-generated.]
         Create a serializer instance for the given function.
@@ -52,7 +52,7 @@ class deserializer(latent_type_hierarchy):
     """
 
     @classmethod
-    def create(cls, func: typing.Callable) -> 'deserializer':
+    def create(cls, func: typing.Callable):
         """
         [This docstring is AI-generated.]
         Create a deserializer instance for the given function.

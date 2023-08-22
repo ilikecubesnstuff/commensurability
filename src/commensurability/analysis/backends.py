@@ -7,30 +7,18 @@ from itertools import pairwise, islice
 import numpy as np
 import astropy.units as u
 
+from .importextension import ExtendImports
 from .coordinates import Coordinate, CoordinateCollection, Cylindrical
 from ..utils import make_quantity
 
 
-class BackendMeta(ABCMeta):
-    def unavailable(e: Exception):
-        class Unavailable:
-            def __init__(self):
-                raise e
-        return Unavailable
+class Backend(ExtendImports):
 
-    def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-        packages = namespace.get('__require__', ())
-        if not isinstance(packages, tuple):
-            packages = (packages,)
-        try:
-            for package in packages:
-                namespace[package] = import_module(package)
-        except ModuleNotFoundError as e:
-            return metacls.unavailable(e)
-        return super().__new__(metacls, name, bases, namespace)
-
-
-class Backend(metaclass=BackendMeta):
+    def __imports__():
+        # when subclassing, include extra imports here
+        # these get added to the object's namespace
+        # use them via attribute access
+        ...
 
     @abstractstaticmethod
     def _extract_points_from_orbit(self, orbit: Any, **kwargs):
@@ -72,10 +60,14 @@ class Backend(metaclass=BackendMeta):
 
 
 class GalpyBackend(Backend):
-    __require__ = ('galpy', 'galpy.orbit')
+
+    def __imports__():
+        import galpy
+        import galpy.orbit
 
     @staticmethod
     def format_coordinate(coord: Coordinate):
+        print(coord)
         if isinstance(coord, Cylindrical.Coordinate):
             return [
                 coord.R,
@@ -126,8 +118,12 @@ class GalpyBackend(Backend):
 
 
 class GalaBackend(Backend):
-    __require__ = 'gala'
+
+    def __imports__():
+        import gala
 
 
 class AgamaBackend(Backend):
-    __require__ = 'agama'
+
+    def __imports__():
+        import agama
