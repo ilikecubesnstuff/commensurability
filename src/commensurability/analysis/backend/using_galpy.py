@@ -4,7 +4,7 @@ import numpy as np
 import astropy.units as u
 
 from ...utils import make_quantity
-from ..coordinates import Coordinate, CoordinateCollection, Cylindrical
+from ..coordinates_old import Coordinate, CoordinateCollection, Cylindrical
 from .base import Backend
 
 

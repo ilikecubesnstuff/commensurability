@@ -1,6 +1,6 @@
 
 
-from commensurability.analysis.coordinates import Cylindrical
+from commensurability.analysis.coordinates_old import Cylindrical
 # from commensurability.analysis.backends import GalpyBackend, GalaBackend
 from commensurability.analysis.backend import GalpyBackend, GalaBackend
 

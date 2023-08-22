@@ -7,7 +7,7 @@ import numpy as np
 
 from ..tessellation import Tessellation
 from ..utils import clump, get_top_level_package
-from .coordinates import Cylindrical
+from .coordinates_old import Cylindrical
 from . import backends
 from .backends import Backend
 from .backends import GalpyBackend

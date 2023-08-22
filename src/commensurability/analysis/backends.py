@@ -8,7 +8,7 @@ import numpy as np
 import astropy.units as u
 
 from .importextension import ExtendImports
-from .coordinates import Coordinate, CoordinateCollection, Cylindrical
+from .coordinates_old import Coordinate, CoordinateCollection, Cylindrical
 from ..utils import make_quantity
 
 

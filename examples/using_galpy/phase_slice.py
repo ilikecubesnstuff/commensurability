@@ -3,7 +3,7 @@ import astropy.units as u
 import galpy.potential as p
 
 from commensurability.analysis import TessellationAnalysis
-from commensurability.analysis.coordinates import Cylindrical
+from commensurability.analysis.coordinates_old import Cylindrical
 
 # rotating bar potential
 omega = 30 * u.km/u.s/u.kpc
@@ -13,7 +13,7 @@ bar = p.SoftenedNeedleBarPotential(amp=1e9 * u.solMass, a=1.5 * u.kpc, b=0 * u.k
 pot = [halo, disc, bar]
 
 
-SIZE = 50
+SIZE = 5
 coords = Cylindrical(
     R   = np.linspace(0, 10, SIZE + 1)[1:]  * u.kpc,
     vR  = np.linspace(0, 0, 1)  * u.km/u.s,
