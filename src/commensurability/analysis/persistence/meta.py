@@ -1,30 +1,12 @@
-import typing
-from types import GenericAlias
-
-import inspect
 from abc import abstractstaticmethod
-from collections.abc import Callable, MutableMapping
+from types import GenericAlias
+import typing
 
-# depth = 0
-# indent = '  '
-# def debug_prints(f):
-#     def inner(*args, **kwargs):
-#         global depth
-#         base = depth * indent
-#         print(base, f'== {f.__name__} ==')
-#         for arg in args:
-#             print(base + indent, 'ARG', arg, type(arg))
-#         for kw, arg in kwargs.items():
-#             print(base + indent, 'KWARG', kw, '=', arg, type(arg))
-#         depth += 1
-#         result = f(*args, **kwargs)
-#         depth -= 1
-#         print(base + indent, 'RESULT', result, type(result))
-#         print(base, '==')
-#         return result
-#     return inner
 
-# @debug_prints
+ANY_TYPE = type(typing.Any)
+UNION_TYPE = type(typing.Union[int, float])
+
+
 def recursive_subtype_check(__subtype, __type):
     """
     [This docstring is AI-generated.]
@@ -59,14 +41,14 @@ def recursive_subtype_check(__subtype, __type):
         # of floats.
     """
     # if the base type is typing.Any, any subtype is valid
-    if type(__type) is type(typing.Any):
+    if type(__type) is ANY_TYPE:
         return True
-    
+
     # deal with unsupported/unimplemented types
     if not isinstance(__type, type | GenericAlias):
 
         # hacked-in support for typing.Union and typing.Optional
-        if type(__type) is type(typing.Union[int, float]):
+        if type(__type) is UNION_TYPE:
             return any(
                 recursive_subtype_check(__subtype, nth_parent_type)
                 for nth_parent_type in typing.get_args(__type)
@@ -113,855 +95,162 @@ def recursive_subtype_check(__subtype, __type):
     )
 
 
-# TYPE_OR_ANNOTATION = type | GenericAlias | typing.Any
-
-
-
-
-
-
-
-
-# class MesaMethods(type):
-
-#     def __new__(cls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         mesamethods = {}
-#         for name, value in namespace.items():
-#             if hasattr(value, '__ismesamethod__'):
-#                 mesamethods[name] = value
-#         for key in mesamethods:
-#             del namespace[key]
-#         namespace['__mesamethods__'] = mesamethods
-#         return super().__new__(cls, name, bases, namespace)
-
-#     def __call__(self, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         for name, value in self.__mesamethods__.items():
-#             namespace[name] = value
-#         return super().__call__(name, bases, namespace)
-
-
-# def mesamethod(func):
-#     func.__ismesamethod__ = True
-#     return func
-
-
-# class MesaMeta(type):
-
-#     def __new__(cls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         mesa = namespace.pop('Mesa', type('Mesa', (), {}))
-#         namespace['Mesa'] = mesa
-#         return super().__new__(cls, name, bases, namespace)
-
-#     def __call__(self, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         for key, attr in vars(self.Mesa).items():
-#             # print(key, getattr(attr, '__overwrite__', False))
-#             if getattr(attr, '__overwrite__', False) or key not in namespace:
-#                 # print('NEW KEY', key, attr)
-#                 namespace[key] = attr
-#         # print('CALL', namespace)
-#         return super().__call__(name, bases, namespace)
-
-# def overwrite(func):
-#     func.__overwrite__ = True
-#     return func
-
-
-# class LatentTypeHierarchy(MesaMethods):
-
-#     def __new__(cls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         pass
-
-#     def __call__(self, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         pass
-
-
-# class BaseLTH(type, metaclass=LatentTypeHierarchy):
-
-#     def __call__(self, obj):
-#         lth_type = self.lth_type(obj)
-#         cls = self[lth_type]
-#         return type.__call__(cls, obj)
-
-#     @abstractstaticmethod
-#     def lth_type(obj: typing.Any):
-#         pass
-
-# class lth_on_callable_return(BaseLTH):
-
-#     def __new__(cls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         pass
-
-#     @staticmethod
-#     def lth_type(func: Callable):
-#         if not isinstance(func, Callable):
-#             raise TypeError('This object can only be constructed on callables')
-#         return func.__annotations__.get('return', typing.Any)
-
-
-# class serializer(metaclass=lth_on_callable_return):
-    
-#     def __class_getitem__(cls, key):
-#         pass
-
-
-
-
 class latent_type_hierarchy(type):
+    """
+    [This docstring is AI-generated.]
+    A metaclass that enables the creation of classes with latent type hierarchies.
+    """
 
-    def __new__(cls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
+    def __new__(cls, name: str, bases: tuple[type, ...], namespace: typing.MutableMapping) -> 'latent_type_hierarchy':
+        """
+        [This docstring is AI-generated.]
+        Create a new class with the specified name, base classes, and namespace.
+
+        Args:
+            name (str): The name of the new class.
+            bases (tuple[type, ...]): Tuple of base classes for the new class.
+            namespace (typing.MutableMapping): The namespace containing class attributes and methods.
+
+        Returns:
+            latent_type_hierarchy: The newly created class.
+
+        Note:
+            If '__type__' is not defined in the namespace, it is set to 'typing.Any'.
+        """
+
         if '__type__' not in namespace:
             namespace['__type__'] = typing.Any
 
-        def __init__(self, obj):
-            if not isinstance(obj, self.__class__):
+        def __init__(self, _obj: typing.Any):
+            """
+            [This docstring is AI-generated.]
+            Initialize an instance of the latent type class.
+
+            Args:
+                _obj (typing.Any): The object to associate with the instance.
+
+            Raises:
+                RuntimeError: If the object is not a valid instance of the class.
+            """
+            if not isinstance(_obj, self.__class__):
                 raise RuntimeError('Use the ".create" constructor to make an instance of this class')
-            self.obj = obj
+            self._obj = _obj
         namespace['__init__'] = __init__
 
-        def __repr__(self):
-            return f"<{self.__class__.__name__}[{self.__type__}] {self.obj}>"
+        def __repr__(self) -> str:
+            """
+            [This docstring is AI-generated.]
+            Return a string representation of the instance.
+
+            Returns:
+                str: The string representation.
+            """
+            return f"<{self.__class__.__name__}[{self.__type__}] {self._obj}>"
         namespace['__repr__'] = __repr__
 
-        def __class_getitem__(cls, key):
+        def __class_getitem__(cls, key: typing.Any) -> 'latent_type_hierarchy':
+            """
+            [This docstring is AI-generated.]
+            Get an instance of the class with a specific associated type.
+
+            Args:
+                key (typing.Any): The associated type for the new instance.
+
+            Returns:
+                latent_type_hierarchy: A new class instance associated with the specified type.
+            """
             new_cls = type(cls.__name__, (cls,), dict(vars(cls)))
             new_cls.__type__ = key
             return new_cls
         namespace['__class_getitem__'] = __class_getitem__
 
-        def __getattribute__(self, key):
+        def __getattribute__(self, key: str) -> typing.Any:
+            """
+            [This docstring is AI-generated.]
+            Get the attribute or method from the instance or the associated object.
+
+            Args:
+                key (str): The attribute or method name.
+
+            Returns:
+                typing.Any: The value of the attribute or the result of the method.
+            """
             try:
                 return object.__getattribute__(self, key)
             except AttributeError as e1:
-                pass
-            try:
-                obj = object.__getattribute__(self, 'obj')
-                return getattr(obj, key)
-            except AttributeError as e2:
-                raise AttributeError(e1)
+                try:
+                    _obj = object.__getattribute__(self, '_obj')
+                    return getattr(_obj, key)
+                except AttributeError:
+                    raise AttributeError(e1)
         namespace['__getattribute__'] = __getattribute__
 
-        def __call__(self, *args, **kwargs):
-            return self.obj(*args, **kwargs)
+        def __call__(self, *args, **kwargs) -> typing.Any:
+            """
+            [This docstring is AI-generated.]
+            Call the associated object with the specified arguments and keyword arguments.
+
+            Returns:
+                typing.Any: The result of the function call.
+            """
+            return self._obj(*args, **kwargs)
         namespace['__call__'] = __call__
 
         return super().__new__(cls, name, bases, namespace)
 
     @abstractstaticmethod
-    def __gettype__(func: Callable):
+    def __gettype__(obj: typing.Any) -> typing.Any:
+        """
+        [This docstring is AI-generated.]
+        Get the type associated with an object.
+
+        Args:
+            obj (typing.Any): The object for which to determine the associated type.
+
+        Returns:
+            typing.Any: The associated type.
+        """
         pass
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        [This docstring is AI-generated.]
+        Return a string representation of the metaclass instance.
+
+        Returns:
+            str: The string representation.
+        """
         return f"<{self.__name__}_type '{self.__type__}'>"
 
     def __subclasscheck__(self, __subclass: type) -> bool:
+        """
+        [This docstring is AI-generated.]
+        Check if a class is a subclass, considering the associated types.
+
+        Args:
+            __subclass (type): The class to check.
+
+        Returns:
+            bool: True if the class is a subclass, False otherwise.
+        """
         associated_type = getattr(__subclass, '__type__', None)
         if not associated_type:
             return False
         return recursive_subtype_check(associated_type, self.__type__)
 
-    def __instancecheck__(self, __instance: Callable) -> bool:
-        if not isinstance(__instance, Callable):
+    def __instancecheck__(self, __instance: typing.Callable) -> bool:
+        """
+        [This docstring is AI-generated.]
+        Check if an object is an instance of the associated type.
+
+        Args:
+            __instance (typing.Callable): The object to check.
+
+        Returns:
+            bool: True if the object is an instance of the associated type, False otherwise.
+        """
+        if issubclass(type(__instance), self):
+            __instance = __instance._obj
+        if not isinstance(__instance, typing.Callable):
             return False
         return self.__gettype__(__instance) == self.__type__
-
-
-class serializer(latent_type_hierarchy):
-
-    @classmethod
-    def create(cls, func):
-        namespace = {}
-        namespace['__type__'] = cls.__gettype__(func)
-        mesacls = cls(f'{cls.__name__}', (), namespace)
-        inst = mesacls(func)
-        return inst
-
-    @staticmethod
-    def __gettype__(func: Callable):
-        return func.__annotations__.get('return', typing.Any)
-
-
-class deserializer(latent_type_hierarchy):
-
-    @classmethod
-    def create(cls, func):
-        namespace = {}
-        namespace['__type__'] = cls.__gettype__(func)
-        mesacls = cls(f'{cls.__name__}', (), namespace)
-        inst = mesacls(func)
-        return inst
-
-    @staticmethod
-    def __gettype__(func: Callable):
-        signature = inspect.signature(func)
-        items = tuple(
-            param.annotation if param.annotation is not param.empty else typing.Any
-            for param in signature.parameters.values()
-        )
-        return tuple[items]
-
-
-
-
-
-
-# class serializer(type, metaclass=MesaMeta):
-
-#     @classmethod
-#     def create(metacls, func):
-#         namespace = {}
-#         namespace = {key: getattr(func, key) for key in dir(func.__class__)}
-#         print(list(namespace.keys()))
-#         # del namespace['__class__']
-#         del namespace['__getattribute__']
-#         namespace['__type__'] = metacls.__gettype__(func)
-#         print(metacls)
-#         cls = metacls(f'{metacls.__name__}_type', (), namespace)
-#         print(cls)
-#         # print(vars(cls))
-#         print(dir(cls))
-#         inst = cls(func)
-#         print(inst, inst.obj)
-#         print('repr check', inst.__repr__)
-#         return inst
-
-#     def __new__(cls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         if '__type__' not in namespace:
-#             namespace['__type__'] = typing.Any
-#         return super().__new__(cls, name, bases, namespace)
-    
-#     def __call__(self, *args, **kwargs):
-#         print('CALL INNER', self, args, kwargs)
-#         return super().__call__(*args, **kwargs)
-
-#     @staticmethod
-#     def __gettype__(func: Callable):
-#         return func.__annotations__.get('return', typing.Any)
-
-#     def __repr__(self):
-#         return f"<{self.__name__} '{self.__type__}'>"
-
-#     def __subclasscheck__(self, __subclass: type) -> bool:
-#         associated_type = getattr(__subclass, '__type__', None)
-#         if not associated_type:
-#             return False
-#         return recursive_subtype_check(associated_type, self.__type__)
-
-#     def __instancecheck__(self, __instance: Callable) -> bool:
-#         if not isinstance(__instance, Callable):
-#             return False
-#         return self.__gettype__(__instance) is self.__type__
-
-#     class Mesa:
-#         x = 1
-
-#         @overwrite
-#         def __init__(self, obj):
-#             if not isinstance(obj, self.__class__):
-#                 raise RuntimeError('Use the ".create" constructor to make an instance of this class')
-#             self.obj = obj
-
-#         @overwrite
-#         def __repr__(self):
-#             return f"{self.__class__.__name__}[{self.__type__}]({self.obj})"
-
-#         def __class_getitem__(cls, key):
-#             new_cls = type(cls.__name__, (cls,), dict(vars(cls)))
-#             new_cls.__type__ = key
-#             return new_cls
-
-
-
-# class deserializer(type, metaclass=MesaMeta):
-
-#     @classmethod
-#     def create(metacls, func):
-#         namespace = {key: getattr(func, key) for key in dir(func)}
-#         namespace['__type__'] = metacls.__gettype__(func)
-#         cls = metacls(f'{metacls.__name__}_type', (), namespace)
-#         inst = cls(func)
-#         return inst
-
-#     def __new__(cls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         if '__type__' not in namespace:
-#             namespace['__type__'] = typing.Any
-#         return super().__new__(cls, name, bases, namespace)
-
-#     @staticmethod
-#     def __gettype__(func: Callable):
-#         # print(func.__annotations__)
-#         signature = inspect.signature(func)
-#         # print(signature.parameters)
-#         items = tuple(
-#             param.annotation
-#             for param in signature.parameters.values()
-#             if param.annotation is not param.empty
-#         )
-#         __type__ = tuple[items]
-#         return __type__
-
-#     def __repr__(self):
-#         return f"<{self.__name__} '{self.__type__}'>"
-
-#     def __subclasscheck__(self, __subclass: type) -> bool:
-#         associated_type = getattr(__subclass, '__type__', None)
-#         if not associated_type:
-#             return False
-#         return recursive_subtype_check(associated_type, self.__type__)
-
-#     def __instancecheck__(self, __instance: Callable) -> bool:
-#         if not isinstance(__instance, Callable):
-#             return False
-#         return self.__gettype__(__instance) is self.__type__
-
-#     class Mesa:
-#         x = 1
-
-#         def __init__(self, obj):
-#             if not isinstance(obj, self.__class__):
-#                 raise RuntimeError('Use the ".create" constructor to make an instance of this class')
-#             self.obj = obj
-
-#         @overwrite
-#         def __repr__(self):
-#             return f"{self.__class__.__name__}[{self.__type__}]({self.obj})"
-
-#         def __class_getitem__(cls, key):
-#             new_cls = type(cls.__name__, (cls,), dict(vars(cls)))
-#             new_cls.__type__ = key
-#             return new_cls
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# class LatentTypeHierarchy(type, metaclass=MesaMethods):
-
-#     def __new__(cls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         __type__ = namespace.get('__type__', typing.Any)
-#         namespace['__type__'] = __type__
-
-#         return super().__new__(cls, name, bases, namespace)
-
-#     @abstractstaticmethod
-#     def __gettype__(func: Callable):
-#         pass
-
-#     def __repr__(self):
-#         return f"<{self.__name__} '{self.__type__}'>"
-
-#     def __subclasscheck__(self, __subclass: type) -> bool:
-#         associated_type = getattr(__subclass, '__type__', None)
-#         if not associated_type:
-#             return False
-#         return recursive_subtype_check(associated_type, self.__type__)
-
-#     def __instancecheck__(self, __instance: Callable) -> bool:
-#         if not isinstance(__instance, Callable):
-#             return False
-#         return self.__gettype__(__instance) is self.__type__
-
-# class lth_on_callable_return(LatentTypeHierarchy):
-
-#     @staticmethod
-#     def __gettype__(func: Callable):
-#         return func.__annotations__.get('return', typing.Any)
-    
-#     # @mesamethod
-#     # def __call__(self, *args, **kwargs):
-#     #     return self.obj(*args, **kwargs)
-
-
-# class serializer(metaclass=lth_on_callable_return):
-#     __type__ = typing.Any
-
-#     @classmethod
-#     def create(cls, func: Callable):
-#         if not isinstance(func, Callable):
-#             raise TypeError('This object can only be constructed using a callable')
-#         # namespace = {key: getattr(func, key) for key in dir(func)}
-#         namespace = {}
-#         namespace |= vars(cls)
-#         new_cls = type(cls.__name__, (cls,), namespace)
-#         new_cls.__type__ = cls.__gettype__(func)
-#         return new_cls(func)
-
-#     def __init__(self, obj):
-#         if not isinstance(obj, self.__class__):
-#             raise RuntimeError('Use the ".create" constructor to make an instance of this class')
-#         self.obj = obj
-
-#     def __repr__(self):
-#         return f"{self.__class__.__name__}[{self.__type__}]({self.obj})"
-
-#     def __class_getitem__(cls, key):
-#         new_cls = type(cls.__name__, (cls,), dict(vars(cls)))
-#         new_cls.__type__ = key
-#         return new_cls
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# class MetaMeta(type):
-
-#     def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         print('>> MetaMeta new', metacls, name, bases, namespace)
-#         mesamethods = {}
-#         for name, value in namespace.items():
-#             if hasattr(value, '__ismesamethod__'):
-#                 mesamethods[name] = value
-#         for key in mesamethods:
-#             del namespace[key]
-#         namespace['__mesamethods__'] = mesamethods
-#         print('NEW MESAMETHODS', mesamethods)
-#         return super().__new__(metacls, name, bases, namespace)
-
-#     def __call__(self, *args, **kwargs):
-#         print('>> MetaMeta call', self, args, kwargs)
-#         name, bases, namespace = args
-#         for name, value in self.__mesamethods__.items():
-#             print('MESAMETHODS', name, value)
-#             namespace[name] = value
-#         return super().__call__(*args, **kwargs)
-
-
-# class DummyMeta(type, metaclass=MetaMeta):
-#     pass
-
-# class Meta(type, metaclass=MetaMeta):
-
-#     def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         print('>> Meta new', metacls, name, bases, namespace)
-#         return super().__new__(metacls, name, bases, namespace)
-
-#     def __call__(self, *args, **kwargs):
-#         print('>> Meta call', self, args, kwargs)
-#         return super().__call__(*args, **kwargs)
-
-#     @mesamethod
-#     def test(self, x):
-#         return x + 1
-
-
-# class Dummy(metaclass=Meta):
-#     pass
-
-# class Base(metaclass=Meta):
-
-#     def __new__(cls, *args, **kwargs):
-#         print('>> Base new', cls, args, kwargs)
-#         return super().__new__(cls, *args, **kwargs)
-
-#     def __call__(self, *args, **kwargs):
-#         print('>> Base call', self, args, kwargs)
-#         return super().__call__(*args, **kwargs)
-
-
-# inst = Base()
-# print(inst.test(1))
-# print(inst)
-# print(inst())
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# class AttributeInitType(type):
-#     def __call__(self, *args, **kwargs):
-#         """Create a new instance."""
-
-#         # First, create the object in the normal default way.
-#         print(self, args, kwargs)
-#         obj = type.__call__(self, *args)
-
-#         # Additionally, set attributes on the new object.
-#         for name, value in kwargs.items():
-#             setattr(obj, name, value)
-
-#         # Return the new object.
-#         return obj
-
-# class Car(object, metaclass=AttributeInitType):
-#     @property
-#     def description(self) -> str:
-#         """Return a description of this car."""
-#         return " ".join(str(value) for value in self.__dict__.values())
-
-# new_car = Car(make='Toyota', model='Prius', year=2005, color='Green', engine='Hybrid')
-
-# print(new_car)
-
-
-
-
-
-
-
-# class InstanceMethodMeta(type):
-
-#     def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         instance_methods = {}
-#         for name, value in namespace.items():
-#             if hasattr(value, '__isinstancemethod__'):
-#                 instance_methods[name] = value
-#                 del namespace[name]
-        
-#         def __init_instance_methods__(self):
-#             for name, value in instance_methods.items():
-#                 setattr(self, name, value)
-#         namespace['__init_instance_methods__'] = __init_instance_methods__
-        
-#         return super().__new__(metacls, name, bases, namespace)
-    
-#     def __call__(self, *args, **kwargs):
-#         print(self, args, kwargs)
-#         return type.__call__(self, *args, **kwargs)
-
-
-# def instancemethod(func):
-#     func.__isinstancemethod__ = True
-
-
-# class Test(metaclass=InstanceMethodMeta):
-
-#     @instancemethod
-#     def f(self, x):
-#         return x + 1
-
-
-
-# class BaseLTH:
-#     __type__ = None
-
-#     @classmethod
-#     def create(cls, obj):
-#         __type__ = cls.lth__gettype__(obj)
-#         return cls[__type__](obj)
-
-#     def __init__(self, obj):
-#         if self.lth__gettype__(obj) is not self.__type__:
-#             raise RuntimeError('Use the ".create" constructor to make an instance of this class')
-#         self.obj = obj
-
-#     @abstractstaticmethod
-#     def lth__gettype__(obj):
-#         pass
-
-#     def __repr__(self):
-#         return f"{self.__class__.__name__}[{self.__type__}]({self.obj})"
-
-#     def __class_getitem__(cls, key: Any):
-#         new_cls = type(cls.__name__, (cls,), dict(vars(cls)))
-#         new_cls.__type__ = key
-#         return new_cls
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# class LatentTypeHierarchyMeta(type):
-
-#     def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         __type__ = namespace.get('__type__', Any)
-#         namespace['__type__'] = __type__
-
-#         for name in namespace:
-#             if name.startswith('lth__'):
-#                 method = namespace[name]
-#                 namespace[name] = metacls.redefine_self(method)
-
-#         return super().__new__(metacls, name, bases, namespace)
-
-#     @staticmethod
-#     def redefine_self(func):
-#         def modified_method(self, *args, **kwargs):
-#             print(self, args, kwargs)
-#             return func(self.obj, *args, **kwargs)
-#         return modified_method
-
-#     def __repr__(self):
-#         return f"<{self.__name__} '{self.__type__}'>"
-
-#     def __subclasscheck__(self, __subclass: type) -> bool:
-#         associated_type = getattr(__subclass, '__type__', None)
-#         if not associated_type:
-#             return False
-#         return recursive_subtype_check(associated_type, self.__type__)
-    
-#     def __instancecheck__(self, __instance: Any) -> bool:
-#         if not hasattr(__instance, 'func'):
-#             return False
-#         associated_type = __instance.func.__annotations__['return']
-#         return recursive_subtype_check(associated_type, self.__type__)
-
-
-# class BaseLTH(metaclass=LatentTypeHierarchyMeta):
-#     __type__ = None
-
-#     @classmethod
-#     def create(cls, obj):
-#         __type__ = cls.lth__gettype__(obj)
-#         return cls[__type__](obj)
-
-#     def __init__(self, obj):
-#         if self.lth__gettype__(obj) is not self.__type__:
-#             raise RuntimeError('Use the ".create" constructor to make an instance of this class')
-#         self.obj = obj
-
-#     @abstractstaticmethod
-#     def lth__gettype__(obj):
-#         pass
-
-#     def __repr__(self):
-#         return f"{self.__class__.__name__}[{self.__type__}]({self.obj})"
-
-#     def __class_getitem__(cls, key: Any):
-#         new_cls = type(cls.__name__, (cls,), dict(vars(cls)))
-#         new_cls.__type__ = key
-#         return new_cls
-
-
-# class serializer(BaseLTH):
-
-#     def lth__gettype__(obj):
-#         return obj.__annotations__.get('return', typing.Any)
-
-
-
-
-
-
-# class IndirectInstantiationMeta(type):
-
-#     def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         namespace.pop('__call__', None)
-#         return super().__new__(metacls, name, bases, namespace)
-
-
-# class LatentTypeHierarchyBaseMeta(type, metaclass=IndirectInstantiationMeta):
-    
-#     @abstractmethod
-#     def __type__(obj: Any) -> TYPE_OR_ANNOTATION:
-#         pass
-
-#     def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         associated_type = namespace.get('__type__', Any)
-#         namespace['__type__'] = associated_type
-        
-#         def __repr__(self):
-#             return f"{self.__class__.__name__}[{self.__type__}]({self.func})"
-#         namespace['__repr__'] = __repr__
-
-#         return super().__new__(metacls, name, bases, namespace)
-# LTHBaseMeta = LatentTypeHierarchyBaseMeta
-
-
-# class SerializerMeta(LTHBaseMeta):
-
-#     def __type__(func: Callable) -> TYPE_OR_ANNOTATION:
-#         return func.__annotations__.get('return', Any)
-        
-#     def __repr__(self):
-#         return f"<{self.__name__} '{self.__type__}'>"
-    
-#     def __subclasscheck__(self, __subclass: type) -> bool:
-#         associated_type = getattr(__subclass, '__type__', None)
-#         if not associated_type:
-#             return False
-#         return recursive_subtype_check(associated_type, self.__type__)
-    
-#     def __instancecheck__(self, __instance: Any) -> bool:
-#         if not hasattr(__instance, 'func'):
-#             return False
-#         associated_type = __instance.func.__annotations__['return']
-#         return recursive_subtype_check(associated_type, self.__type__)
-
-
-
-# class GenericInheritanceMeta(type):
-
-#     def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         associated_type = namespace.get('__type__', Any)
-#         namespace['__type__'] = associated_type
-
-#         def __init__(self, func):
-#             if func.__annotations__['return'] is not self.__type__:
-#                 raise TypeError('Function return type must coincide with that of the Serializer class.')
-#             self.func = func
-#         namespace['__init__'] = __init__
-        
-#         def __repr__(self):
-#             return f"{self.__class__.__name__}[{self.__type__}]({self.func})"
-#         namespace['__repr__'] = __repr__
-
-#         return super().__new__(metacls, name, bases, namespace)
-        
-#     def __repr__(self):
-#         return f"<{self.__name__} '{self.__type__}'>"
-    
-#     def __subclasscheck__(self, __subclass: type) -> bool:
-#         associated_type = getattr(__subclass, '__type__', None)
-#         if not associated_type:
-#             return False
-#         return recursive_subtype_check(associated_type, self.__type__)
-    
-#     def __instancecheck__(self, __instance: Any) -> bool:
-#         if not hasattr(__instance, 'func'):
-#             return False
-#         associated_type = __instance.func.__annotations__['return']
-#         return recursive_subtype_check(associated_type, self.__type__)
-
-
-# class Serializer(metaclass=GenericInheritanceMeta):
-#     __type__ = Any
-
-#     def __init__(self, func):
-#         if func.__annotations__['return'] is not self.__type__:
-#             raise TypeError('Function return type must coincide with that of the Serializer class.')
-#         self.func = func
-
-#     def __call__(self, *args, **kwargs):
-#         return self.func(*args, **kwargs)
-
-#     def __class_getitem__(cls, key: Any):
-#         new_serializer = type(cls.__name__, (cls,), dict(vars(cls)))
-#         new_serializer.__type__ = key
-#         return new_serializer
-
-
-# def serializer(func: Callable):
-#     associated_type = func.__annotations__.get('return', Any)
-#     cls = Serializer[associated_type]
-#     # print(cls(func))
-#     return cls(func)
-
-
-# class DeserializerMeta(type):
-
-#     def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
-#         associated_type = namespace.get('__type__', Any)
-#         namespace['__type__'] = associated_type
-
-#         def __repr__(self):
-#             return f"{self.__class__.__name__}[{self.__type__}]({self.func})"
-#         namespace['__repr__'] = __repr__
-
-#         return super().__new__(metacls, name, bases, namespace)
-        
-#     def __repr__(self):
-#         return f"<{self.__name__} '{self.__type__}'>"
-    
-#     def __subclasscheck__(self, __subclass: type) -> bool:
-#         associated_type = getattr(__subclass, '__type__', None)
-#         if not associated_type:
-#             return False
-#         return recursive_subtype_check(associated_type, self.__type__)
-    
-#     def __instancecheck__(self, __instance: Any) -> bool:
-#         if not hasattr(__instance, 'func'):
-#             return False
-#         associated_type = __instance.func.__annotations__['return']
-#         return recursive_subtype_check(associated_type, self.__type__)
-
-
-# class Deserializer(metaclass=DeserializerMeta):
-#     __type__ = Any
-
-#     def __init__(self, func):
-#         if func.__code__.co_argcount < len(func.__code__.co_varnames):
-#             raise TypeError('Function signature must only contain non-variadic positional arguments.\n'
-#                             f'Function signature: {inspect.signature(func)}')
-#         if func.__defaults__:
-#             raise TypeError('Function signature must not contain any default values.\n'
-#                             f'Function signature: {inspect.signature(func)}')
-#         self.func = func
-
-#     def __call__(self, *args, **kwargs):
-#         return self.func(*args, **kwargs)
-
-#     def __class_getitem__(cls, key: Any):
-#         new_serializer = type(cls.__name__, (cls,), dict(vars(cls)))
-#         new_serializer.__type__ = key
-#         return new_serializer
-
-
-# def deserializer(func: Callable):
-#     associated_type = func.__annotations__.get('return', Any)
-#     cls = Deserializer[associated_type]
-#     # print(cls(func))
-#     return cls(func)
