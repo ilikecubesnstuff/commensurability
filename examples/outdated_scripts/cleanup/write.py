@@ -113,7 +113,7 @@
 
 
 import typing
-from commensurability.analysis.persistence.meta import serializer, deserializer
+from commensurability.analysis.persistence.serialization import serializer, deserializer
 
 @serializer.create
 def s1() -> tuple[list[float], dict[str, list[float]]]:

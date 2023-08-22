@@ -1,7 +1,8 @@
 
 
 from commensurability.analysis.coordinates import Cylindrical
-from commensurability.analysis.backends import GalpyBackend, GalaBackend
+# from commensurability.analysis.backends import GalpyBackend, GalaBackend
+from commensurability.analysis.backend import GalpyBackend, GalaBackend
 
 import galpy.potential as gp
 # import galpy.orbit as go
