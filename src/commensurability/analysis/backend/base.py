@@ -59,7 +59,7 @@ class Backend(ExtendImports):
         pass
 
     @abstractmethod
-    def _compute_orbit(self, 
+    def _compute_orbit(self,
                        coord: Coordinate,
                        **kwargs):
         """
@@ -195,7 +195,8 @@ class Backend(ExtendImports):
             **kwargs: Additional keyword arguments.
 
         Yields:
-            typing.Generator[tuple[np.ndarray], None, None]: Generator yielding tuples of slices of computed orbit data points.
+            typing.Generator[tuple[np.ndarray], None, None]: Generator yielding tuples of slices of
+                computed orbit data points.
         """
         steps = [0] + sorted(steps)
         computing_kwargs, extracting_kwargs = self._precompute_namespace_hook(locals())
