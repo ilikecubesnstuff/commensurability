@@ -1,7 +1,8 @@
-from typing import MutableMapping
+from __future__ import annotations
 
 import inspect
 import textwrap
+import typing
 
 
 def _unavailable(e: Exception):
@@ -16,7 +17,7 @@ class ExtendImportsMeta(type):
     def __imports__():
         pass
 
-    def __new__(metacls, name: str, bases: tuple[type, ...], namespace: MutableMapping):
+    def __new__(metacls, name: str, bases: tuple[type, ...], namespace: typing.MutableMapping):
         imports = namespace.pop('__imports__', metacls.__imports__)
         src = inspect.getsource(imports)
         *_, body = src.partition('\n')

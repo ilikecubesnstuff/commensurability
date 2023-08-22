@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import abstractstaticmethod
 from types import GenericAlias
 import typing

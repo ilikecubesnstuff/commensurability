@@ -62,7 +62,6 @@ class Backend(ExtendImports):
 class GalpyBackend(Backend):
 
     def __imports__():
-        import galpy
         import galpy.orbit
 
     @staticmethod
