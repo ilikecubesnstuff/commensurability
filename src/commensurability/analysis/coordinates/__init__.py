@@ -1,3 +1,4 @@
+from .base import Coordinate
 from .dim3 import (
     Cartesian,
     Cylindrical,

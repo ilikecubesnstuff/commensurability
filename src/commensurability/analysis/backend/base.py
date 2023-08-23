@@ -38,7 +38,7 @@ class Backend(ExtendImports):
         """
         ...
 
-    @abstractstaticmethod
+    @abstractmethod
     def _extract_points_from_orbit(orbit: typing.Any,
                                    **kwargs
                                    ) -> np.ndarray:
