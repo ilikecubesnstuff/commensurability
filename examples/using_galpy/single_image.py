@@ -18,22 +18,30 @@ def potential():
     return pot
 
 
-SIZE = 10
+SIZE = 30
 FRAMES = 1
+
+RMIN = 0
+RMAX = 10
+VMIN = 0
+VMAX = 300
+
 coords = Cylindrical(
-    R   = np.linspace(0, 10, SIZE + 1)[1:]  * u.kpc,
+    R   = np.linspace(RMIN, RMAX, SIZE + 1)[1:]  * u.kpc,
     vR  = np.linspace(0, 0, 1)  * u.km/u.s,
-    vT  = np.linspace(0, 300, SIZE + 1)[1:]  * u.km/u.s,
-    z   = np.linspace(2, 6, FRAMES + 1)[1:]  * u.kpc,
+    vT  = np.linspace(VMIN, VMAX, SIZE + 1)[1:]  * u.km/u.s,
+    z   = np.linspace(1, 1, FRAMES + 1)[1:]  * u.kpc,
     vz  = np.linspace(0, 0, 1)  * u.km/u.s,
     phi = np.linspace(0, 0, 1)  * u.deg,
 )
 dt = 0.01 * u.Gyr
 steps = 500
 canal = TessellationAnalysis(potential, dt, steps, pattern_speed=30 * u.km/u.s/u.kpc)
-img = canal.construct_image(coords, chunksize=1)
+img = canal.construct_image(coords, chunksize=10)
 
-plt.imshow(img.T, origin='lower')
+np.save('image.npy', img)
+
+plt.imshow(img.T, origin='lower', extent=(RMIN, RMAX, VMIN, VMAX), aspect=(RMAX-RMIN)/(VMAX-VMIN))
 plt.show()
 
 # canal.save_image(f'mw_bar_{SIZE}_{FRAMES}.hdf5')

@@ -102,7 +102,7 @@ class CoordinateMeta(type):
                 unit = self.units[ax]
                 if isinstance(unit, str):
                     unit = eval(unit)
-                attr = make_quantity(make_collection(attr, cls=tuple), unit=unit)
+                attr = make_quantity(make_collection(attr), unit=unit)
                 setattr(self, ax, attr)
             self.shape = tuple(getattr(self, axis).size for axis in self.axes)
         namespace['__post_init__'] = __post_init__
@@ -110,7 +110,7 @@ class CoordinateMeta(type):
         cls = super().__new__(metacls, name, bases, namespace)
 
         # dataclass should be frozen too? currently freezing leads to bugs
-        return dataclasses.dataclass(cls, eq=False, kw_only=True)
+        return dataclasses.dataclass(cls, eq=False, kw_only=True, repr=False)
 
 
 class Coordinate(metaclass=CoordinateMeta):
@@ -138,6 +138,21 @@ class Coordinate(metaclass=CoordinateMeta):
         """
         super().__init_subclass__(**kwargs)
         COORDINATE_TYPE_REGISTRY[cls.__name__] = cls
+
+    def __repr__(self):
+        body = []
+        for ax in self.axes:
+            quantity = getattr(self, ax)
+            if len(quantity) == 1:
+                body.append(
+                    f'{quantity.value[0]} {quantity.unit}'
+                )
+            else:
+                body.append(
+                    f'{quantity.value} {quantity.unit}'
+                )
+        body = ', '.join(body)
+        return f'{self.__class__.__name__}({body})'
 
     def __contains__(self, item: Union[Mapping, Sequence]) -> bool:
         """

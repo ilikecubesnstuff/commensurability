@@ -7,6 +7,7 @@ from typing import (
 )
 
 from abc import abstractstaticmethod
+import inspect
 from tqdm import tqdm
 
 import numpy as np
@@ -17,6 +18,11 @@ from .backend import GalpyBackend, GalaBackend, AgamaBackend
 from .backend.base import Backend
 from .coordinates import Coordinate
 
+# move to "persistence" subpackage later
+from .fileio import FileIO
+from .coordinates import Cylindrical
+from . import backend
+from .interactive import InteractivePhasePlot
 
 class Analysis:
 
@@ -77,6 +83,72 @@ class Analysis:
         
         self.image = self.image.reshape(self.shape)
         return self.image
+
+    # persistence methods
+
+    def __save__(self):
+        potsource = inspect.getsource(self._potential_function)
+        potsource.replace(self._potential_function.__name__, 'potential_function', 1)
+        attrs = dict(
+            R = self.coords.R,
+            vR = self.coords.vR,
+            vT = self.coords.vT,
+            z = self.coords.z,
+            vz = self.coords.vz,
+            phi = self.coords.phi,
+            dt = self.dt,
+            steps = self.n,
+            pattern_speed = self.pattern_speed,
+            backend = np.void(self.backend.__class__.__name__.encode('utf8')),
+            potfunc = np.void(potsource.encode('utf8')),
+        )
+        print(self.image)
+        return attrs, self.image
+
+    @classmethod
+    def __read__(cls, dset):
+        if 'potfunc' in dset.attrs:
+            potsource = dset.attrs['potfunc'].tobytes().decode('utf8')
+            namespace = {}
+            exec(potsource, {'u': u}, namespace)
+            potfunc = namespace['potential_function']
+        else:
+            print('Warning! No potential function defined.')
+            potfunc = lambda: None
+
+        backend_cls = getattr(backend, dset.attrs['backend'].tobytes().decode('utf8'))
+        analysis = cls(
+            potfunc,
+            dset.attrs['dt'],
+            dset.attrs['steps'],
+            pattern_speed=dset.attrs['pattern_speed'],
+            backend=backend_cls()
+        )
+
+        coords = Cylindrical(
+            R=dset.attrs['R'],
+            vR=dset.attrs['vR'],
+            vT=dset.attrs['vT'],
+            z=dset.attrs['z'],
+            vz=dset.attrs['vz'],
+            phi=dset.attrs['phi'],
+        )
+        analysis.coords = coords
+        varaxes = tuple(s > 1 for s in coords.shape)
+        analysis.axes = tuple(axis for isvar, axis in zip(varaxes, coords.axes) if isvar)
+        analysis.shape = tuple(s for isvar, s in zip(varaxes, coords.shape) if isvar)
+
+        analysis.image = dset[()]
+        return analysis
+
+    def save_image(self, filename):
+        file = FileIO(filename)
+        file.save(self)
+        return file
+
+    def launch_interactive_plot(self):
+        plot = InteractivePhasePlot(self)
+        plot.show()
 
 
 from ..tessellation import Tessellation

@@ -22,12 +22,12 @@ class GalpyBackend(Backend):
         # print(coord)
         if isinstance(coord, Cylindrical):
             return [
-                coord.R,
-                coord.vR,
-                coord.vT,
-                coord.z,
-                coord.vz,
-                coord.phi
+                coord.R[0],
+                coord.vR[0],
+                coord.vT[0],
+                coord.z[0],
+                coord.vz[0],
+                coord.phi[0]
             ]
         raise NotImplementedError('Only cylindrical coordinates accepted for galpy backend')
 
@@ -59,7 +59,7 @@ class GalpyBackend(Backend):
                         pot: typing.Any,
                         **kwargs
                         ):
-        initial_conditions = tuple(map(self.format_coordinate, coords))
+        initial_conditions = list(map(self.format_coordinate, coords))
         orbits = self.galpy.orbit.Orbit(initial_conditions)
         orbits.integrate(t, pot, **kwargs)
         return orbits

@@ -42,6 +42,8 @@ def make_collection(obj, cls: Collection = list):
         raise ValueError('Class provided must subclass collections.abc.Collection')
     if not isinstance(obj, Collection):
         obj = cls([obj])
+    if isinstance(obj, u.Quantity):
+        return make_collection(obj.value)
     return obj
 
 

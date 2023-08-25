@@ -8,6 +8,7 @@ class InteractivePhasePlot:
         self.analysis = analysis
         self.a1, self.a2, *self.axes = analysis.axes
         self.indices = {ax: 0 for ax in self.axes}
+        self.axvals = {ax: analysis.coords[ax] for ax in self.axes}
         self.current = self.axes[0] if self.axes else None
         ax1 = analysis.coords[self.a1].value
         ax2 = analysis.coords[self.a2].value
@@ -29,13 +30,13 @@ class InteractivePhasePlot:
         values[self.a2] = event.ydata * values[self.a2].unit
         for ax, index in self.indices.items():
             values[ax] = self.analysis.coords[ax][index]
-        new_coord = self.analysis.coords.Coordinate(**values)
+        new_coord = self.analysis.coords.__class__(**values)
         print(new_coord)
         points = self.analysis.backend.get_orbit(
-            pot=self.analysis.pot,
+            pot=self.analysis.potential,
             coord=new_coord,
             dt=self.analysis.dt,
-            steps=self.analysis.steps,
+            steps=self.analysis.n,
             pattern_speed=self.analysis.pattern_speed
         )
         value = self.analysis.__eval__(points)
@@ -66,12 +67,12 @@ class InteractivePhasePlot:
             self.indices[self.current] = self.analysis.coords[self.current].size - 1
         if self.indices[self.current] < 0:
             self.indices[self.current] = 0
-        print(self.indices)
-        print(self.image.shape)
-        print(self.image[..., *self.indices.values()])
+        # print(self.indices)
+        # print(self.image.shape)
+        # print(self.image[..., *self.indices.values()])
 
         self.im_phase.set_data(self.image[..., *self.indices.values()].T)
-        self.ax_phase.set_title(f'{self.indices}')
+        self.ax_phase.set_title(f'z={self.axvals[self.current][self.indices[self.current]]}')
         self.dot_phase.set_xdata([self.extent[0]])
         self.dot_phase.set_ydata([self.extent[2]])
 

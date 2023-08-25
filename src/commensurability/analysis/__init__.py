@@ -1,1 +1,1 @@
-from .analysis_old import Analysis, TessellationAnalysis
+from .analysis import Analysis, TessellationAnalysis
