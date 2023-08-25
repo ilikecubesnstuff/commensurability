@@ -1,5 +1,5 @@
+from __future__ import annotations
 from typing import Any
-
 import h5py
 
 
@@ -16,11 +16,11 @@ class FileIO:
         if not hasattr(obj, '__save__'):
             raise TypeError(f'{obj} cannot be saved with {self.__class__.__name__}')
         try:
-            data, attrs = obj.__save__(**kwargs)
-            print(data, attrs)
+            attrs, data = obj.__save__(**kwargs)
+            # print(data, attrs)
             with h5py.File(self.filename, 'w') as f:
                 dset = f.create_dataset(obj.__class__.__name__, data=data)
-                print(data)
+                # print(data)
                 for attr, value in attrs.items():
                     dset.attrs[attr] = value
         except Exception as e:
