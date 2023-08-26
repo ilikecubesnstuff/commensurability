@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from abc import abstractmethod, abstractstaticmethod
-from itertools import pairwise, islice
+from abc import abstractmethod
+from itertools import islice, tee
 import typing
 
 import numpy as np
@@ -204,4 +204,7 @@ class Backend(ExtendImports):
         for orbit in orbits:
             points = self._extract_points_from_orbit(orbit, **extracting_kwargs)
             iter_points = iter(points)
-            yield (np.array(list(islice(iter_points, s2 - s1))) for s1, s2 in pairwise(steps))
+
+            steps1, steps2 = tee(steps)
+            next(steps2, None)
+            yield (np.array(list(islice(iter_points, s2 - s1))) for s1, s2 in zip(steps1, steps2))

@@ -88,4 +88,6 @@ class deserializer(latent_type_hierarchy):
             param.annotation if param.annotation is not param.empty else typing.Any
             for param in signature.parameters.values()
         )
+        if len(items) == 1:
+            return items[0]
         return tuple[items]

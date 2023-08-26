@@ -71,7 +71,7 @@ class InteractivePhasePlot:
         # print(self.image.shape)
         # print(self.image[..., *self.indices.values()])
 
-        self.im_phase.set_data(self.image[..., *self.indices.values()].T)
+        self.im_phase.set_data(self.image[(..., *self.indices.values())].T)
         self.ax_phase.set_title(f'z={self.axvals[self.current][self.indices[self.current]]}')
         self.dot_phase.set_xdata([self.extent[0]])
         self.dot_phase.set_ydata([self.extent[2]])
@@ -125,8 +125,8 @@ class InteractivePhasePlot:
             aspect=self.aspect
         )
         print(self.image.shape)
-        print(self.image[..., *self.indices.values()])
-        self.im_phase = self.ax_phase.imshow(self.image[:,:,*self.indices.values()].T, **kwargs)
+        print(self.image[(..., *self.indices.values())])
+        self.im_phase = self.ax_phase.imshow(self.image[(..., *self.indices.values())].T, **kwargs)
         self.dot_phase, = self.ax_phase.plot([self.extent[0]], self.extent[2])
 
         # right plot: orbit in configuration space

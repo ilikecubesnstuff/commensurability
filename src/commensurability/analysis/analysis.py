@@ -24,6 +24,7 @@ from .coordinates import Cylindrical
 from . import backend
 from .interactive import InteractivePhasePlot
 
+
 class Analysis:
 
     def __init__(self,

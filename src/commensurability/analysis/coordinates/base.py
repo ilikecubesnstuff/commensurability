@@ -1,5 +1,4 @@
 from __future__ import annotations
-import typing
 from typing import (
     Generator,
     Mapping,
@@ -38,7 +37,6 @@ def identity_transformation(self: Coordinate) -> Coordinate:
     return self
 
 
-@typing.dataclass_transform()
 class CoordinateMeta(type):
     """
     [This docstring is AI-generated.]
@@ -110,7 +108,7 @@ class CoordinateMeta(type):
         cls = super().__new__(metacls, name, bases, namespace)
 
         # dataclass should be frozen too? currently freezing leads to bugs
-        return dataclasses.dataclass(cls, eq=False, kw_only=True, repr=False)
+        return dataclasses.dataclass(cls, eq=False, repr=False)
 
 
 class Coordinate(metaclass=CoordinateMeta):
