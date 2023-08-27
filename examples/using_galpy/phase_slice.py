@@ -3,14 +3,18 @@ import astropy.units as u
 import galpy.potential as p
 
 from commensurability.analysis import TessellationAnalysis
-from commensurability.analysis.coordinates_old import Cylindrical
+from commensurability.analysis.coordinates import Cylindrical
 
 # rotating bar potential
 omega = 30 * u.km/u.s/u.kpc
-halo = p.NFWPotential(conc=10, mvir=1)
-disc = p.MiyamotoNagaiPotential(amp=5e10 * u.solMass, a=3 * u.kpc, b=0.1 * u.kpc)
-bar = p.SoftenedNeedleBarPotential(amp=1e9 * u.solMass, a=1.5 * u.kpc, b=0 * u.kpc, c=0.5 * u.kpc, omegab=omega)
-pot = [halo, disc, bar]
+def pot():
+    import galpy.potential as gp
+    omega = 30 * u.km/u.s/u.kpc
+    halo = gp.NFWPotential(conc=10, mvir=1)
+    disc = gp.MiyamotoNagaiPotential(amp=5e10 * u.solMass, a=3 * u.kpc, b=0.1 * u.kpc)
+    bar = gp.SoftenedNeedleBarPotential(amp=1e9 * u.solMass, a=1.5 * u.kpc, b=0 * u.kpc, c=0.5 * u.kpc, omegab=omega)
+    pot = [halo, disc, bar]
+    return pot
 
 
 SIZE = 5
@@ -27,15 +31,6 @@ steps = 500
 canal = TessellationAnalysis(pot, dt, steps, pattern_speed=omega)
 canal.construct_image(coords, chunksize=100)
 
-canal.pot_string = """
-import astropy.units as u
-import galpy.potential as p
-omega = 30 * u.km/u.s/u.kpc
-halo = p.NFWPotential(conc=10, mvir=1)
-disc = p.MiyamotoNagaiPotential(amp=5e10 * u.solMass, a=3 * u.kpc, b=0.1 * u.kpc)
-bar = p.SoftenedNeedleBarPotential(amp=1e9 * u.solMass, a=1.5 * u.kpc, b=0 * u.kpc, c=0.5 * u.kpc, omegab=omega)
-pot = [halo, disc, bar]
-"""
 canal.save_image(f'mw_bar_{SIZE}.hdf5')
 canal.launch_interactive_plot()
 # canal.save_image('test.hdf5')

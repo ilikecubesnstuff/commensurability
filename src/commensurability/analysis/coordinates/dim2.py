@@ -6,7 +6,11 @@ import astropy.units as u
 from .base import Coordinate
 
 
-class Cartesian(Coordinate):
+class Coordinate2D(Coordinate):
+    dim = 2
+
+
+class Cartesian(Coordinate2D):
     """
     [This docstring is AI-generated.]
     Class representing a 2D Cartesian coordinate.
@@ -50,7 +54,7 @@ class Cartesian(Coordinate):
             return Polar(r=r, t=t, vr=vr, vt=vt)
 
 
-class Polar(Coordinate):
+class Polar(Coordinate2D):
     """
     [This docstring is AI-generated.]
     Class representing a 2D polar coordinate.

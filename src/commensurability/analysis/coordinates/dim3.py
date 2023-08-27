@@ -6,7 +6,11 @@ import astropy.units as u
 from .base import Coordinate
 
 
-class Cartesian(Coordinate):
+class Coordinate3D(Coordinate):
+    pass
+
+
+class Cartesian(Coordinate3D):
     """
     [This docstring is AI-generated.][Modified]
     Class representing a Cartesian coordinate.
@@ -54,7 +58,7 @@ class Cartesian(Coordinate):
             return Cylindrical(R=R, vR=vR, vT=vT, z=self.z, vz=self.vz, phi=phi)
 
 
-class Cylindrical(Coordinate):
+class Cylindrical(Coordinate3D):
     """
     [This docstring is AI-generated.]
     Class representing a cylindrical coordinate.
@@ -123,7 +127,7 @@ class Cylindrical(Coordinate):
             return Spherical(R=R, phi=self.phi, theta=theta, vR=vR, v_alt=v_alt, v_az=self.vT)
 
 
-class Spherical(Coordinate):
+class Spherical(Coordinate3D):
     """
     [This docstring is AI-generated.]
     Class representing a spherical coordinate.

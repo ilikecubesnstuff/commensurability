@@ -103,7 +103,6 @@ class Analysis:
             backend = np.void(self.backend.__class__.__name__.encode('utf8')),
             potfunc = np.void(potsource.encode('utf8')),
         )
-        print(self.image)
         return attrs, self.image
 
     @classmethod

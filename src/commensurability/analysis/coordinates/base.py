@@ -188,7 +188,7 @@ class Coordinate(metaclass=CoordinateMeta):
         """
         return math.prod(self.shape)
 
-    def __iter__(self, ctype: Coordinate = None) -> Generator[Coordinate, None, None]:
+    def __iter__(self, ctype: CoordinateMeta = None) -> Generator[Coordinate, None, None]:
         """
         [This docstring is AI-generated.]
         Iterate over points in the coordinate.
