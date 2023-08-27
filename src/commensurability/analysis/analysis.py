@@ -22,7 +22,7 @@ from .coordinates import Coordinate
 from .fileio import FileIO
 from .coordinates import Cylindrical
 from . import backend
-from .interactive import InteractivePhasePlot
+from .interactive import InteractivePlot3D
 
 
 class Analysis:
@@ -148,7 +148,7 @@ class Analysis:
         return file
 
     def launch_interactive_plot(self):
-        plot = InteractivePhasePlot(self)
+        plot = InteractivePlot3D(self, self.axes[0], self.axes[1])
         plot.show()
 
 

@@ -188,7 +188,7 @@ class Coordinate(metaclass=CoordinateMeta):
         """
         return math.prod(self.shape)
 
-    def __iter__(self) -> Generator[Coordinate, None, None]:
+    def __iter__(self, ctype: Coordinate = None) -> Generator[Coordinate, None, None]:
         """
         [This docstring is AI-generated.]
         Iterate over points in the coordinate.
@@ -201,7 +201,7 @@ class Coordinate(metaclass=CoordinateMeta):
         """
         for indices in np.ndindex(self.shape):
             coord = {axis: getattr(self, axis)[i] for i, axis in zip(indices, self.axes)}
-            yield self.__class__(**coord)
+            yield self.__class__(**coord)._transform_to(ctype or self.__class__)
 
     def __getitem__(self, ax: str) -> u.Quantity:
         """
@@ -218,7 +218,11 @@ class Coordinate(metaclass=CoordinateMeta):
         """
         return getattr(self, ax)
 
-    def to(self, ctype: Coordinate) -> Coordinate:
+    # NOTE: This function breaks for sets of coordinates larger than 1.
+    # A cartesian product of values in one coordinate system need not translate
+    # to a cartesian product of values in the other.
+    # This needs to be performed on individual points ONLY.
+    def _transform_to(self, ctype: Coordinate) -> Coordinate:
         """
         [This docstring is AI-generated.]
         Convert the coordinate to a different coordinate type.

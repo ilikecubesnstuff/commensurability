@@ -33,4 +33,4 @@ class ParabolicCylindrical(Coordinate):
 coords = ParabolicCylindrical(s=[1, 2, 3], t=[4, 5], z=0, vs=1, vt=0, vz=[-1, 1])
 for coord in coords:
     print(coord)
-    print(coord.to(Cartesian), end='\n\n')
+    print(coord._transform_to(Cartesian), end='\n\n')

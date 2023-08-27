@@ -1,13 +1,17 @@
 from __future__ import annotations
 from typing import Any
-import h5py
+
+from .importextension import ExtendImports
 
 
 class WriteError(Exception):
     pass
 
 
-class FileIO:
+class FileIO(ExtendImports):
+
+    def __imports__():
+        import h5py
 
     def __init__(self, filename):
         self.filename = filename
@@ -18,7 +22,7 @@ class FileIO:
         try:
             attrs, data = obj.__save__(**kwargs)
             # print(data, attrs)
-            with h5py.File(self.filename, 'w') as f:
+            with self.h5py.File(self.filename, 'w') as f:
                 dset = f.create_dataset(obj.__class__.__name__, data=data)
                 # print(data)
                 for attr, value in attrs.items():
@@ -31,7 +35,7 @@ class FileIO:
             raise TypeError(f'{cls} cannot be read with {self.__class__.__name__}')
         try:
             objs = []
-            with h5py.File(self.filename) as f:
+            with self.h5py.File(self.filename) as f:
                 for cl in cls:
                     obj = cl.__read__(f[cl.__name__])
                     objs.append(obj)
@@ -39,5 +43,4 @@ class FileIO:
                 return objs[0]
             return objs
         except Exception as e:
-            raise e
             raise WriteError(f'Unable to read {cl} from {self.filename}: {e}')
