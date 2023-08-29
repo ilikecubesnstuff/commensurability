@@ -1,81 +1,27 @@
 import numpy as np
-from scipy.linalg import norm
-from scipy.spatial import ConvexHull
+from scipy import linalg, spatial
 
 try:
-    import matplotlib.pyplot as plt
     import mpl_toolkits.mplot3d as a3
     PLOTTING = True
 except ImportError:
     PLOTTING = False
 
-from . import generic
-# from .dim2 import Tessellation as Tess2D
+from .generic import TessellationGeneric
 
 
-class Tessellation(generic.Tessellation):
-
-    def normalization(self):
-        # r = norm(self.points, axis=1)
-        # return 4/3 * np.pi * np.max(r)**3
-
-        # x, y, z = self.points.T
-        # return np.pi * np.max(x**2 + y**2) * (np.max(z) - np.min(z))
-
-        # x, y, z = self.points.T
-        # R = np.sqrt(x**2 + y**2)
-        # points = np.array([R, z]).T
-        # points = np.array([*points, [0, max(z)], [0, min(z)]])
-        # hull = ConvexHull(points)
-
-        # poly = points[hull.vertices]
-        # start = poly[0]
-        # poly = poly[1:] - start
-
-        # # NOTE: requires "pairwise" from itertools (recent python version)
-        # centroids = [start + (t1 + t2)/3 for t1, t2 in pairwise(poly)]
-        # areas = [np.linalg.det([t1, t2]) for t1, t2 in pairwise(poly)]
-
-        # centroid = np.sum([a*c for c, a in zip(centroids, areas)], axis=0)
-        # return 2 * np.pi * np.linalg.norm(centroid[:2])
-
-        # hull = ConvexHull(self.points)
-        # return hull.volume
-
-        x, y, z = self.points.T
-        r000 = np.array([+x, +y, z]).T
-        r090 = np.array([-y, +x, z]).T
-        r180 = np.array([-x, -y, z]).T
-        r270 = np.array([+y, -x, z]).T
-
-        points = np.array([*r000, *r090, *r180, *r270])
-        hull = ConvexHull(points)
-        return hull.volume
-
-    @property
-    def volume(self):
-        return self.calculate_measure()
+class Tessellation3D(TessellationGeneric):
 
     @staticmethod
     def simplex_sides(*vertices):
         v1, v2, v3, v4 = vertices
-        # return [
-        #     norm(np.cross(v2-v1, v3-v1)),
-        #     norm(np.cross(v2-v1, v4-v1)),
-        #     norm(np.cross(v3-v1, v4-v1)),
-        #     norm(np.cross(v3-v2, v4-v2)),
-        #     Tess2D.simplex_measure(v1, v2-v1, v3-v1),
-        #     Tess2D.simplex_measure(v1, v2-v1, v4-v1),
-        #     Tess2D.simplex_measure(v1, v3-v1, v4-v1),
-        #     Tess2D.simplex_measure(v2, v3-v2, v4-v2),
-        # ]
         return [
-            norm(v2 - v1),
-            norm(v3 - v1),
-            norm(v4 - v1),
-            norm(v3 - v2),
-            norm(v4 - v2),
-            norm(v4 - v3),
+            linalg.norm(v2 - v1),
+            linalg.norm(v3 - v1),
+            linalg.norm(v4 - v1),
+            linalg.norm(v3 - v2),
+            linalg.norm(v4 - v2),
+            linalg.norm(v4 - v3),
         ]
 
     @staticmethod
@@ -86,50 +32,123 @@ class Tessellation(generic.Tessellation):
         a3 = (x4-x1) * ((y2-y1) * (z3-z1) - (y3-y1) * (z2-z1))
         return abs(a1 + a2 + a3) / 6
 
-    def plot_tessellation_trimming(self, plot_included=True, plot_removed=False, plot_points=True):
+    class Normalization:
+
+        def sphere(self):
+            r = linalg.norm(self.points, axis=1)
+            return 4/3 * np.pi * np.max(r)**3
+
+        def cylinder(self):
+            x, y, z = self.points.T
+            return np.pi * np.max(x**2 + y**2) * (np.max(z) - np.min(z))
+
+        def Rz_convexhull(self):
+            x, y, z = self.points.T
+            R = np.sqrt(x**2 + y**2)
+            points = np.array([R, z]).T
+            points = np.array([*points, [0, max(z)], [0, min(z)]])
+            hull = spatial.ConvexHull(points)
+
+            poly = points[hull.vertices]
+            start = poly[0]
+            poly = poly[1:] - start
+
+            # NOTE: requires "pairwise" from itertools (recent python version)
+            from itertools import pairwise
+            centroids = [start + (t1 + t2)/3 for t1, t2 in pairwise(poly)]
+            areas = [np.linalg.det([t1, t2]) for t1, t2 in pairwise(poly)]
+
+            centroid = np.sum([a*c for c, a in zip(centroids, areas)], axis=0)
+            return 2 * np.pi * np.linalg.norm(centroid[:2])
+
+        def convexhull(self):
+            hull = spatial.ConvexHull(self.points)
+            return hull.volume
+
+        def convexhull_rot4(self):
+            x, y, z = self.points.T
+            r000 = np.array([+x, +y, z]).T
+            r090 = np.array([-y, +x, z]).T
+            r180 = np.array([-x, -y, z]).T
+            r270 = np.array([+y, -x, z]).T
+
+            points = np.array([*r000, *r090, *r180, *r270])
+            hull = spatial.ConvexHull(points)
+            return hull.volume
+
+        default = convexhull_rot4
+
+    @property
+    def volume(self):
+        return self.measure
+
+    def plot(self, fig, plot_included=True, plot_removed=False, plot_points=True, verbosity=1):
         """
         Plot the triangulation - trimmed triangles are drawn in red.
         """
         if not PLOTTING:
-            raise ImportError('This method requires matplotlib.')
+            raise ImportError('This method requires matplotlib')
+        if self.tri is None:
+            raise RuntimeError('Tessellation failed; cannot produce tessellation plot')
 
-        x, y, z = self.points.T
+        ax = fig.add_subplot(projection='3d')
+        X, Y, Z = self.points.T
 
-        g_conns = set()
-        r_conns = set()
+        included_edges = set()
+        excluded_edges = set()
         for simplex, included in zip(self.tri.simplices, self.mask):
-            i1, i2, i3, i4 = sorted(simplex)
-            conns = g_conns if included else r_conns
-            conns.add((i1, i2))
-            conns.add((i1, i3))
-            conns.add((i1, i4))
-            conns.add((i2, i3))
-            conns.add((i2, i4))
-            conns.add((i3, i4))
+            i1, i2, i3, i4 = simplex
+            edges = included_edges if included else excluded_edges
+            for tuplet in (
+                (i1, i2),
+                (i1, i3),
+                (i1, i4),
+                (i2, i3),
+                (i2, i4),
+                (i3, i4),
+            ):
+                edges.add(tuplet)
 
-        ax = plt.figure().add_subplot(projection='3d')
+        if plot_removed and plot_included:
+            inex_edges = included_edges & excluded_edges
+            included_edges -= inex_edges
+            excluded_edges -= inex_edges
+
+            inex_lines = [(self.points[i1], self.points[i2]) for i1, i2 in inex_edges]
+            if verbosity:
+                print(self.__class__.__name__, 'plotting intersection edges (orange):', len(inex_lines))
+
+            line_collection = a3.art3d.Poly3DCollection(inex_lines)
+            line_collection.set_edgecolor('blue')
+            line_collection.set_linewidths(0.2)
+            ax.add_collection3d(line_collection)
+
         if plot_removed:
-            r_lines = [(self.points[i1], self.points[i2]) for i1, i2 in r_conns]
-            print(len(r_lines), 'lines added')
-            line_collection = a3.art3d.Poly3DCollection(r_lines)
-            line_collection.set_edgecolor('r')
-            line_collection.set_linewidths(0.1)
+            excluded_lines = [(self.points[i1], self.points[i2]) for i1, i2 in excluded_edges]
+            if verbosity:
+                print(self.__class__.__name__, 'plotting excluded edges (red):', len(excluded_lines))
+
+            line_collection = a3.art3d.Poly3DCollection(excluded_lines)
+            line_collection.set_edgecolor('red')
+            line_collection.set_linewidths(0.2)
             ax.add_collection3d(line_collection)
+
         if plot_included:
-            g_lines = [(self.points[i1], self.points[i2]) for i1, i2 in g_conns]
-            line_collection = a3.art3d.Poly3DCollection(g_lines)
-            print(len(g_lines), 'lines added')
-            line_collection.set_edgecolor('g')
-            line_collection.set_linewidths(0.1)
+            included_lines = [(self.points[i1], self.points[i2]) for i1, i2 in included_edges]
+            if verbosity:
+                print(self.__class__.__name__, 'plotting included edges (green):', len(included_lines))
+
+            line_collection = a3.art3d.Poly3DCollection(included_lines)
+            line_collection.set_edgecolor('green')
+            line_collection.set_linewidths(0.2)
             ax.add_collection3d(line_collection)
+
         if plot_points:
-            ax.scatter(x, y, z, marker='.')
-            print(len(x), 'points added')
-        ax_lim = 1.1 * max(max(x), max(y), max(z))
+            ax.scatter(X, Y, Z, marker='.', color='black')
+            if verbosity:
+                print(self.__class__.__name__, 'plotting points:', len(X))
+
+        ax_lim = 1.1 * max(max(X), max(Y), max(Z))
         ax_lim = (-ax_lim, ax_lim)
-        ax.set(
-            xlim=ax_lim,
-            ylim=ax_lim,
-            zlim=ax_lim
-        )
-        plt.show()
+        ax.set(xlim=ax_lim, ylim=ax_lim, zlim=ax_lim)
+        return ax

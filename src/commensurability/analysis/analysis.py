@@ -8,12 +8,14 @@ from typing import (
 
 from abc import abstractstaticmethod
 import inspect
+import warnings
 from tqdm import tqdm  # NOTE: remove this dependency, this is not from standard library
 
 import numpy as np
 import astropy.units as u
 
 from ..utils import clump, make_quantity, get_top_level_package
+from ..tessellation import Tessellation
 from .backend import GalpyBackend, GalaBackend, AgamaBackend
 from .backend.base import Backend
 from .coordinates import Coordinate
@@ -44,10 +46,14 @@ class Analysis:
 
         self.pattern_speed = make_quantity(pattern_speed, unit=u.km / u.s / u.kpc)
 
-        if backend is None: backend = get_top_level_package(self.potential)
-        if backend == 'galpy': backend = GalpyBackend()
-        if backend == 'gala': backend = GalaBackend()
-        if backend == 'agama': backend = AgamaBackend()
+        if backend is None:
+            backend = get_top_level_package(self.potential)
+        if backend == 'galpy':
+            backend = GalpyBackend()
+        if backend == 'gala':
+            backend = GalaBackend()
+        if backend == 'agama':
+            backend = AgamaBackend()
         if not isinstance(backend, Backend):
             raise TypeError(f'Unrecognized backend {backend}')
         self.backend = backend
@@ -71,7 +77,7 @@ class Analysis:
         i = 0
         for coords_chunk in tqdm(coords, desc=f'with {chunksize=}', disable=not progressbar):
             orb_it = self.backend.iter_orbits(
-                pot = self.potential,
+                pot=self.potential,
                 coords=coords_chunk,
                 dt=self.dt,
                 steps=self.n,
@@ -81,7 +87,7 @@ class Analysis:
                 value = self.__eval__(points)
                 self.image[i] = value
                 i += 1
-        
+
         self.image = self.image.reshape(self.shape)
         return self.image
 
@@ -91,17 +97,17 @@ class Analysis:
         potsource = inspect.getsource(self._potential_function)
         potsource.replace(self._potential_function.__name__, 'potential_function', 1)
         attrs = dict(
-            R = self.coords.R,
-            vR = self.coords.vR,
-            vT = self.coords.vT,
-            z = self.coords.z,
-            vz = self.coords.vz,
-            phi = self.coords.phi,
-            dt = self.dt,
-            steps = self.n,
-            pattern_speed = self.pattern_speed,
-            backend = np.void(self.backend.__class__.__name__.encode('utf8')),
-            potfunc = np.void(potsource.encode('utf8')),
+            R=self.coords.R,
+            vR=self.coords.vR,
+            vT=self.coords.vT,
+            z=self.coords.z,
+            vz=self.coords.vz,
+            phi=self.coords.phi,
+            dt=self.dt,
+            steps=self.n,
+            pattern_speed=self.pattern_speed,
+            backend=np.void(self.backend.__class__.__name__.encode('utf8')),
+            potfunc=np.void(potsource.encode('utf8')),
         )
         return attrs, self.image
 
@@ -113,8 +119,10 @@ class Analysis:
             exec(potsource, {'u': u}, namespace)
             potfunc = namespace['potential_function']
         else:
-            print('Warning! No potential function defined.')
-            potfunc = lambda: None
+            warnings.warn('No potential function defined.')
+
+            def potfunc() -> None:
+                pass
 
         backend_cls = getattr(backend, dset.attrs['backend'].tobytes().decode('utf8'))
         analysis = cls(
@@ -150,8 +158,6 @@ class Analysis:
         plot = InteractivePlot3D(self, self.axes[0], self.axes[1])
         plot.show()
 
-
-from ..tessellation import Tessellation
 
 class TessellationAnalysis(Analysis):
 

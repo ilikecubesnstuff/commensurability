@@ -2,5 +2,13 @@
 name = "commensurability"
 version = "0.0.1"
 dependencies = [
+    "astropy",
+    "matplotlib",
+    "numpy",
     "scipy",
+    "tqdm",
 ]
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling>=0.22", "hatch-vcs>=0.2"]

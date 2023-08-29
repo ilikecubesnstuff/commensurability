@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.linalg import norm
+from scipy import linalg
 
 try:
     import matplotlib.pyplot as plt
@@ -7,26 +7,18 @@ try:
 except ImportError:
     PLOTTING = False
 
-from . import generic
+from .generic import TessellationGeneric
 
 
-class Tessellation(generic.Tessellation):
-
-    def normalization(self):
-        r = norm(self.points, axis=1)
-        return np.pi * (max(r)**2)
-
-    @property
-    def area(self):
-        return self.calculate_measure()
+class Tessellation2D(TessellationGeneric):
 
     @staticmethod
     def simplex_sides(*vertices):
         v1, v2, v3 = vertices
         return [
-            norm(v2 - v1),
-            norm(v3 - v1),
-            norm(v3 - v2),
+            linalg.norm(v2 - v1),
+            linalg.norm(v3 - v1),
+            linalg.norm(v3 - v2),
         ]
 
     @staticmethod
@@ -34,18 +26,43 @@ class Tessellation(generic.Tessellation):
         (x1, y1), (x2, y2), (x3, y3) = vertices
         return abs((x2-x1) * (y3-y1) - (x3-x1) * (y2-y1)) / 2
 
-    def plot_tessellation_trimming(self, plot_included=True, plot_removed=False, plot_points=True):
+    class Normalization:
+
+        def circle(self):
+            r = linalg.norm(self.points, axis=1)
+            return np.pi * (max(r)**2)
+
+        default = circle
+
+    @property
+    def area(self):
+        return self.measure
+
+    def plot(self, fig, plot_included=True, plot_removed=False, plot_points=True, verbosity=1):
         """
         Plot the triangulation - trimmed triangles are drawn in red.
         """
         if not PLOTTING:
-            raise ImportError('This method requires matplotlib.')
+            raise ImportError('This method requires matplotlib')
+        if self.tri is None:
+            raise RuntimeError('Tessellation failed; cannot produce tessellation plot')
 
-        x, y = self.points.T
+        X, Y = self.points.T
+        ax = fig.add_subplot()
+
         if plot_removed:
-            plt.triplot(x, y, self.tri.simplices, mask=self.mask, color='red')
+            plt.triplot(X, Y, self.tri.simplices, mask=self.mask, color='red')
+            if verbosity:
+                print(self.__class__.__name__, 'plotting excluded edges (red):', len(self.mask))
+
         if plot_included:
-            plt.triplot(x, y, self.tri.simplices, mask=~self.mask, color='green')
+            plt.triplot(X, Y, self.tri.simplices, mask=~self.mask, color='green')
+            if verbosity:
+                print(self.__class__.__name__, 'plotting included edges (green):', len(~self.mask))
+
         if plot_points:
-            plt.plot(x, y, 'k.', markersize=0.5)
-        plt.show()
+            plt.plot(X, Y, 'k.', markersize=0.5)
+            if verbosity:
+                print(self.__class__.__name__, 'plotting points:', len(X))
+
+        return ax

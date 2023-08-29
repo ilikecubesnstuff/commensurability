@@ -58,7 +58,6 @@ class InteractivePlotBase:
         print('Key press not implemented yet!')
         # TODO: explore alternate axes (in the case of 4+ dimensional data)
 
-
     def _mpl_button_press_event(self, event):
         if event.inaxes is not self.ax_phase:
             return
@@ -77,12 +76,12 @@ class InteractivePlotBase:
 
         for thing in self.garbage:
             thing.remove()
-        
+
         self.on_scroll(event)
 
     def _mpl_key_press_event(self, event):
         self.on_keypress(event)
-    
+
     def _add_connections(self):
         self.connections = []
         self.connections.append(
@@ -102,7 +101,7 @@ class InteractivePlotBase:
         # connect methods to figure
         self._add_connections()
         plt.show()
-    
+
     @abstractmethod
     def plot_axes(self, **imshow_kwargs):
         self.fig = plt.figure(figsize=(12, 5))
@@ -124,7 +123,6 @@ class InteractivePlotBase:
 
         # right plot: orbit in configuration space
         self.l_orbit, = self.ax_orbit.plot([0], [0], [0], '.k-', linewidth=0.5)
-    
 
 
 class InteractivePlot2D(InteractivePlotBase):
@@ -188,7 +186,6 @@ class InteractivePlot2D(InteractivePlotBase):
 
         # right plot: orbit in configuration space
         self.l_orbit, = self.ax_orbit.plot([0], [0], '.k-', linewidth=0.5)
-
 
 
 class InteractivePlot3D(InteractivePlotBase):
