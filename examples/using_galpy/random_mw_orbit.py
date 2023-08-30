@@ -18,7 +18,7 @@ orbit = o.Orbit([
 ts = np.linspace(0., 2., 501) * u.Gyr
 orbit.integrate(ts, pot, progressbar=True)
 
-tess = Tessellation.from_galpy_orbit(orbit, dims=('x', 'y', 'z'))
+tess = Tessellation(orbit, ('x', 'y', 'z'))
 print(tess.volume)
-tess.plot_tessellation_trimming(plot_included=False, plot_points=True)
-tess.plot_tessellation_trimming(plot_included=True, plot_points=False)
+tess.plot(plot_included=False, plot_points=True)
+tess.plot(plot_included=True, plot_removed=True, plot_points=False)
