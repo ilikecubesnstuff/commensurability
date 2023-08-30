@@ -164,4 +164,4 @@ class TessellationAnalysis(Analysis):
     @staticmethod
     def __eval__(points):
         tess = Tessellation(points)
-        return tess.calculate_measure()
+        return tess.measure

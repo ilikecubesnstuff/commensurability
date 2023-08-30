@@ -30,7 +30,7 @@ ic = [
     0 * u.deg
 ]
 orbit = o.Orbit(ic)
-orbit.integrate(ts, pot, method='dopr54_c')
+orbit.integrate(ts, pot, method='dopr54_c', progressbar=True)
 orbit.plot3d(d1='x', d2='y', d3='z')
 plt.xlim([-7, 7])
 plt.ylim([-7, 7])

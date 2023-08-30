@@ -30,7 +30,7 @@ ic = [
     0 * u.deg
 ]
 orbit = o.Orbit(ic)
-orbit.integrate(ts, pot, method='dopr54_c')
+orbit.integrate(ts, pot, method='dopr54_c', progressbar=True)
 orbit.plot3d(d1='x', d2='y', d3='z')
 # plt.xlim([-7, 7])
 # plt.ylim([-7, 7])
@@ -41,6 +41,6 @@ R, vR, vT, z, vz, phi = orbit.getOrbit().T
 x = R * np.cos(phi)
 y = R * np.sin(phi)
 points = np.array([x, y, z]).T
-tess = Tessellation(points)
+tess = Tessellation(points, verbosity=1)
 print(f'{tess.volume = }')
-tess.plot_tessellation_trimming(plot_included=True, plot_removed=True, plot_points=True)
+tess.plot(plot_included=True, plot_removed=True, plot_points=True)

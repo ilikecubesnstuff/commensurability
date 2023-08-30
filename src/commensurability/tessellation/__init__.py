@@ -21,7 +21,7 @@ def Tessellation(orbit_or_point_array: Any,
                  qhull_options: Optional[str] = None,
                  axis_ratio: float = 10,
                  normalization_routine: str = 'default',
-                 verbosity: int = 1,
+                 verbosity: int = 0,
                  ) -> _TessType:
     points = orbit = orbit_or_point_array
     pkg = get_top_level_package(orbit)

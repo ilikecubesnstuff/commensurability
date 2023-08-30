@@ -47,7 +47,7 @@ def pot():
     return pot
 
 
-SIZE = 50
+SIZE = 20
 coords = Cylindrical2D(
     R   = np.linspace(0, 10, SIZE + 1)[1:]  * u.kpc,
     vR  = np.linspace(0, 0, 1)  * u.km/u.s,

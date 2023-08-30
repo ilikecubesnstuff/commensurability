@@ -2,6 +2,7 @@ import numpy as np
 from scipy import linalg, spatial
 
 try:
+    import matplotlib.pyplot as plt
     import mpl_toolkits.mplot3d as a3
     PLOTTING = True
 except ImportError:
@@ -82,7 +83,7 @@ class Tessellation3D(TessellationGeneric):
     def volume(self):
         return self.measure
 
-    def plot(self, fig, plot_included=True, plot_removed=False, plot_points=True, verbosity=1):
+    def plot(self, plot_included=True, plot_removed=False, plot_points=True, verbosity=1, ax=None, show=True):
         """
         Plot the triangulation - trimmed triangles are drawn in red.
         """
@@ -91,7 +92,9 @@ class Tessellation3D(TessellationGeneric):
         if self.tri is None:
             raise RuntimeError('Tessellation failed; cannot produce tessellation plot')
 
-        ax = fig.add_subplot(projection='3d')
+        if not ax:
+            fig = plt.figure()
+            ax = fig.add_subplot(projection='3d')
         X, Y, Z = self.points.T
 
         included_edges = set()
@@ -151,4 +154,7 @@ class Tessellation3D(TessellationGeneric):
         ax_lim = 1.1 * max(max(X), max(Y), max(Z))
         ax_lim = (-ax_lim, ax_lim)
         ax.set(xlim=ax_lim, ylim=ax_lim, zlim=ax_lim)
+
+        if show:
+            plt.show()
         return ax

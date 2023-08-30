@@ -147,7 +147,7 @@ class TestDegeneracies:
         rng.random((3, 2)),
     ])
     def test_insufficient_points_in_two_dimensions(self, points):
-        with pytest.warns(UserWarning, match='Degenerate orbit'):
+        with pytest.warns(UserWarning, match='degenerate'):
             tess = Tessellation(points)
         assert tess.measure == 0.0
 
@@ -158,7 +158,7 @@ class TestDegeneracies:
         rng.random((4, 3)),
     ])
     def test_insufficient_points_in_three_dimensions(self, points):
-        with pytest.warns(UserWarning, match='Degenerate orbit'):
+        with pytest.warns(UserWarning, match='degenerate'):
             tess = Tessellation(points)
         assert tess.measure == 0.0
 
@@ -170,7 +170,7 @@ class TestDegeneracies:
         rng.random((5, 4)),
     ])
     def test_insufficient_points_in_four_dimensions(self, points):
-        with pytest.warns(UserWarning, match='Degenerate orbit'):
+        with pytest.warns(UserWarning, match='degenerate'):
             tess = Tessellation(points)
         assert tess.measure == 0.0
 
@@ -201,7 +201,7 @@ class TestDegeneracies:
         ]).T,
     ])
     def test_degeneracy_in_two_dimensions(self, points):
-        with pytest.warns(UserWarning, match='Degenerate orbit'):
+        with pytest.warns(UserWarning, match='degenerate'):
             tess = Tessellation(points)
         assert tess.measure == 0.0
 
@@ -263,7 +263,7 @@ class TestDegeneracies:
         ]).T,
     ])
     def test_degeneracy_in_three_dimensions(self, points):
-        with pytest.warns(UserWarning, match='Degenerate orbit'):
+        with pytest.warns(UserWarning, match='degenerate'):
             tess = Tessellation(points)
         assert tess.measure == 0.0
 
@@ -396,7 +396,7 @@ class TestDegeneracies:
         ]).T,
     ])
     def test_degeneracy_in_four_dimensions(self, points):
-        with pytest.warns(UserWarning, match='Degenerate orbit'):
+        with pytest.warns(UserWarning, match='degenerate'):
             tess = Tessellation(points)
         assert tess.measure == 0.0
 

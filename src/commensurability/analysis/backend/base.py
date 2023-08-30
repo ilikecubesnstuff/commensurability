@@ -1,14 +1,14 @@
 from __future__ import annotations
+import typing
 
 from abc import abstractmethod
 from itertools import islice, tee
-import typing
 
 import numpy as np
 import astropy.units as u
 
 from ..importextension import ExtendImports
-from ..coordinates_old import Coordinate, CoordinateCollection
+from ..coordinates import Coordinate
 
 
 class Backend(ExtendImports):
@@ -80,7 +80,7 @@ class Backend(ExtendImports):
 
     @abstractmethod
     def _compute_orbits(self,
-                        coords: CoordinateCollection,
+                        coords: typing.Iterable[Coordinate],
                         **kwargs):
         """
         [This docstring is AI-generated.]
@@ -147,7 +147,7 @@ class Backend(ExtendImports):
 
     def iter_orbits(self,
                     pot: typing.Any,
-                    coords: CoordinateCollection,
+                    coords: typing.Iterable[Coordinate],
                     dt: typing.Union[float, typing.Collection],
                     steps: int,
                     *,
@@ -176,7 +176,7 @@ class Backend(ExtendImports):
 
     def iter_orbit_slices(self,
                           pot: typing.Any,
-                          coords: CoordinateCollection,
+                          coords: typing.Iterable[Coordinate],
                           dt: typing.Union[float, typing.Collection],
                           *steps: int,
                           pattern_speed: u.Quantity = 0,

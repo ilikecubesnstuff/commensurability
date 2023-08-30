@@ -51,7 +51,7 @@ def make_collection(obj, cls: type = list):
         obj = [obj]
     elif isinstance(obj, np.ndarray) and obj.size == 1 and obj.ndim == 0:
         obj = [obj]
-    elif len(obj) <= 1:
+    elif len(obj) == 0:
         obj = [obj]
 
     if isinstance(obj, u.Quantity):

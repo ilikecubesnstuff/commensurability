@@ -18,11 +18,11 @@ class ParabolicCylindrical(Coordinate):
     class Transforms:
 
         def to_cartesian(self: ParabolicCylindrical) -> Cartesian:
-            # adapted from https://en.wikipedia.org/wiki/Elliptic_coordinate_system
+            # adapted from https://en.wikipedia.org/wiki/Parabolic_cylindrical_coordinates
             x = self.s * self.t
             y = 0.5 * (self.s**2 - self.t**2)
-            
-            d = self.s**2 + self.t**2
+
+            d = np.sqrt(self.s**2 + self.t**2)
             vx = (self.s * self.vt + self.t * self.vs) / d
             vy = (self.t * self.vt - self.s * self.vs) / d
 

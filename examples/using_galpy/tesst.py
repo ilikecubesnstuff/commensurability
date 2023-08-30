@@ -41,6 +41,4 @@ orbit.integrate(ts, pot, progressbar=True)
 tess = Tessellation(orbit, ['x', 'y'])
 print(tess, tess.measure < 0.01)
 
-fig = plt.figure()
-tess.plot(fig, plot_removed=True)
-plt.show()
+tess.plot(plot_removed=True)

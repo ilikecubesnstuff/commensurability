@@ -29,7 +29,7 @@ coords = Cylindrical(
 dt = 0.01 * u.Gyr
 steps = 500
 canal = TessellationAnalysis(pot, dt, steps, pattern_speed=omega)
-canal.construct_image(coords, chunksize=100)
+canal.construct_image(coords, chunksize=5)
 
 canal.save_image(f'mw_bar_{SIZE}.hdf5')
 canal.launch_interactive_plot()

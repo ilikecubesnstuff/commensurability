@@ -38,7 +38,7 @@ class Tessellation2D(TessellationGeneric):
     def area(self):
         return self.measure
 
-    def plot(self, fig, plot_included=True, plot_removed=False, plot_points=True, verbosity=1):
+    def plot(self, plot_included=True, plot_removed=False, plot_points=True, verbosity=1, ax=None, show=True):
         """
         Plot the triangulation - trimmed triangles are drawn in red.
         """
@@ -47,8 +47,10 @@ class Tessellation2D(TessellationGeneric):
         if self.tri is None:
             raise RuntimeError('Tessellation failed; cannot produce tessellation plot')
 
+        if not ax:
+            fig = plt.figure()
+            ax = fig.add_subplot()
         X, Y = self.points.T
-        ax = fig.add_subplot()
 
         if plot_removed:
             plt.triplot(X, Y, self.tri.simplices, mask=self.mask, color='red')
@@ -65,4 +67,6 @@ class Tessellation2D(TessellationGeneric):
             if verbosity:
                 print(self.__class__.__name__, 'plotting points:', len(X))
 
+        if show:
+            plt.show()
         return ax

@@ -33,7 +33,7 @@ class TessellationBase:
                  qhull_options: Optional[str] = None,
                  axis_ratio: float = 10,
                  normalization_routine: str = 'default',
-                 verbosity: int = 1,
+                 verbosity: int = 0,
                  ) -> None:
         self.points: np.ndarray = points
         self._normalizations: Mapping[str, Callable]
@@ -73,8 +73,10 @@ class TessellationBase:
 
             self.measure = np.sum(self.tracers['measure'][self.mask]) / self.normalization_const
         except AttributeError:
-            if verbosity:
-                warnings.warn('Degenerate orbit, consider using a different dimensionality')
+            warnings.warn(
+                'Point set appears to be degenerate or co-spherical. '
+                'Consider using a different dimensionality for the degenerate case.'
+            )
 
     def __repr__(self):
         status = 'bare'

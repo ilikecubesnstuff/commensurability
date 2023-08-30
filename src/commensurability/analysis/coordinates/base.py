@@ -84,27 +84,6 @@ class CoordinateMeta(type):
                 namespace[attrname] = attr
                 transforms[signature.return_annotation] = attr
 
-        def __post_init__(self):
-            """
-            [This docstring is AI-generated.]
-            Post-initialization method for coordinate instances.
-
-            This method sets up the coordinate instance after initialization, converting
-            values to appropriate units and calculating the shape of the coordinate.
-
-            Returns:
-                None
-            """
-            for ax in self.axes:
-                attr = getattr(self, ax)
-                unit = self.units[ax]
-                if isinstance(unit, str):
-                    unit = eval(unit)
-                attr = make_quantity(make_collection(attr), unit=unit)
-                setattr(self, ax, attr)
-            self.shape = tuple(getattr(self, axis).size for axis in self.axes)
-        namespace['__post_init__'] = __post_init__
-
         cls = super().__new__(metacls, name, bases, namespace)
 
         # dataclass should be frozen too? currently freezing leads to bugs
@@ -136,6 +115,26 @@ class Coordinate(metaclass=CoordinateMeta):
         """
         super().__init_subclass__(**kwargs)
         COORDINATE_TYPE_REGISTRY[cls.__name__] = cls
+
+    def __post_init__(self):
+        """
+        [This docstring is AI-generated.]
+        Post-initialization method for coordinate instances.
+
+        This method sets up the coordinate instance after initialization, converting
+        values to appropriate units and calculating the shape of the coordinate.
+
+        Returns:
+            None
+        """
+        for ax in self.axes:
+            attr = getattr(self, ax)
+            unit = self.units[ax]
+            if isinstance(unit, str):
+                unit = eval(unit)
+            attr = make_quantity(make_collection(attr), unit=unit)
+            setattr(self, ax, attr)
+        self.shape = tuple(getattr(self, axis).size for axis in self.axes)
 
     def __repr__(self):
         body = []

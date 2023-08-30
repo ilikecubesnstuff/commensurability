@@ -17,8 +17,8 @@ def pot():
     return pot
 
 
-SIZE = 100
-FRAMES = 50
+SIZE = 5
+FRAMES = 5
 coords = Cylindrical(
     R   = np.linspace(0, 10, SIZE + 1)[1:]  * u.kpc,
     vR  = np.linspace(0, 0, 1)  * u.km/u.s,
@@ -30,7 +30,7 @@ coords = Cylindrical(
 dt = 0.01 * u.Gyr
 steps = 500
 canal = TessellationAnalysis(pot, dt, steps, pattern_speed=omega)
-canal.construct_image(coords, chunksize=100)
+canal.construct_image(coords, chunksize=10)
 
 canal.save_image(f'mw_bar_{SIZE}_{FRAMES}.hdf5')
 canal.launch_interactive_plot()
