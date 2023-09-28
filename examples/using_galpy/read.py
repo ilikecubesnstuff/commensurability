@@ -11,8 +11,8 @@
 from commensurability.analysis import TessellationAnalysis
 from commensurability.analysis.fileio import FileIO
 
-SIZE = 50
-FRAMES = 20
+SIZE = 5
+FRAMES = 5
 f = FileIO(f'mw_bar_{SIZE}_{FRAMES}.hdf5')
 tanal = f.read(TessellationAnalysis)
 tanal.launch_interactive_plot()

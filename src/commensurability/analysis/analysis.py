@@ -95,7 +95,7 @@ class Analysis:
 
     def __save__(self):
         potsource = inspect.getsource(self._potential_function)
-        potsource.replace(self._potential_function.__name__, 'potential_function', 1)
+        potsource = potsource.replace(self._potential_function.__name__, 'potential_function', 1)
         attrs = dict(
             R=self.coords.R,
             vR=self.coords.vR,
