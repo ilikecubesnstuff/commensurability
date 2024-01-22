@@ -1,12 +1,11 @@
-
 # pretend there exists a new galactic dynamics library 'pydgeon'
 # this is how to write a new backend for it (to some approximation)
 
 
-from commensurability.analysis.backend.base import Backend
+from pidgey.base import Backend
+
 
 class PydgeonBackend(Backend):
-
     def __imports__():
         import pydgeon
 
@@ -27,23 +26,23 @@ class PydgeonBackend(Backend):
         # helper method to populate keyword arguments in above
         ...
 
+
 # this file will run, and throw an error at runtime only when this backend is initialized
 # backend = PydgeonBackend()
 
 
 # this kind of "import extension" behavior is isolated to its own metaclass
-from commensurability.analysis.importextension import ExtendImports
+from iext import ExtendImports
 
 
 # toy example with packages that don't exist
 class Chef(ExtendImports):
-
     def __imports__():
-        import kitchen
         import grocer
+        import kitchen
 
     async def pesto_pasta(self):
-        pasta, pesto, parmesan = await self.grocer.request('pasta', 'pesto', 'parmesan')
+        pasta, pesto, parmesan = await self.grocer.request("pasta", "pesto", "parmesan")
 
         stove = self.kitcken.get_stove()
         kettle = self.kitchen.kettle(water=True)

@@ -1,18 +1,8 @@
-# no other imports required
-
-# all the code is taken care of inside the library
-
-# currently, a FileIO object and a TessellationAnalysis
-# object is all that is required
-
-
 # package imports
-from commensurability.analysis import TessellationAnalysis
-from commensurability.analysis.fileio import FileIO
+from commensurability import TessellationAnalysis2D
 
 # read in analysis object
-f = FileIO(f'5-data.hdf5')
-tanal = f.read(TessellationAnalysis)
+tanal = TessellationAnalysis2D.read_from_hdf5("5-data.hdf5")
 
 # scroll & click to explore the phase space
-tanal.launch_interactive_plot()
+tanal.launch_interactive_plot("x", "vy")

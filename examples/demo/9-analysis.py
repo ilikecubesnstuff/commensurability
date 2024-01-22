@@ -1,13 +1,11 @@
-
 # the analysis class can be extended to work with
 # any arbitrary "evaluation function" of an orbit
 # be overwriting __eval__
 
-from commensurability.analysis import Analysis
+from commensurability.base import AnalysisBase
 
 
-class FrequencyAnalysis(Analysis):
-
+class FrequencyAnalysis(AnalysisBase):
     def __eval__(self, points):
         x, y, z = points.T
 
@@ -19,8 +17,7 @@ class FrequencyAnalysis(Analysis):
         return [f_x, f_y, f_z]
 
 
-class FractalAnalysis(Analysis):
-
+class FractalAnalysis(AnalysisBase):
     def __eval__(self, points):
         # do some fractal dimension analysis
         ...

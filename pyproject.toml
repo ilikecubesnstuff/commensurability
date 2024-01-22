@@ -1,14 +1,62 @@
 [project]
 name = "commensurability"
-version = "0.0.1"
-dependencies = [
-    "astropy",
-    "matplotlib",
-    "numpy",
-    "scipy",
-    "tqdm",
+version = "0.1.0"
+description = "A package for analyzing orbit commensurabilities."
+authors = [
+    { name = "ilikecubesnstuff", email = "25328250+ilikecubesnstuff@users.noreply.github.com" },
 ]
+dependencies = [
+    "orbit-tessellation>=0.2.0",
+    "pidgey>=0.2.1",
+    "matplotlib>=3.8.2",
+    "tqdm>=4.66.1",
+    "h5py>=3.10.0",
+    "more_itertools>=10.2.0",
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+requires-python = ">=3.9"
+readme = "README.md"
+
+[project.license]
+text = "MIT"
 
 [build-system]
-build-backend = "hatchling.build"
-requires = ["hatchling>=0.22", "hatch-vcs>=0.2"]
+requires = [
+    "pdm-backend",
+]
+build-backend = "pdm.backend"
+
+[tool.black]
+line-length = 100
+target-version = [
+    "py39",
+    "py310",
+    "py311",
+    "py312",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = [
+    "F401",
+]
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.pdm]
+package-type = "library"

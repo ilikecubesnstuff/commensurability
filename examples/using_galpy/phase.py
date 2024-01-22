@@ -1,36 +1,52 @@
-import numpy as np
+import astropy.coordinates as c
 import astropy.units as u
-import galpy.potential as p
+import numpy as np
 
-from commensurability.analysis import TessellationAnalysis
-from commensurability.analysis.coordinates import Cylindrical
+from commensurability import TessellationAnalysis
 
 # rotating bar potential
-omega = 30 * u.km/u.s/u.kpc
+omega = 30 * u.km / u.s / u.kpc
+
+
 def pot():
     import galpy.potential as gp
-    omega = 30 * u.km/u.s/u.kpc
+
+    omega = 30 * u.km / u.s / u.kpc
     halo = gp.NFWPotential(conc=10, mvir=1)
     disc = gp.MiyamotoNagaiPotential(amp=5e10 * u.solMass, a=3 * u.kpc, b=0.1 * u.kpc)
-    bar = gp.SoftenedNeedleBarPotential(amp=1e9 * u.solMass, a=1.5 * u.kpc, b=0 * u.kpc, c=0.5 * u.kpc, omegab=omega)
+    bar = gp.SoftenedNeedleBarPotential(
+        amp=1e9 * u.solMass, a=1.5 * u.kpc, b=0 * u.kpc, c=0.5 * u.kpc, omegab=omega
+    )
     pot = [halo, disc, bar]
     return pot
 
 
 SIZE = 5
 FRAMES = 5
-coords = Cylindrical(
-    R   = np.linspace(0, 10, SIZE + 1)[1:]  * u.kpc,
-    vR  = np.linspace(0, 0, 1)  * u.km/u.s,
-    vT  = np.linspace(0, 300, SIZE + 1)[1:]  * u.km/u.s,
-    z   = np.linspace(0, 5, FRAMES + 1)[1:]  * u.kpc,
-    vz  = np.linspace(0, 0, 1)  * u.km/u.s,
-    phi = np.linspace(0, 0, 1)  * u.deg,
+values = dict(
+    x=np.linspace(0, 10, SIZE + 1)[1:],
+    vy=np.linspace(0, 300, SIZE + 1)[1:],
+    z=np.linspace(0, 10, FRAMES + 1)[1:],
 )
+
+
+def ic_function(x, vy, z):
+    return c.SkyCoord(
+        x=x * u.kpc,
+        y=0 * u.kpc,
+        z=z * u.kpc,
+        v_x=0 * u.km / u.s,
+        v_y=vy * u.km / u.s,
+        v_z=0 * u.km / u.s,
+        frame="galactocentric",
+        representation_type="cartesian",
+    )
+
+
 dt = 0.01 * u.Gyr
 steps = 500
-canal = TessellationAnalysis(pot, dt, steps, pattern_speed=omega)
-canal.construct_image(coords, chunksize=10)
+tanal = TessellationAnalysis(ic_function, values, pot, dt, steps, pattern_speed=omega, chunksize=50)
+tanal.launch_interactive_plot("x", "vy")
 
-canal.save_image(f'mw_bar_{SIZE}_{FRAMES}.hdf5')
-canal.launch_interactive_plot()
+tanal.save(f"examples/using_galpy/mw_bar_{SIZE}_{FRAMES}.hdf5")
+tanal.launch_interactive_plot("x", "vy")
