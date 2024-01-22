@@ -17,7 +17,7 @@ This package uses [`pidgey`](https://github.com/ilikecubesnstuff/pidgey) as its 
 Install this package via `pip`:
 
 ```
-python -m pip install orbit-tessellation
+python -m pip install commensurability
 ```
 
 ## Usage
