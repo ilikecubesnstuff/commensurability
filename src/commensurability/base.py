@@ -63,7 +63,7 @@ class AnalysisBase:
         backend: Optional[Union[str, Backend]] = None,
         chunksize: int = 1,
         progressbar: bool = True,
-        _blank_image=False,
+        _blank_image: bool = False,
     ) -> None:
         self.ic_function = ic_function
         argspec = inspect.getfullargspec(ic_function)
