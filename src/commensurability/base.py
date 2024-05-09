@@ -4,6 +4,7 @@ import inspect
 import warnings
 from abc import abstractstaticmethod
 from math import prod
+from pathlib import Path
 from typing import Any, Callable, Mapping, Optional, Sequence, Union
 
 import astropy.coordinates as c
@@ -62,7 +63,7 @@ class AnalysisBase:
         backend: Optional[Union[str, Backend]] = None,
         chunksize: int = 1,
         progressbar: bool = True,
-        _blank_image=False,
+        _blank_image: bool = False,
     ) -> None:
         self.ic_function = ic_function
         argspec = inspect.getfullargspec(ic_function)
@@ -138,6 +139,11 @@ class AnalysisBase:
                 self.image[pixel] = self.__eval__(orbit)
 
     def save(self, path):
+        path = Path(path)
+        if not path.parent.exists():
+            print("Parent directory does not exist; creating directory.")
+            path.parent.mkdir(parents=True)
+
         # store image mapping function source
         icsource = inspect.getsource(self.ic_function)
         icsource = icsource.replace(self.ic_function.__name__, "ic_function", 1)

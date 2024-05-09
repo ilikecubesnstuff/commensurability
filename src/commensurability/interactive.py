@@ -220,7 +220,7 @@ class InteractivePlot3D(InteractivePlotBase):
         Xrange = max(abs(X))
         Yrange = max(abs(Y))
         Zrange = max(abs(Z))
-        XYZrange = max(Xrange, Yrange, Zrange)
+        XYZrange = max(Xrange, Yrange, Zrange).value
         self.ax_orbit.set_xlim([-XYZrange, XYZrange])
         self.ax_orbit.set_ylim([-XYZrange, XYZrange])
         self.ax_orbit.set_zlim([-XYZrange, XYZrange])

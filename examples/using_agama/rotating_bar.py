@@ -9,16 +9,22 @@ omega = 30 * u.km / u.s / u.kpc
 
 
 def pot():
-    import galpy.potential as gp
+    import agama
 
-    omega = 30 * u.km / u.s / u.kpc
-    halo = gp.NFWPotential(conc=10, mvir=1)
-    disc = gp.MiyamotoNagaiPotential(amp=5e10 * u.solMass, a=3 * u.kpc, b=0.1 * u.kpc)
-    bar = gp.SoftenedNeedleBarPotential(
-        amp=1e9 * u.solMass, a=1.5 * u.kpc, b=0 * u.kpc, c=0.5 * u.kpc, omegab=omega
+    bar_par = dict(
+        type="Ferrers",
+        mass=1e9,
+        scaleRadius=1.0,
+        axisRatioY=0.5,
+        axisratioz=0.4,
+        cutoffStrength=2.0,
+        patternSpeed=30,
     )
-    pot = [halo, disc, bar]
-    return pot
+    disk_par = dict(type="Disk", mass=5e10, scaleRadius=3, scaleHeight=0.4)
+    bulge_par = dict(type="Sersic", mass=1e10, scaleRadius=1, axisRatioZ=0.6)
+    halo_par = dict(type="NFW", mass=1e12, scaleRadius=20, axisRatioZ=0.8)
+    potgal = agama.Potential(disk_par, bulge_par, halo_par, bar_par)
+    return potgal
 
 
 SIZE = 5
@@ -48,5 +54,5 @@ steps = 500
 tanal = TessellationAnalysis(ic_function, values, pot, dt, steps, pattern_speed=omega, chunksize=50)
 tanal.launch_interactive_plot("x", "vy")
 
-tanal.save(f"examples/using_galpy/mw_bar_{SIZE}_{FRAMES}.hdf5")
+tanal.save(f"examples/using_galpy/bar_{SIZE}_{FRAMES}.hdf5")
 tanal.launch_interactive_plot("x", "vy")
