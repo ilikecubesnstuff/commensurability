@@ -55,3 +55,6 @@ dt = 0.01 * u.Gyr
 steps = 500
 tanal = TessellationAnalysis(ic_function, values, pot, dt, steps, pattern_speed=omega, chunksize=50)
 tanal.launch_interactive_plot("x", "vy")
+
+tanal.save(f"examples/using_galpy/bar_{SIZE}_{FRAMES}.hdf5")
+tanal.launch_interactive_plot("x", "vy")
