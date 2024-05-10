@@ -8,7 +8,6 @@
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 A Python package for performing analysis on orbit commensurabilities.
-[`orbit-tessellation`](https://github.com/ilikecubesnstuff/orbit-tessellation) is used for commensurability evaluation.
 
 This package uses [`pidgey`](https://github.com/ilikecubesnstuff/pidgey) as its orbit integration backend.
 
@@ -19,7 +18,3 @@ Install this package via `pip`:
 ```
 python -m pip install commensurability
 ```
-
-## Usage
-
-See the `examples` folder for usage cases. `examples/demo` provides a walkthrough of the features.
