@@ -6,6 +6,7 @@ It inherits from `TessellationBase` and includes methods for calculating tetrahe
 and tetrahedron volumes. The `Normalization` nested class includes normalization methods.
 Additionally, the class offers a plotting function to visualize the tessellation.
 """
+
 import numpy as np
 
 try:
@@ -125,7 +126,7 @@ class Tessellation3D(TessellationBase):
             areas = [np.linalg.det([t1, t2]) for t1, t2 in pairwise(poly)]
 
             centroid = np.sum([a * c for c, a in zip(centroids, areas)], axis=0)
-            return 2 * np.pi * np.linalg.norm(centroid[:2])
+            return 2 * np.pi * float(np.linalg.norm(centroid[:2]))
 
         def convexhull(self) -> float:
             """

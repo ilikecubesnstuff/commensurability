@@ -5,6 +5,7 @@ This module is part of the tessellation package and can be used for general orbi
 It inherits from `TessellationBase` and includes methods for calculating simplex side lengths
 and simplex volumes. The `Normalization` nested class includes normalization methods.
 """
+
 from __future__ import annotations
 
 from itertools import combinations

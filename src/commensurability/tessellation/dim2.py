@@ -6,6 +6,7 @@ It inherits from `TessellationBase` and includes methods for calculating triangl
 and triangle areas. The `Normalization` nested class includes normalization methods.
 Additionally, the class offers a plotting function to visualize the tessellation.
 """
+
 import numpy as np
 from scipy import linalg
 

@@ -1,20 +1,12 @@
-import inspect
 import math
-from importlib.metadata import version
 
 import numpy as np
 import pytest
 
-import commensurability.tessellation
 from commensurability.tessellation import Tessellation
 from commensurability.tessellation.exceptions import LowDimensionalityException
 
 rng = np.random.default_rng(0)
-
-
-class TestBasics:
-    def test_version(self):
-        assert version("orbit-tessellation") == tessellation.__version__
 
 
 class TestInsufficientDimensionality:

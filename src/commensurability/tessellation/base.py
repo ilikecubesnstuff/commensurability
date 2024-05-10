@@ -2,6 +2,7 @@
 This module defines the abstract base class `TessellationBase` used for
 2D, 3D and general N-D tessellation algorithms.
 """
+
 from __future__ import annotations
 
 import warnings
