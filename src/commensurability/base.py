@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 import warnings
-from abc import abstractstaticmethod
+from abc import abstractmethod
 from math import prod
 from pathlib import Path
 from typing import Any, Callable, Mapping, Optional, Sequence, Union
@@ -46,7 +46,8 @@ def collapse_coords(coords):
 class AnalysisBase:
     dim = 3
 
-    @abstractstaticmethod
+    @staticmethod
+    @abstractmethod
     def __eval__(orbit: c.SkyCoord) -> float:
         return 0.0
 
