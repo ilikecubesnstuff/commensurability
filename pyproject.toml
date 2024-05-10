@@ -52,10 +52,26 @@ ignore_missing_imports = true
 
 [tool.pdm]
 distribution = true
+
 [tool.pdm.dev-dependencies]
 dev = [
+    "tox-pdm>=0.7.2",
+]
+test = [
     "pytest>=8.2.0",
+]
+type = [
     "mypy>=1.10.0",
+]
+lint = [
     "black>=24.4.2",
     "isort>=5.13.2",
+]
+docs = [
+    "mkdocs>=1.6.0",
+    "mkdocs-gen-files>=0.5.0",
+    "mkdocs-literate-nav>=0.6.1",
+    "mkdocs-material>=9.5.21",
+    "mkdocstrings>=0.25.1",
+    "mkdocstrings-python>=1.10.0",
 ]
