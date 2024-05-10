@@ -1,0 +1,96 @@
+site_name: Orbit Tessellation in Python
+repo_url: https://github.com/ilikecubesnstuff/orbit-tessellation/
+
+theme:
+  name: 'material'
+  language: en
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep-purple
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep-purple
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Atkinson Hyperlegible
+    code: Ubuntu Mono
+  features:
+    - content.code.copy
+    - content.tabs.link
+    - navigation.indexes
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.share
+    - search.suggest
+    # - toc.integrate  # NOTE: undecided, can be unwieldy
+
+plugins:
+- search:
+    lang: en
+    # taken from https://squidfunk.github.io/mkdocs-material/setup/setting-up-site-search/#+search.separator
+    separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+- gen-files:
+    scripts:
+    - docs/gen_ref_pages.py
+- literate-nav:
+    nav_file: SUMMARY.md
+- mkdocstrings
+
+nav:
+- Home: index.md
+- installation.md
+- About:
+  - about/index.md
+  - about/motivation.md
+  - about/algorithm.md
+  - Usage: about/usage.md
+- User Guide:
+  - user/index.md
+  - user/introduction.md
+  - Tutorials:
+    - user/tutorials/mw_orbit.md
+    - user/tutorials/pidgey.md
+    - user/tutorials/multiprocessing.md
+- API Reference: reference/
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+      permalink_title: Anchor link to this section for reference
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

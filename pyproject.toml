@@ -6,7 +6,6 @@ authors = [
     { name = "ilikecubesnstuff", email = "25328250+ilikecubesnstuff@users.noreply.github.com" },
 ]
 dependencies = [
-    "orbit-tessellation>=0.2.0",
     "pidgey>=0.2.1",
     "matplotlib>=3.8.2",
     "tqdm>=4.66.1",
@@ -59,4 +58,9 @@ line-length = 100
 ignore_missing_imports = true
 
 [tool.pdm]
-package-type = "library"
+distribution = true
+[tool.pdm.dev-dependencies]
+dev = [
+    "pytest>=8.2.0",
+    "mypy>=1.10.0",
+]

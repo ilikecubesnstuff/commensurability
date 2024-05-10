@@ -1,9 +1,9 @@
 # mypy: ignore-errors
 
 import astropy.coordinates as c
-from tessellation import Tessellation
 
 from .base import AnalysisBase
+from .tessellation import Tessellation
 
 
 class TessellationAnalysis(AnalysisBase):
