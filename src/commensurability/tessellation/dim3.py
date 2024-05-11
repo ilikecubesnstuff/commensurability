@@ -7,16 +7,9 @@ and tetrahedron volumes. The `Normalization` nested class includes normalization
 Additionally, the class offers a plotting function to visualize the tessellation.
 """
 
+import matplotlib.pyplot as plt
+import mpl_toolkits.mplot3d as a3
 import numpy as np
-
-try:
-    import matplotlib.pyplot as plt
-    import mpl_toolkits.mplot3d as a3
-
-    PLOTTING = True
-except ImportError:
-    PLOTTING = False
-
 from scipy import linalg, spatial
 
 from .base import TessellationBase
@@ -170,41 +163,24 @@ class Tessellation3D(TessellationBase):
         """
         return self.measure
 
-    def plot(
-        self,
-        plot_included=True,
-        plot_removed=False,
-        plot_points=True,
-        verbosity=1,
-        ax=None,
-        show=True,
-    ):
+    def plot(self, ax, plot_included=True, plot_removed=False, plot_points=True):
         """
         Plot the 3D tessellation.
         Included tetrahedra are green, excluded tetrahedra are red.
         Shared edges are blue.
 
         Args:
-            plot_included (bool): Whether to plot included triangles (default True).
-            plot_removed (bool): Whether to plot removed triangles (default False).
-            plot_points (bool): Whether to plot points (default True).
-            verbosity (int): Verbosity level (default 1).
-            ax (mpl_toolkits.mplot3d.axes3d.Axes3D, optional): Matplotlib 3D axes (default None).
-            show (bool): Whether to display the plot (default True).
+            ax (mpl_toolkits.mplot3d.axes3d.Axes3D): Matplotlib 3D axes.
+            plot_included (bool, optional): Whether to plot included triangles (default True).
+            plot_removed (bool, optional): Whether to plot removed triangles (default False).
+            plot_points (bool, optional): Whether to plot points (default True).
 
         Raises:
-            ImportError: If Matplotlib is not available.
-
             RuntimeError: If tessellation failed.
         """
-        if not PLOTTING:
-            raise ImportError("This method requires matplotlib")
         if self.tri is None:
             raise RuntimeError("Tessellation failed; cannot produce tessellation plot")
 
-        if not ax:
-            fig = plt.figure()
-            ax = fig.add_subplot(projection="3d")
         X, Y, Z = self.points.T
 
         included_edges = set()
@@ -222,53 +198,45 @@ class Tessellation3D(TessellationBase):
             ):
                 edges.add(tuplet)
 
+        plotted_objects = set()
+
         if plot_removed and plot_included:
             inex_edges = included_edges & excluded_edges
             included_edges -= inex_edges
             excluded_edges -= inex_edges
 
             inex_lines = [(self.points[i1], self.points[i2]) for i1, i2 in inex_edges]
-            if verbosity:
-                print(self.__class__.__name__, "plotting in/ex edges (blue):", len(inex_lines))
 
             line_collection = a3.art3d.Poly3DCollection(inex_lines)
             line_collection.set_edgecolor("blue")
             line_collection.set_linewidths(0.2)
             ax.add_collection3d(line_collection)
+            plotted_objects.add(line_collection)
 
         if plot_removed:
             excluded_lines = [(self.points[i1], self.points[i2]) for i1, i2 in excluded_edges]
-            if verbosity:
-                print(
-                    self.__class__.__name__, "plotting excluded edges (red):", len(excluded_lines)
-                )
 
             line_collection = a3.art3d.Poly3DCollection(excluded_lines)
             line_collection.set_edgecolor("red")
             line_collection.set_linewidths(0.2)
             ax.add_collection3d(line_collection)
+            plotted_objects.add(line_collection)
 
         if plot_included:
             included_lines = [(self.points[i1], self.points[i2]) for i1, i2 in included_edges]
-            if verbosity:
-                print(
-                    self.__class__.__name__, "plotting included edges (green):", len(included_lines)
-                )
 
             line_collection = a3.art3d.Poly3DCollection(included_lines)
             line_collection.set_edgecolor("green")
             line_collection.set_linewidths(0.2)
             ax.add_collection3d(line_collection)
+            plotted_objects.add(line_collection)
 
         if plot_points:
-            ax.scatter(X, Y, Z, marker=".", color="black")
-            if verbosity:
-                print(self.__class__.__name__, "plotting points:", len(X))
+            line = ax.scatter(X, Y, Z, marker=".", color="black")
+            plotted_objects.add(line)
 
         ax_lim = 1.1 * max(max(X), max(Y), max(Z))
         ax_lim = (-ax_lim, ax_lim)
         ax.set(xlim=ax_lim, ylim=ax_lim, zlim=ax_lim)
 
-        if show:
-            plt.show()
-        return ax
+        return plotted_objects

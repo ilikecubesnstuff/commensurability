@@ -13,6 +13,8 @@ from typing import Any, Callable, Mapping, Optional, Union
 import numpy as np
 from scipy import spatial
 
+from ..evaluation import Evaluation
+
 MISSING = object()
 
 
@@ -32,7 +34,7 @@ class FailedDelaunay:
         self.convex_hull = [[0]]
 
 
-class TessellationBase:
+class TessellationBase(Evaluation):
     """
     A base class for the tessellation and trimming algorithm.
     """
@@ -165,8 +167,6 @@ class TessellationBase:
             self.tracers["measure"][i] = self.simplex_measure(*vertices)
 
     def _compute_trimming(self, axis_ratio: float = 10) -> None:
-        # self.mask = np.ones(self.tri.nsimplex, dtype=bool)
-
         # trim simplices with large sides
         threshold = axis_ratio * np.median(self.tracers["smallest side"])
         self.mask = self.tracers["largest side"] < threshold
@@ -185,7 +185,7 @@ class TessellationBase:
 
     @staticmethod
     @abstractmethod
-    def simplex_sides(*vertices: np.ndarray) -> list:
+    def simplex_sides(*vertices: np.ndarray) -> list[float]:
         """
         Calculate the side lengths of a simplex.
         This must be redefined in a base class.
@@ -213,24 +213,11 @@ class TessellationBase:
         """
         return 0.0
 
-    def plot(
-        self,
-        plot_included=True,
-        plot_removed=False,
-        plot_points=True,
-        verbosity=1,
-        ax=None,
-        show=True,
-    ):
+    def plot(self, ax):
         """
         Plot the tessellation.
 
         Args:
-            plot_included (bool, optional): Whether to plot included edges (default True).
-            plot_removed (bool, optional): Whether to plot removed edges (default False).
-            plot_points (bool, optional): Whether to plot the original points (default True).
-            verbosity (int, optional): Verbosity level (default 1).
-            ax (matplotlib.axes._axes.Axes, optional): Matplotlib axes (default None).
-            show (bool): Whether to display the plot (default True).
+            ax (matplotlib.axes._axes.Axes): Matplotlib axes (default None).
         """
         pass
