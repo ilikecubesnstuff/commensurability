@@ -200,3 +200,17 @@ class AnalysisBase3D(AnalysisBase):
     def launch_interactive_plot(self, x_axis: str, y_axis: str, var_axis: Optional[str] = None):
         iplot: InteractivePlotBase = InteractivePlot3D(self, x_axis, y_axis, var_axis)
         iplot.show()
+
+
+# define user-facing analysis classes
+from .tessellation import Tessellation
+
+
+class TessellationAnalysis(AnalysisBase3D):
+    evaluate = staticmethod(Tessellation)
+
+
+class TessellationAnalysis2D(AnalysisBase2D):
+    @staticmethod
+    def evaluate(orbit):
+        return Tessellation(orbit.xyz[:2].T)
