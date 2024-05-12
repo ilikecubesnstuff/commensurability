@@ -26,7 +26,7 @@ class AnalysisBase:
     @staticmethod
     @abstractmethod
     def evaluate(orbit: c.SkyCoord) -> Evaluation:
-        return Evaluation(orbit)
+        pass
 
     def __init__(
         self,
@@ -207,7 +207,9 @@ from .tessellation import Tessellation
 
 
 class TessellationAnalysis(AnalysisBase3D):
-    evaluate = staticmethod(Tessellation)
+    @staticmethod
+    def evaluate(orbit):
+        return Tessellation(orbit)
 
 
 class TessellationAnalysis2D(AnalysisBase2D):
