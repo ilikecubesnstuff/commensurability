@@ -7,15 +7,9 @@ and triangle areas. The `Normalization` nested class includes normalization meth
 Additionally, the class offers a plotting function to visualize the tessellation.
 """
 
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import linalg
-
-try:
-    import matplotlib.pyplot as plt
-
-    PLOTTING = True
-except ImportError:
-    PLOTTING = False
 
 from .base import TessellationBase
 
@@ -92,57 +86,34 @@ class Tessellation2D(TessellationBase):
         """
         return self.measure
 
-    def plot(
-        self,
-        plot_included=True,
-        plot_removed=False,
-        plot_points=True,
-        verbosity=1,
-        ax=None,
-        show=True,
-    ):
+    def plot(self, ax, plot_included=True, plot_removed=False, plot_points=True):
         """
         Plot the 2D tessellation.
         Included triangles are green, excluded triangles are red.
 
         Args:
-            plot_included (bool): Whether to plot included triangles (default True).
-            plot_removed (bool): Whether to plot removed triangles (default False).
-            plot_points (bool): Whether to plot points (default True).
-            verbosity (int): Verbosity level (default 1).
-            ax (matplotlib.axes._axes.Axes, optional): Matplotlib axes (default None).
-            show (bool): Whether to display the plot (default True).
+            ax (matplotlib.axes._axes.Axes): Matplotlib axes.
+            plot_included (bool, optional): Whether to plot included triangles (default True).
+            plot_removed (bool, optional): Whether to plot removed triangles (default False).
+            plot_points (bool, optional): Whether to plot points (default True).
 
         Raises:
-            ImportError: If Matplotlib is not available.
-
             RuntimeError: If tessellation failed.
         """
-        if not PLOTTING:
-            raise ImportError("This method requires matplotlib")
         if self.tri is None:
             raise RuntimeError("Tessellation failed; cannot produce tessellation plot")
 
-        if not ax:
-            fig = plt.figure()
-            ax = fig.add_subplot()
         X, Y = self.points.T
-
+        plotted_objects = set()
         if plot_removed:
-            plt.triplot(X, Y, self.tri.simplices, mask=self.mask, color="red")
-            if verbosity:
-                print(self.__class__.__name__, "plotting excluded edges (red):", len(self.mask))
-
+            lines, markers = plt.triplot(X, Y, self.tri.simplices, mask=self.mask, color="red")
+            plotted_objects.add(lines)
+            plotted_objects.add(markers)
         if plot_included:
-            plt.triplot(X, Y, self.tri.simplices, mask=~self.mask, color="green")
-            if verbosity:
-                print(self.__class__.__name__, "plotting included edges (green):", len(~self.mask))
-
+            lines, markers = plt.triplot(X, Y, self.tri.simplices, mask=~self.mask, color="green")
+            plotted_objects.add(lines)
+            plotted_objects.add(markers)
         if plot_points:
-            plt.plot(X, Y, "k.", markersize=0.5)
-            if verbosity:
-                print(self.__class__.__name__, "plotting points:", len(X))
-
-        if show:
-            plt.show()
-        return ax
+            (points,) = plt.plot(X, Y, "k.", markersize=0.5)
+            plotted_objects.add(points)
+        return plotted_objects

@@ -1,3 +1,5 @@
+import gc
+import warnings
 from abc import abstractmethod
 
 import matplotlib.pyplot as plt
@@ -79,7 +81,18 @@ class InteractivePlotBase:
             return
 
         for thing in self.garbage:
-            thing.remove()
+            # NOTE: Various objects seems to be in the garbage list when not existing
+            # within the plot's object list. For now, I will pass in these cases.
+            # I have no clue what these objects are. This may lead to memory problems
+            # in extreme cases, but for now they appear harmless.
+            try:
+                thing.remove()
+            except ValueError:
+                pass
+            del thing
+
+        # to counteract the above memory concerns, run gc.collect here
+        gc.collect()
 
         if event.button == 1:
             self.on_left_click(event)
@@ -144,7 +157,7 @@ class InteractivePlot2D(InteractivePlotBase):
             steps=self.analysis.steps,
             pattern_speed=self.analysis.pattern_speed,
         )
-        value = self.analysis.__eval__(orbit)
+        value = self.analysis.evaluate(orbit).measure
 
         # for 2D plot
         X, Y, Z = orbit.xyz
@@ -154,6 +167,45 @@ class InteractivePlot2D(InteractivePlotBase):
         XYrange = max(Xrange, Yrange)
         self.ax_orbit.set_xlim([-XYrange, XYrange])
         self.ax_orbit.set_ylim([-XYrange, XYrange])
+
+        self.ax_orbit.set_title(f"{value = }")
+        self.fig.canvas.draw()
+        self.fig.canvas.flush_events()
+
+    def on_right_click(self, event):
+        self.dot_phase.set_xdata([event.xdata])
+        self.dot_phase.set_ydata([event.ydata])
+
+        values = {
+            ax: self.analysis.values[ax][i]
+            for ax, i in zip(self.analysis.axis_names, self.indices)
+            if i is not None
+        }
+        values[self.x_axis] = event.xdata
+        values[self.y_axis] = event.ydata
+        coord = self.analysis.ic_function(**values)
+
+        orbit = self.analysis.backend.compute_orbit(
+            coord,
+            pot=self.analysis.potential,
+            dt=self.analysis.dt,
+            steps=self.analysis.steps,
+            pattern_speed=self.analysis.pattern_speed,
+        )
+        value = self.analysis.evaluate(orbit).measure
+
+        # for 2D plot
+        X, Y, Z = orbit.xyz
+        self.l_orbit.set_data(X, Y)
+        Xrange = max(abs(X))
+        Yrange = max(abs(Y))
+        XYrange = max(Xrange, Yrange)
+        self.ax_orbit.set_xlim([-XYrange, XYrange])
+        self.ax_orbit.set_ylim([-XYrange, XYrange])
+
+        # plot evaluation of the orbit
+        extras = self.analysis.evaluate(orbit).plot(self.ax_orbit)
+        self.garbage.update(extras)
 
         self.ax_orbit.set_title(f"{value = }")
         self.fig.canvas.draw()
@@ -212,7 +264,7 @@ class InteractivePlot3D(InteractivePlotBase):
             steps=self.analysis.steps,
             pattern_speed=self.analysis.pattern_speed,
         )
-        value = self.analysis.__eval__(orbit)
+        value = self.analysis.evaluate(orbit).measure
 
         # for 3D plot
         X, Y, Z = orbit.xyz
@@ -230,8 +282,45 @@ class InteractivePlot3D(InteractivePlotBase):
         self.fig.canvas.flush_events()
 
     def on_right_click(self, event):
-        print("Right-click not implemented yet!")
-        # TODO: plot orbit with tessellation on right plot
+        self.dot_phase.set_xdata([event.xdata])
+        self.dot_phase.set_ydata([event.ydata])
+
+        values = {
+            ax: self.analysis.values[ax][i]
+            for ax, i in zip(self.analysis.axis_names, self.indices)
+            if i is not None
+        }
+        values[self.x_axis] = event.xdata
+        values[self.y_axis] = event.ydata
+        coord = self.analysis.ic_function(**values)
+
+        orbit = self.analysis.backend.compute_orbit(
+            coord,
+            pot=self.analysis.potential,
+            dt=self.analysis.dt,
+            steps=self.analysis.steps,
+            pattern_speed=self.analysis.pattern_speed,
+        )
+        value = self.analysis.evaluate(orbit).measure
+
+        # for 3D plot
+        X, Y, Z = orbit.xyz
+        self.l_orbit.set_data_3d(X, Y, Z)
+        Xrange = max(abs(X))
+        Yrange = max(abs(Y))
+        Zrange = max(abs(Z))
+        XYZrange = max(Xrange, Yrange, Zrange).value
+        self.ax_orbit.set_xlim([-XYZrange, XYZrange])
+        self.ax_orbit.set_ylim([-XYZrange, XYZrange])
+        self.ax_orbit.set_zlim([-XYZrange, XYZrange])
+
+        # plot evaluation of the orbit
+        extras = self.analysis.evaluate(orbit).plot(self.ax_orbit)
+        self.garbage.update(extras)
+
+        self.ax_orbit.set_title(f"{value = }")
+        self.fig.canvas.draw()
+        self.fig.canvas.flush_events()
 
     def plot_axes(self, **imshow_kwargs):
         self.fig = plt.figure(figsize=(12, 5))

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 import warnings
-from abc import abstractstaticmethod
+from abc import abstractmethod
 from math import prod
 from pathlib import Path
 from typing import Any, Callable, Mapping, Optional, Sequence, Union
@@ -17,38 +17,16 @@ from pidgey import AgamaBackend, GalaBackend, GalpyBackend, get_backend_from
 from pidgey.base import Backend
 from tqdm import tqdm
 
+from .evaluation import Evaluation
 from .interactive import InteractivePlot2D, InteractivePlot3D, InteractivePlotBase
-from .utils import make_quantity
-
-
-def collapse_coords(coords):
-    # it seems as though astropy coordinates discard
-    # velocity data by default when combining coordinates
-    # i'm not sure of a better approach for this step
-    if isinstance(coords, c.SkyCoord):
-        return coords
-    for coord in coords:
-        coord.representation_type = "cartesian"
-    data = [(coord.x, coord.y, coord.z, coord.v_x, coord.v_y, coord.v_z) for coord in coords]
-    x, y, z, v_x, v_y, v_z = list(zip(*data))
-    return c.SkyCoord(
-        x=x,
-        y=y,
-        z=z,
-        v_x=v_x,
-        v_y=v_y,
-        v_z=v_z,
-        frame="galactocentric",
-        representation_type="cartesian",
-    )
+from .utils import collapse_coords, make_quantity
 
 
 class AnalysisBase:
-    dim = 3
-
-    @abstractstaticmethod
-    def __eval__(orbit: c.SkyCoord) -> float:
-        return 0.0
+    @staticmethod
+    @abstractmethod
+    def evaluate(orbit: c.SkyCoord) -> Evaluation:
+        pass
 
     def __init__(
         self,
@@ -133,10 +111,10 @@ class AnalysisBase:
                 zip(pixels, orbits),
                 desc="commensurability evaluation",
                 total=chunksize,
-                disable=True,
+                disable=not progressbar,
                 leave=False,
             ):
-                self.image[pixel] = self.__eval__(orbit)
+                self.image[pixel] = self.evaluate(orbit).measure
 
     def save(self, path):
         path = Path(path)
@@ -211,10 +189,30 @@ class AnalysisBase:
             analysis.image = dset[()]
         return analysis
 
+
+class AnalysisBase2D(AnalysisBase):
     def launch_interactive_plot(self, x_axis: str, y_axis: str, var_axis: Optional[str] = None):
-        iplot: InteractivePlotBase
-        if self.dim == 3:
-            iplot = InteractivePlot3D(self, x_axis, y_axis, var_axis)
-        elif self.dim == 2:
-            iplot = InteractivePlot2D(self, x_axis, y_axis, var_axis)
+        iplot: InteractivePlotBase = InteractivePlot2D(self, x_axis, y_axis, var_axis)
         iplot.show()
+
+
+class AnalysisBase3D(AnalysisBase):
+    def launch_interactive_plot(self, x_axis: str, y_axis: str, var_axis: Optional[str] = None):
+        iplot: InteractivePlotBase = InteractivePlot3D(self, x_axis, y_axis, var_axis)
+        iplot.show()
+
+
+# define user-facing analysis classes
+from .tessellation import Tessellation
+
+
+class TessellationAnalysis(AnalysisBase3D):
+    @staticmethod
+    def evaluate(orbit):
+        return Tessellation(orbit)
+
+
+class TessellationAnalysis2D(AnalysisBase2D):
+    @staticmethod
+    def evaluate(orbit):
+        return Tessellation(orbit.xyz[:2].T)

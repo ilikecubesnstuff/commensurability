@@ -8,6 +8,7 @@ from __future__ import annotations
 import inspect
 from typing import Any, Optional
 
+import astropy.coordinates as c
 import numpy as np
 
 from .base import TessellationBase as _TessType
@@ -69,6 +70,10 @@ def Tessellation(
     else:
         if dims_for_orbit is not None:
             raise ValueError("Orbit dimensions must only be passed with an orbit object")
+        if isinstance(
+            orbit, c.CartesianRepresentation
+        ):  # NOTE: seems like a hacky fix, works for now
+            points = orbit.xyz.T
         points = np.array(points, dtype=float)
 
     if points.ndim != 2:
