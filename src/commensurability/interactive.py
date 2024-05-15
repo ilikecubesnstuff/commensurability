@@ -9,8 +9,11 @@ This module also defines user-facing interactive plot classes for 2D and 3D orbi
 import gc
 import warnings
 from abc import abstractmethod
+from typing import Any, Union
 
 import matplotlib.pyplot as plt
+
+from ..commensurability.analysis import AnalysisBase
 
 
 class InteractivePlotBase:
@@ -20,7 +23,7 @@ class InteractivePlotBase:
     This class provides methods for handling interactive plots.
     """
 
-    def __init__(self, analysis, x_axis, y_axis, var_axis=None):
+    def __init__(self, analysis: AnalysisBase, x_axis: str, y_axis: str, var_axis: str = None):
         """
         Initialize InteractivePlotBase instance.
 
@@ -54,7 +57,7 @@ class InteractivePlotBase:
             self.var_axis = axes[0] if axes else None
 
     @staticmethod
-    def image_slice(data, indices):
+    def image_slice(data: Any, indices: list[Union[int, None]]) -> Any:
         """
         Return a 2D slice of the analysis data according to the given indices.
 
@@ -154,7 +157,7 @@ class InteractivePlotBase:
             self.fig.canvas.mpl_connect("key_press_event", self._mpl_key_press_event)
         )
 
-    def show(self, **imshow_kwargs):
+    def show(self, **imshow_kwargs: dict[str, Any]):
         """
         Show the interactive plot.
 
@@ -169,7 +172,7 @@ class InteractivePlotBase:
         plt.show()
 
     @abstractmethod
-    def plot_axes(self, **imshow_kwargs):
+    def plot_axes(self, **imshow_kwargs: dict[str, Any]):
         """
         Plot the axes.
 
@@ -262,7 +265,7 @@ class InteractivePlot2D(InteractivePlotBase):
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
 
-    def plot_axes(self, **imshow_kwargs):
+    def plot_axes(self, **imshow_kwargs: dict[str, Any]):
         """
         Plot the axes.
 
@@ -385,7 +388,7 @@ class InteractivePlot3D(InteractivePlotBase):
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
 
-    def plot_axes(self, **imshow_kwargs):
+    def plot_axes(self, **imshow_kwargs: dict[str, Any]):
         """
         Plot the axes.
 

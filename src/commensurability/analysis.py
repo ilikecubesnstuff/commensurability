@@ -162,7 +162,7 @@ class AnalysisBase:
             ):
                 self.image[pixel] = self.evaluate(orbit).measure
 
-    def save(self, path):
+    def save(self, path: Any):
         """
         Save the analysis data to an HDF5 file.
 
@@ -198,7 +198,7 @@ class AnalysisBase:
                 dset.attrs[attr] = value
 
     @classmethod
-    def read_from_hdf5(cls, path):
+    def read_from_hdf5(cls, path: Any) -> AnalysisBase:
         """
         Read analysis data from an HDF5 file.
 
@@ -325,7 +325,7 @@ class TessellationAnalysis2D(AnalysisBase2D):
     """
 
     @staticmethod
-    def evaluate(orbit):
+    def evaluate(orbit) -> TessellationBase:
         """
         Evaluate an orbit using the tessellation and trimming algorithm.
 

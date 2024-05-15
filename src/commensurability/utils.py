@@ -2,11 +2,13 @@
 This module defines utility functions for the analysis classes.
 """
 
+from typing import Any
+
 import astropy.coordinates as c
 import astropy.units as u
 
 
-def make_quantity(obj, unit: u.Unit):
+def make_quantity(obj: Any, unit: u.Unit) -> u.Quantity:
     """
     Convert object to a Quantity with specified unit.
 
@@ -22,7 +24,7 @@ def make_quantity(obj, unit: u.Unit):
     return obj * unit
 
 
-def collapse_coords(coords):
+def collapse_coords(coords: Any) -> c.SkyCoord:
     """
     Collapse coordinates into a single SkyCoord object.
 
