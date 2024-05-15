@@ -1,14 +1,37 @@
+"""
+This module defines utility functions for the analysis classes.
+"""
+
 import astropy.coordinates as c
 import astropy.units as u
 
 
 def make_quantity(obj, unit: u.Unit):
+    """
+    Convert object to a Quantity with specified unit.
+
+    Args:
+        obj: Object to convert.
+        unit (astropy.units.Unit): Unit to convert to.
+
+    Returns:
+        Quantity with specified unit.
+    """
     if isinstance(obj, u.Quantity):
         return obj
     return obj * unit
 
 
 def collapse_coords(coords):
+    """
+    Collapse coordinates into a single SkyCoord object.
+
+    Args:
+        coords: List of coordinates to collapse.
+
+    Returns:
+        Collapsed SkyCoord object.
+    """
     # it seems as though astropy coordinates discard
     # velocity data by default when combining coordinates
     # i'm not sure of a better approach for this step

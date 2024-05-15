@@ -1,3 +1,12 @@
+"""
+This module defines abstract base classes for commensurability analysis
+of a galactic potential's phase space. The "dimensionality" associated
+with the class corresponds with the dimensionality of the relevant orbits.
+
+This module also defines user-facing analysis classes for 2D and 3D
+commensurability analysis using the tessellation subpackage.
+"""
+
 from __future__ import annotations
 
 import inspect
@@ -23,9 +32,25 @@ from .utils import collapse_coords, make_quantity
 
 
 class AnalysisBase:
+    """
+    Base class for analyzing commensurate orbits within galactic potentials.
+
+    This class provides methods for evaluating orbits, constructing images of
+    phase space slices, and saving/loading analysis data.
+    """
+
     @staticmethod
     @abstractmethod
     def evaluate(orbit: c.SkyCoord) -> Evaluation:
+        """
+        Evaluate an orbit and return an evaluation object.
+
+        Args:
+            orbit (c.SkyCoord): Integrated orbit coordinates.
+
+        Returns:
+            Evaluation: Evaluation object containing analysis results.
+        """
         pass
 
     def __init__(
@@ -43,6 +68,20 @@ class AnalysisBase:
         progressbar: bool = True,
         _blank_image: bool = False,
     ) -> None:
+        """
+        Initialize AnalysisBase instance.
+
+        Args:
+            ic_function (Callable[..., c.SkyCoord]): Function to generate initial conditions for orbits.
+            values (Mapping[str, Sequence[float]]): Values to pass into ic_function.
+            potential_function (Callable[[], Any]): Function to generate the potential for orbit integration.
+            dt (Union[float, np.ndarray, u.Quantity]): Time step for orbit integration.
+            steps (Union[int, np.ndarray]): Number of integration steps.
+            pattern_speed (Union[float, u.Quantity], optional): Pattern speed for orbit integration (default 0.0).
+            backend (Optional[Union[str, Backend]], optional): Backend for orbit computation.
+            chunksize (int, optional): Chunk size for image construction (default 1).
+            progressbar (bool, optional): Whether to show progress bar during image construction (default True).
+        """
         self.ic_function = ic_function
         argspec = inspect.getfullargspec(ic_function)
         self.axis_names = argspec.args
@@ -87,6 +126,13 @@ class AnalysisBase:
             self._construct_image(chunksize, progressbar)
 
     def _construct_image(self, chunksize: int = 1, progressbar: bool = True):
+        """
+        Construct an image of a slice of phase space by integrating orbits and evaluating them.
+
+        Args:
+            chunksize (int, optional): Chunk size for batching evaluation calls (default 1).
+            progressbar (bool, optional): Whether to show progress bar during construction (default True).
+        """
         for pixels in tqdm(
             chunked(np.ndindex(self.shape), chunksize),
             desc=f"with {chunksize=}",
@@ -117,6 +163,12 @@ class AnalysisBase:
                 self.image[pixel] = self.evaluate(orbit).measure
 
     def save(self, path):
+        """
+        Save the analysis data to an HDF5 file.
+
+        Args:
+            path: Path to the HDF5 file.
+        """
         path = Path(path)
         if not path.parent.exists():
             print("Parent directory does not exist; creating directory.")
@@ -147,6 +199,15 @@ class AnalysisBase:
 
     @classmethod
     def read_from_hdf5(cls, path):
+        """
+        Read analysis data from an HDF5 file.
+
+        Args:
+            path: Path to the HDF5 file.
+
+        Returns:
+            AnalysisBase: Instance of AnalysisBase class with loaded data.
+        """
         with h5py.File(path, "r") as f:
             dset = f[cls.__name__]
 
@@ -191,28 +252,87 @@ class AnalysisBase:
 
 
 class AnalysisBase2D(AnalysisBase):
+    """
+    Base class for commensurability analysis on 2D orbits.
+
+    This class extends AnalysisBase and provides additional methods for launching interactive plots.
+    """
+
     def launch_interactive_plot(self, x_axis: str, y_axis: str, var_axis: Optional[str] = None):
+        """
+        Launch an interactive plot for 2D orbits.
+
+        Args:
+            x_axis (str): Name of the x-axis parameter.
+            y_axis (str): Name of the y-axis parameter.
+            var_axis (Optional[str]): Name of the axis varied by scrolling (optional).
+        """
         iplot: InteractivePlotBase = InteractivePlot2D(self, x_axis, y_axis, var_axis)
         iplot.show()
 
 
 class AnalysisBase3D(AnalysisBase):
+    """
+    Base class for commensurability analysis on 3D orbits.
+
+    This class extends AnalysisBase and provides additional methods for launching interactive plots.
+    """
+
     def launch_interactive_plot(self, x_axis: str, y_axis: str, var_axis: Optional[str] = None):
+        """
+        Launch an interactive plot for 3D orbits.
+
+        Args:
+            x_axis (str): Name of the x-axis parameter.
+            y_axis (str): Name of the y-axis parameter.
+            var_axis (Optional[str]): Name of the variable axis (optional).
+        """
         iplot: InteractivePlotBase = InteractivePlot3D(self, x_axis, y_axis, var_axis)
         iplot.show()
 
 
 # define user-facing analysis classes
 from .tessellation import Tessellation
+from .tessellation.base import TessellationBase
 
 
 class TessellationAnalysis(AnalysisBase3D):
+    """
+    Analysis class for tessellation analysis on 3D orbits.
+
+    This class extends AnalysisBase3D and implements the evaluate method for tessellation analysis.
+    """
+
     @staticmethod
-    def evaluate(orbit):
+    def evaluate(orbit: c.SkyCoord) -> TessellationBase:
+        """
+        Evaluate an orbit using the tessellation and trimming algorithm.
+
+        Args:
+            orbit (c.SkyCoord): Integrated orbit coordinates.
+
+        Returns:
+            TessellationBase: Tessellation object containing tessellation results.
+        """
         return Tessellation(orbit)
 
 
 class TessellationAnalysis2D(AnalysisBase2D):
+    """
+    Analysis class for tessellation analysis on 2D orbits.
+
+    This class extends AnalysisBase2D and implements the evaluate method for tessellation analysis.
+    """
+
     @staticmethod
     def evaluate(orbit):
+        """
+        Evaluate an orbit using the tessellation and trimming algorithm.
+
+        Args:
+            orbit (c.SkyCoord): Integrated orbit coordinates.
+
+        Returns:
+            TessellationBase: Tessellation object containing tessellation results.
+        """
         return Tessellation(orbit.xyz[:2].T)

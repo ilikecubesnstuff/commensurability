@@ -1,3 +1,11 @@
+"""
+This module defines abstract base classes for interactive plots of phase space
+slices alongside orbits in configuration space. The "dimensionality" associated
+with the class corresponds with the dimensionality of the relevant orbits.
+
+This module also defines user-facing interactive plot classes for 2D and 3D orbits.
+"""
+
 import gc
 import warnings
 from abc import abstractmethod
@@ -6,7 +14,22 @@ import matplotlib.pyplot as plt
 
 
 class InteractivePlotBase:
+    """
+    Base class for interactive plotting.
+
+    This class provides methods for handling interactive plots.
+    """
+
     def __init__(self, analysis, x_axis, y_axis, var_axis=None):
+        """
+        Initialize InteractivePlotBase instance.
+
+        Args:
+            analysis: Analysis object containing the data to plot.
+            x_axis (str): Name of the x-axis parameter.
+            y_axis (str): Name of the y-axis parameter.
+            var_axis (Optional[str]): Name of the variable axis (optional).
+        """
         self.analysis = analysis
         self.x_axis = x_axis
         self.y_axis = y_axis
@@ -32,6 +55,16 @@ class InteractivePlotBase:
 
     @staticmethod
     def image_slice(data, indices):
+        """
+        Return a 2D slice of the analysis data according to the given indices.
+
+        Args:
+            data: Analysis data.
+            indices: Indices to slice the data with, marked with two `None`s.
+
+        Returns:
+            Sliced image data.
+        """
         i = indices.index(None)
         j = indices.index(None, i + 1)
         image = data[*indices[:i], :, *indices[i + 1 : j], :, *indices[j + 1 :]]
@@ -122,6 +155,12 @@ class InteractivePlotBase:
         )
 
     def show(self, **imshow_kwargs):
+        """
+        Show the interactive plot.
+
+        Args:
+            **imshow_kwargs: Additional keyword arguments for plt.imshow.
+        """
         self.plot_axes(**imshow_kwargs)
         self.garbage = set()
 
@@ -131,12 +170,24 @@ class InteractivePlotBase:
 
     @abstractmethod
     def plot_axes(self, **imshow_kwargs):
+        """
+        Plot the axes.
+
+        Args:
+            **imshow_kwargs: Additional keyword arguments for imshow.
+        """
         self.fig = plt.figure(figsize=(12, 5))
         self.ax_phase = self.fig.add_subplot(121)
         self.ax_orbit = self.fig.add_subplot(122)
 
 
 class InteractivePlot2D(InteractivePlotBase):
+    """
+    Interactive plotting class for 2D orbits.
+
+    This class extends InteractivePlotBase and provides methods for interactive 2D plots.
+    """
+
     def on_left_click(self, event):
         self.dot_phase.set_xdata([event.xdata])
         self.dot_phase.set_ydata([event.ydata])
@@ -212,6 +263,12 @@ class InteractivePlot2D(InteractivePlotBase):
         self.fig.canvas.flush_events()
 
     def plot_axes(self, **imshow_kwargs):
+        """
+        Plot the axes.
+
+        Args:
+            **imshow_kwargs: Additional keyword arguments for imshow.
+        """
         self.fig = plt.figure(figsize=(12, 5))
         self.ax_phase = self.fig.add_subplot(121)
         self.ax_orbit = self.fig.add_subplot(122)
@@ -244,6 +301,12 @@ class InteractivePlot2D(InteractivePlotBase):
 
 
 class InteractivePlot3D(InteractivePlotBase):
+    """
+    Interactive plotting class for 3D orbits.
+
+    This class extends InteractivePlotBase and provides methods for interactive 3D plots.
+    """
+
     def on_left_click(self, event):
         self.dot_phase.set_xdata([event.xdata])
         self.dot_phase.set_ydata([event.ydata])
@@ -323,6 +386,12 @@ class InteractivePlot3D(InteractivePlotBase):
         self.fig.canvas.flush_events()
 
     def plot_axes(self, **imshow_kwargs):
+        """
+        Plot the axes.
+
+        Args:
+            **imshow_kwargs: Additional keyword arguments for imshow.
+        """
         self.fig = plt.figure(figsize=(12, 5))
         self.ax_phase = self.fig.add_subplot(121)
         self.ax_orbit = self.fig.add_subplot(122, projection="3d")
