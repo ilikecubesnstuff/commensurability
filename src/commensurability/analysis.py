@@ -213,7 +213,7 @@ class AnalysisBase:
 
             if "icfunc" in dset.attrs:
                 icsource = dset.attrs["icfunc"].tobytes().decode("utf8")
-                namespace = {}
+                namespace: dict[str, Any] = {}
                 exec(icsource, {"u": u, "c": c}, namespace)
                 ic_function = namespace["ic_function"]
             else:

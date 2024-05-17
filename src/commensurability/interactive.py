@@ -9,11 +9,9 @@ This module also defines user-facing interactive plot classes for 2D and 3D orbi
 import gc
 import warnings
 from abc import abstractmethod
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 import matplotlib.pyplot as plt
-
-from ..commensurability.analysis import AnalysisBase
 
 
 class InteractivePlotBase:
@@ -23,7 +21,7 @@ class InteractivePlotBase:
     This class provides methods for handling interactive plots.
     """
 
-    def __init__(self, analysis: AnalysisBase, x_axis: str, y_axis: str, var_axis: str = None):
+    def __init__(self, analysis: Any, x_axis: str, y_axis: str, var_axis: Optional[str] = None):
         """
         Initialize InteractivePlotBase instance.
 
@@ -40,7 +38,7 @@ class InteractivePlotBase:
 
         self.shape = analysis.shape
         axes = self.analysis.axis_names.copy()
-        self.indices = [0 for ax in axes]
+        self.indices: list[int | None] = [0 for ax in axes]
         self.indices[axes.index(self.x_axis)] = None
         self.indices[axes.index(self.y_axis)] = None
 
@@ -165,7 +163,7 @@ class InteractivePlotBase:
             **imshow_kwargs: Additional keyword arguments for plt.imshow.
         """
         self.plot_axes(**imshow_kwargs)
-        self.garbage = set()
+        self.garbage: set = set()
 
         # connect methods to figure
         self._add_connections()
