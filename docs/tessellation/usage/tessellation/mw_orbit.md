@@ -1,4 +1,4 @@
-# Milky Way Orbit
+# Tessellating a Milky Way Orbit
 
 ```
 from tessellation import Tessellation

@@ -1,4 +1,12 @@
-# About `orbit-tessellation`
+# Home Page for `commensurability.tessellation`
+
+Although this is a subpackage of `commensurability`, it implements functionality that can extended beyond exclusive usage
+with the parent package; it can be used for standalone research.
+See [usage](usage/index.md) for both usage cases.
+
+This subpackage is compatible with the galactic dynamics packages [`agama`](https://github.com/GalacticDynamics-Oxford/Agama), [`gala`](https://gala-astro.readthedocs.io/en/latest/), and [`galpy`](https://docs.galpy.org/en/latest/).
+
+## Attribution
 
 This package implements and extends the algorithm presented by [Petersen, Weinberg & Katz (2020)](https://academic.oup.com/mnras/article/500/1/838/5925365).
 From appendix B1 of ["Using commensurabilities and orbit structure to understand barred galaxy evolution"](https://academic.oup.com/mnras/article/500/1/838/5925365):
@@ -8,6 +16,6 @@ From appendix B1 of ["Using commensurabilities and orbit structure to understand
 > One such computational technique is Delaunay triangulation (DT).
 > We construct a procedure that uses DT, taking as input a set of points and returning a single value that is the (normalized) computed orbit area from the sum of individual tessellated triangles.
 
-A generalized N-dimensional algorithm is implemented, but the 2D and 3D case implement optimized versions.
+A generalized N-dimensional algorithm is implemented, but the 2D and 3D case implement special cases.
 This package also offers a variety of normalization options.
-See [the algorithm](algorithm.md) for details.
+See [implementation](implementation.md) for details.
