@@ -120,7 +120,8 @@ class AnalysisBase:
         if chunksize <= 0:
             raise ValueError("chunksize must be greater than 0")
         if chunksize >= self.size:
-            raise ValueError("chunksize must be less than total number of starting coordinates")
+            chunksize = self.size
+            # raise ValueError("chunksize must be less than total number of starting coordinates")
 
         self.image = np.zeros(self.shape)
         if not _blank_image:

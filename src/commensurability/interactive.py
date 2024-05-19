@@ -140,7 +140,18 @@ class InteractivePlotBase:
             return
 
         for thing in self.garbage:
-            thing.remove()
+            # NOTE: Various objects seems to be in the garbage list when not existing
+            # within the plot's object list. For now, I will pass in these cases.
+            # I have no clue what these objects are. This may lead to memory problems
+            # in extreme cases, but for now they appear harmless.
+            try:
+                thing.remove()
+            except ValueError:
+                pass
+            del thing
+
+        # to counteract the above memory concerns, run gc.collect here
+        gc.collect()
 
         self.on_scroll(event)
 
