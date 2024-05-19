@@ -39,4 +39,6 @@ From appendix B1 of ["Using commensurabilities and orbit structure to understand
 
 The idea is to tessellate the points and trim sections that are not traversed by the orbit—"unwanted" sections.
 Such a tessellation algorithm would cover unwanted sections with polyhedra of large "axis ratios", as they would have to connect unrelated parts of the orbit.
-This is set as the trimming criterion—see [the algorithm](algorithm.md) for more details.
+
+This algorithm is implemented in the `tessellation` subpackage.
+The above is used as the trimming criterion—see [tessellation's implementation](tessellation/implementation.md) for more details.

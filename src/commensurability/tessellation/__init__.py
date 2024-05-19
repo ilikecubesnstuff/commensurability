@@ -1,5 +1,6 @@
 """
-This package contains 6 modules.
+This subpackage contains 6 modules. It implements an evaluation class using
+a tessellation and trimming algorithm for commensurability analysis.
 
 The tessellation and trimming algorithm is implemented across the following:
 

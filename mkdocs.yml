@@ -1,5 +1,5 @@
-site_name: Orbit Tessellation in Python
-repo_url: https://github.com/ilikecubesnstuff/orbit-tessellation/
+site_name: Commensurability
+repo_url: https://github.com/ilikecubesnstuff/commensurability/
 
 theme:
   name: 'material'
@@ -52,19 +52,22 @@ plugins:
 
 nav:
 - Home: index.md
-- installation.md
-- About:
-  - about/index.md
-  - about/motivation.md
-  - about/algorithm.md
-  - Usage: about/usage.md
-- User Guide:
-  - user/index.md
-  - user/introduction.md
-  - Tutorials:
-    - user/tutorials/mw_orbit.md
-    - user/tutorials/pidgey.md
-    - user/tutorials/multiprocessing.md
+- Motivation: motivation.md
+- Installation: installation.md
+- Quickstart: quickstart.md
+- Tessellation:
+  - tessellation/index.md
+  - Implementation: tessellation/implementation.md
+  - Usage:
+    - tessellation/usage/index.md
+    - Quickstart: tessellation/usage/quickstart.md
+    - Tessellation:
+      - Milky Way Orbit: tessellation/usage/tessellation/mw_orbit.md
+      - Using Pidgey: tessellation/usage/tessellation/pidgey.md
+      - Using Multiprocessing: tessellation/usage/tessellation/multiprocessing.md
+    - Analysis:
+      - Rotating Bar: tessellation/usage/analysis/rotating_bar.md
+      - Solar Neighborhood: tessellation/usage/analysis/solar_neighborhood.md
 - API Reference: reference/
 
 markdown_extensions:
