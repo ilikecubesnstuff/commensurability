@@ -13,6 +13,7 @@ import inspect
 import warnings
 from abc import abstractmethod
 from math import prod
+from multiprocessing import Pool
 from pathlib import Path
 from typing import Any, Callable, Mapping, Optional, Sequence, Union
 
@@ -251,7 +252,77 @@ class AnalysisBase:
         return analysis
 
 
-class AnalysisBase2D(AnalysisBase):
+class MPAnalysisBase(AnalysisBase):
+    @staticmethod
+    @abstractmethod
+    def __eval__(orbit: c.SkyCoord) -> float:
+        return 0.0
+
+    def __init__(
+        self,
+        ic_function: Callable[..., c.SkyCoord],
+        values: Mapping[str, Sequence[float]],
+        /,
+        potential_function: Callable[[], Any],
+        dt: Union[float, np.ndarray, u.Quantity],
+        steps: Union[int, np.ndarray],
+        *,
+        pattern_speed: Union[float, u.Quantity] = 0.0,
+        backend: Optional[Union[str, Backend]] = None,
+        chunksize: int = 1,
+        mpchunksize: int = 1,
+        progressbar: bool = True,
+        _blank_image: bool = False,
+    ) -> None:
+        super().__init__(
+            ic_function,
+            values,
+            potential_function,
+            dt,
+            steps,
+            pattern_speed=pattern_speed,
+            backend=backend,
+            chunksize=chunksize,
+            progressbar=progressbar,
+            _blank_image=True,
+        )
+        if not _blank_image:
+            self._construct_image(chunksize, mpchunksize, progressbar)
+
+    def _construct_image(self, chunksize: int = 1, mpchunksize: int = 1, progressbar: bool = True):
+        for pixels in tqdm(
+            chunked(np.ndindex(self.shape), chunksize),
+            desc=f"with {chunksize=}",
+            total=self.size // chunksize,
+            disable=not progressbar,
+        ):
+            coords = []
+            for pixel in pixels:
+                params = [self.values[ax][i] for i, ax in zip(pixel, self.axis_names)]
+                coord = self.ic_function(*params)
+                coords.append(coord)
+            coords = collapse_coords(coords)
+
+            orbits = self.backend.compute_orbit(
+                coords,
+                self.potential,
+                self.dt,
+                self.steps,
+                pattern_speed=self.pattern_speed,
+            )
+            with Pool() as p:
+                values = list(
+                    tqdm(
+                        p.imap(self.__eval__, orbits, chunksize=mpchunksize),
+                        total=chunksize,
+                        leave=False,
+                    )
+                )
+            for pixel, value in zip(pixels, values):
+                self.image[pixel] = value
+
+
+class AnalysisBase2D(MPAnalysisBase):
     """
     Base class for commensurability analysis on 2D orbits.
 
@@ -271,7 +342,7 @@ class AnalysisBase2D(AnalysisBase):
         iplot.show()
 
 
-class AnalysisBase3D(AnalysisBase):
+class AnalysisBase3D(MPAnalysisBase):
     """
     Base class for commensurability analysis on 3D orbits.
 
@@ -314,7 +385,11 @@ class TessellationAnalysis(AnalysisBase3D):
         Returns:
             TessellationBase: Tessellation object containing tessellation results.
         """
-        return Tessellation(orbit)
+        return Tessellation(orbit, incremental=False)
+
+    @staticmethod
+    def __eval__(orbit: c.SkyCoord) -> float:
+        return Tessellation(orbit, incremental=False).measure
 
 
 class TessellationAnalysis2D(AnalysisBase2D):
@@ -335,4 +410,8 @@ class TessellationAnalysis2D(AnalysisBase2D):
         Returns:
             TessellationBase: Tessellation object containing tessellation results.
         """
-        return Tessellation(orbit.xyz[:2].T)
+        return Tessellation(orbit.xyz[:2].T, incremental=False)
+
+    @staticmethod
+    def __eval__(orbit: c.SkyCoord) -> float:
+        return Tessellation(orbit.xyz[:2].T, incremental=False).measure

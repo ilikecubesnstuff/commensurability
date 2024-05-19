@@ -25,6 +25,9 @@ class Evaluation:
         """
         self.orbit = orbit
 
+    def __reduce__(self):
+        return self.__class__, (self.orbit,)
+
     @property
     @abstractmethod
     def measure(self) -> float:
