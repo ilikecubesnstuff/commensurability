@@ -46,7 +46,9 @@ class InteractivePlotBase:
         XMAX = self.analysis.values[self.x_axis][-1]
         YMIN = self.analysis.values[self.y_axis][0]
         YMAX = self.analysis.values[self.y_axis][-1]
-        self.extent = (XMIN, XMAX, YMIN, YMAX)
+        XSTEP = self.analysis.values[self.x_axis][1] - self.analysis.values[self.x_axis][0]
+        YSTEP = self.analysis.values[self.y_axis][1] - self.analysis.values[self.y_axis][0]
+        self.extent = (XMIN - XSTEP / 2, XMAX + XSTEP / 2, YMIN - YSTEP / 2, YMAX + YSTEP / 2)
         self.aspect = (XMAX - XMIN) / (YMAX - YMIN)
 
         axes.remove(x_axis)
