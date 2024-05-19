@@ -2,14 +2,6 @@
 .pdm-python
 None
 
-# Data files
-*.png
-*.gif
-*.npy
-*.npz
-*.hdf5
-
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
