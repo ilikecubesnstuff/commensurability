@@ -16,7 +16,7 @@ from collections.abc import Mapping as MappingABC
 from math import prod
 from multiprocessing import Pool
 from pathlib import Path
-from typing import Any, Callable, Mapping, Optional, Sequence, Union
+from typing import Any, Callable, Generator, Mapping, Optional, Sequence, Union
 
 import astropy.coordinates as c
 import astropy.units as u
@@ -67,7 +67,7 @@ class AnalysisBase(MappingABC):
         pattern_speed: Union[float, u.Quantity] = 0.0,
         backend: Optional[Union[str, Backend]] = None,
         progressbar: bool = True,
-        pidgey_chunksize: Optional[int] = None,
+        pidgey_chunksize: int = 1,
         _blank_measures: bool = False,
     ) -> None:
         """
@@ -82,7 +82,7 @@ class AnalysisBase(MappingABC):
             pattern_speed (Union[float, u.Quantity], optional): Pattern speed for orbit integration (default 0.0).
             backend (Optional[Union[str, Backend]], optional): Backend for orbit computation.
             progressbar (bool, optional): Whether to show progress bar during image construction (default True).
-            pidgey_chunksize (int, optional): Chunk size for orbit integration.
+            pidgey_chunksize (int, optional): Chunk size for orbit integration (default 1).
         """
         self.ic_function = ic_function
         argspec = inspect.getfullargspec(ic_function)
@@ -137,7 +137,7 @@ class AnalysisBase(MappingABC):
         """
         return self.size
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[tuple[int, ...], None, None]:
         """
         Iterate over the measures array's indices.
 
@@ -147,7 +147,7 @@ class AnalysisBase(MappingABC):
         for pixel in np.ndindex(self.shape):
             yield pixel
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: tuple[int, ...]) -> tuple[c.SkyCoord, float]:
         """
         Get the measure at a specific grid point.
 
@@ -323,9 +323,9 @@ class MPAnalysisBase(AnalysisBase):
             _blank_measures=True,
         )
         if not _blank_measures:
-            self._construct_image(pidgey_chunksize, mp_chunksize, progressbar)
+            self._construct_image_with_mp(pidgey_chunksize, mp_chunksize, progressbar)
 
-    def _construct_image(
+    def _construct_image_with_mp(
         self, pidgey_chunksize: int = 1, mp_chunksize: int = 1, progressbar: bool = True
     ):
         for pixels in tqdm(
