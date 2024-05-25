@@ -42,12 +42,12 @@ class InteractivePlotBase:
         self.indices[axes.index(self.x_axis)] = None
         self.indices[axes.index(self.y_axis)] = None
 
-        XMIN = self.analysis.values[self.x_axis][0]
-        XMAX = self.analysis.values[self.x_axis][-1]
-        YMIN = self.analysis.values[self.y_axis][0]
-        YMAX = self.analysis.values[self.y_axis][-1]
-        XSTEP = self.analysis.values[self.x_axis][1] - self.analysis.values[self.x_axis][0]
-        YSTEP = self.analysis.values[self.y_axis][1] - self.analysis.values[self.y_axis][0]
+        XMIN = self.analysis.ic_values[self.x_axis][0]
+        XMAX = self.analysis.ic_values[self.x_axis][-1]
+        YMIN = self.analysis.ic_values[self.y_axis][0]
+        YMAX = self.analysis.ic_values[self.y_axis][-1]
+        XSTEP = self.analysis.ic_values[self.x_axis][1] - self.analysis.ic_values[self.x_axis][0]
+        YSTEP = self.analysis.ic_values[self.y_axis][1] - self.analysis.ic_values[self.y_axis][0]
         self.extent = (XMIN - XSTEP / 2, XMAX + XSTEP / 2, YMIN - YSTEP / 2, YMAX + YSTEP / 2)
         self.aspect = (XMAX - XMIN) / (YMAX - YMIN)
 
@@ -86,10 +86,10 @@ class InteractivePlotBase:
         i = self.analysis.axis_names.index(self.var_axis)
         new = self.indices[i] + int(event.step)
         # clip the value inside the valid index range
-        self.indices[i] = max(0, min(self.analysis.values[self.var_axis].size - 1, new))
+        self.indices[i] = max(0, min(self.analysis.ic_values[self.var_axis].size - 1, new))
 
         info = [
-            f"{ax}={self.analysis.values[ax][i]}"
+            f"{ax}={self.analysis.ic_values[ax][i]}"
             for ax, i in zip(self.analysis.axis_names, self.indices)
             if i is not None
         ]
@@ -207,7 +207,7 @@ class InteractivePlot2D(InteractivePlotBase):
         self.dot_phase.set_ydata([event.ydata])
 
         values = {
-            ax: self.analysis.values[ax][i]
+            ax: self.analysis.ic_values[ax][i]
             for ax, i in zip(self.analysis.axis_names, self.indices)
             if i is not None
         }
@@ -242,7 +242,7 @@ class InteractivePlot2D(InteractivePlotBase):
         self.dot_phase.set_ydata([event.ydata])
 
         values = {
-            ax: self.analysis.values[ax][i]
+            ax: self.analysis.ic_values[ax][i]
             for ax, i in zip(self.analysis.axis_names, self.indices)
             if i is not None
         }
@@ -304,7 +304,7 @@ class InteractivePlot2D(InteractivePlotBase):
         self.ax_phase.set_xlabel(self.x_axis)
         self.ax_phase.set_ylabel(self.y_axis)
         info = [
-            f"{ax}={self.analysis.values[ax][i]}"
+            f"{ax}={self.analysis.ic_values[ax][i]}"
             for ax, i in zip(self.analysis.axis_names, self.indices)
             if i is not None
         ]
@@ -326,7 +326,7 @@ class InteractivePlot3D(InteractivePlotBase):
         self.dot_phase.set_ydata([event.ydata])
 
         values = {
-            ax: self.analysis.values[ax][i]
+            ax: self.analysis.ic_values[ax][i]
             for ax, i in zip(self.analysis.axis_names, self.indices)
             if i is not None
         }
@@ -363,7 +363,7 @@ class InteractivePlot3D(InteractivePlotBase):
         self.dot_phase.set_ydata([event.ydata])
 
         values = {
-            ax: self.analysis.values[ax][i]
+            ax: self.analysis.ic_values[ax][i]
             for ax, i in zip(self.analysis.axis_names, self.indices)
             if i is not None
         }
@@ -427,7 +427,7 @@ class InteractivePlot3D(InteractivePlotBase):
         self.ax_phase.set_xlabel(self.x_axis)
         self.ax_phase.set_ylabel(self.y_axis)
         info = [
-            f"{ax}={self.analysis.values[ax][i]}"
+            f"{ax}={self.analysis.ic_values[ax][i]}"
             for ax, i in zip(self.analysis.axis_names, self.indices)
             if i is not None
         ]

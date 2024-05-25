@@ -12,6 +12,7 @@ from __future__ import annotations
 import inspect
 import warnings
 from abc import abstractmethod
+from collections.abc import Mapping as MappingABC
 from math import prod
 from multiprocessing import Pool
 from pathlib import Path
@@ -32,7 +33,7 @@ from .interactive import InteractivePlot2D, InteractivePlot3D, InteractivePlotBa
 from .utils import collapse_coords, make_quantity
 
 
-class AnalysisBase:
+class AnalysisBase(MappingABC):
     """
     Base class for analyzing commensurate orbits within galactic potentials.
 
@@ -86,12 +87,12 @@ class AnalysisBase:
         self.ic_function = ic_function
         argspec = inspect.getfullargspec(ic_function)
         self.axis_names = argspec.args
-        self.values = values
-        if len(self.values) != len(self.axis_names) or not all(
-            name in self.axis_names for name in self.values
+        self.ic_values = values
+        if len(self.ic_values) != len(self.axis_names) or not all(
+            name in self.axis_names for name in self.ic_values
         ):
             raise ValueError("values and ic_function signature do not correspond")
-        self.shape = tuple(len(self.values[name]) for name in self.axis_names)
+        self.shape = tuple(len(self.ic_values[name]) for name in self.axis_names)
         self.size = prod(self.shape)
 
         self.potential_function = potential_function
@@ -127,6 +128,40 @@ class AnalysisBase:
         if not _blank_measures:
             self._construct_image(chunksize, progressbar)
 
+    def __len__(self) -> int:
+        """
+        Returns the size of the measures array.
+
+        Returns:
+            int: The size of the measures array.
+        """
+        return self.size
+
+    def __iter__(self):
+        """
+        Iterate over the measures array's indices.
+
+        Yields:
+            Tuple[float]: Tuple of the indices for each grid point.
+        """
+        for pixel in np.ndindex(self.shape):
+            yield pixel
+
+    def __getitem__(self, key):
+        """
+        Get the measure at a specific grid point.
+
+        Args:
+            key: Tuple of indices for the grid point.
+
+        Returns:
+            Tuple[SkyCoord, float]: Tuple of the initial condition and measure at the grid point.
+        """
+        if not isinstance(key, tuple):
+            raise KeyError("key must be a tuple")
+        args = [self.ic_values[ax][i] for i, ax in zip(key, self.axis_names)]
+        return self.ic_function(*args), self.measures[key]
+
     def _construct_image(self, chunksize: int = 1, progressbar: bool = True):
         """
         Construct an image of a slice of phase space by integrating orbits and evaluating them.
@@ -143,7 +178,7 @@ class AnalysisBase:
         ):
             coords = []
             for pixel in pixels:
-                params = [self.values[ax][i] for i, ax in zip(pixel, self.axis_names)]
+                params = [self.ic_values[ax][i] for i, ax in zip(pixel, self.axis_names)]
                 coord = self.ic_function(*params)
                 coords.append(coord)
             coords = collapse_coords(coords)
@@ -196,7 +231,7 @@ class AnalysisBase:
             dset = f.create_dataset(self.__class__.__name__, data=self.measures)
             for attr, value in attrs.items():
                 dset.attrs[attr] = value
-            for attr, value in self.values.items():
+            for attr, value in self.ic_values.items():
                 dset.attrs[attr] = value
 
     @classmethod
@@ -299,7 +334,7 @@ class MPAnalysisBase(AnalysisBase):
         ):
             coords = []
             for pixel in pixels:
-                params = [self.values[ax][i] for i, ax in zip(pixel, self.axis_names)]
+                params = [self.ic_values[ax][i] for i, ax in zip(pixel, self.axis_names)]
                 coord = self.ic_function(*params)
                 coords.append(coord)
             coords = collapse_coords(coords)
