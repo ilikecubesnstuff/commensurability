@@ -66,8 +66,8 @@ class AnalysisBase(MappingABC):
         *,
         pattern_speed: Union[float, u.Quantity] = 0.0,
         backend: Optional[Union[str, Backend]] = None,
-        chunksize: int = 1,
         progressbar: bool = True,
+        pidgey_chunksize: Optional[int] = None,
         _blank_measures: bool = False,
     ) -> None:
         """
@@ -81,8 +81,8 @@ class AnalysisBase(MappingABC):
             steps (Union[int, np.ndarray]): Number of integration steps.
             pattern_speed (Union[float, u.Quantity], optional): Pattern speed for orbit integration (default 0.0).
             backend (Optional[Union[str, Backend]], optional): Backend for orbit computation.
-            chunksize (int, optional): Chunk size for image construction (default 1).
             progressbar (bool, optional): Whether to show progress bar during image construction (default True).
+            pidgey_chunksize (int, optional): Chunk size for orbit integration.
         """
         self.ic_function = ic_function
         argspec = inspect.getfullargspec(ic_function)
@@ -118,15 +118,15 @@ class AnalysisBase(MappingABC):
         if not self.backend:
             raise TypeError(f"Unrecognized potential: {self.potential}")
 
-        if chunksize <= 0:
+        if pidgey_chunksize <= 0:
             raise ValueError("chunksize must be greater than 0")
-        if chunksize >= self.size:
-            chunksize = self.size
+        if pidgey_chunksize >= self.size:
+            pidgey_chunksize = self.size
             # raise ValueError("chunksize must be less than total number of starting coordinates")
 
         self.measures = np.zeros(self.shape)
         if not _blank_measures:
-            self._construct_image(chunksize, progressbar)
+            self._construct_image(pidgey_chunksize, progressbar)
 
     def __len__(self) -> int:
         """
@@ -162,18 +162,18 @@ class AnalysisBase(MappingABC):
         args = [self.ic_values[ax][i] for i, ax in zip(key, self.axis_names)]
         return self.ic_function(*args), self.measures[key]
 
-    def _construct_image(self, chunksize: int = 1, progressbar: bool = True):
+    def _construct_image(self, pidgey_chunksize: int = 1, progressbar: bool = True):
         """
         Construct an image of a slice of phase space by integrating orbits and evaluating them.
 
         Args:
-            chunksize (int, optional): Chunk size for batching evaluation calls (default 1).
+            pidgey_chunksize (int, optional): Chunk size for batching orbit integration (default 1).
             progressbar (bool, optional): Whether to show progress bar during construction (default True).
         """
         for pixels in tqdm(
-            chunked(np.ndindex(self.shape), chunksize),
-            desc=f"with {chunksize=}",
-            total=self.size // chunksize,
+            chunked(np.ndindex(self.shape), pidgey_chunksize),
+            desc=f"with {pidgey_chunksize=}",
+            total=self.size // pidgey_chunksize,
             disable=not progressbar,
         ):
             coords = []
@@ -193,7 +193,7 @@ class AnalysisBase(MappingABC):
             for pixel, orbit in tqdm(
                 zip(pixels, orbits),
                 desc="commensurability evaluation",
-                total=chunksize,
+                total=pidgey_chunksize,
                 disable=not progressbar,
                 leave=False,
             ):
@@ -305,9 +305,9 @@ class MPAnalysisBase(AnalysisBase):
         *,
         pattern_speed: Union[float, u.Quantity] = 0.0,
         backend: Optional[Union[str, Backend]] = None,
-        chunksize: int = 1,
-        mpchunksize: int = 1,
         progressbar: bool = True,
+        pidgey_chunksize: int = 1,
+        mp_chunksize: int = 1,
         _blank_measures: bool = False,
     ) -> None:
         super().__init__(
@@ -318,18 +318,20 @@ class MPAnalysisBase(AnalysisBase):
             steps,
             pattern_speed=pattern_speed,
             backend=backend,
-            chunksize=chunksize,
             progressbar=progressbar,
+            pidgey_chunksize=pidgey_chunksize,
             _blank_measures=True,
         )
         if not _blank_measures:
-            self._construct_image(chunksize, mpchunksize, progressbar)
+            self._construct_image(pidgey_chunksize, mp_chunksize, progressbar)
 
-    def _construct_image(self, chunksize: int = 1, mpchunksize: int = 1, progressbar: bool = True):
+    def _construct_image(
+        self, pidgey_chunksize: int = 1, mp_chunksize: int = 1, progressbar: bool = True
+    ):
         for pixels in tqdm(
-            chunked(np.ndindex(self.shape), chunksize),
-            desc=f"with {chunksize=}",
-            total=self.size // chunksize,
+            chunked(np.ndindex(self.shape), pidgey_chunksize),
+            desc=f"with {pidgey_chunksize=}",
+            total=self.size // pidgey_chunksize,
             disable=not progressbar,
         ):
             coords = []
@@ -349,8 +351,8 @@ class MPAnalysisBase(AnalysisBase):
             with Pool() as p:
                 values = list(
                     tqdm(
-                        p.imap(self.__eval__, orbits, chunksize=mpchunksize),
-                        total=chunksize,
+                        p.imap(self.__eval__, orbits, chunksize=mp_chunksize),
+                        total=pidgey_chunksize,
                         leave=False,
                     )
                 )
