@@ -12,7 +12,7 @@ import numpy as np
 from commensurability import TessellationAnalysis2D
 ```
 
-## Orbits in an NFW Potential
+## NFW Potential Setup
 
 Start by setting up a regular NFW potential in a function. Make sure to include the agama import as part of the function.
 
@@ -66,6 +66,13 @@ Note that there are 2 chunksize parameters. `chunksize` determines how many orbi
 
 It is recommended to save analysis objects immediately after finishing computation. Analysis objects are saved using the [HDF5](https://www.hdfgroup.org/solutions/hdf5/) format. The analysis object can be recovered entirely from this file, using [`Analysis.read_from_hdf5`](../../../reference/commensurability/analysis.md#commensurability.analysis.AnalysisBase.read_from_hdf5).
 
+```py
+# to read from disk
+tanal = TessellationAnalysis.read_from_hdf5("no_bar_example.hdf5")
+```
+
+## Exploring Orbits
+
 ![](no_bar.PNG){ width=40% align=right }
 
 Once this step is done, launch the interactive plot to view the structure of the phase space.
@@ -112,6 +119,9 @@ The remaining parameters will all be kept the same. The code blocks are omitted 
 tanal = TessellationAnalysis2D(initial_condition, values, potential_definition,
                              dt, steps, pattern_speed=omega, chunksize=500, mpchunksize=20)
 tanal.save("bar_example.hdf5")
+
+# to read from disk
+tanal = TessellationAnalysis.read_from_hdf5("bar_example.hdf5")
 ```
 
 ![](bar.PNG){ width=40% align=right }
@@ -158,6 +168,9 @@ As before, the remaining parameters will all be kept the same. The code blocks a
 tanal = TessellationAnalysis2D(initial_condition, values, potential_definition,
                              dt, steps, pattern_speed=omega, chunksize=500, mpchunksize=20)
 tanal.save("big_bar_example.hdf5")
+
+# to read from disk
+tanal = TessellationAnalysis.read_from_hdf5("big_bar_example.hdf5")
 ```
 
 ![](big_bar.PNG){ width=40% align=right }
