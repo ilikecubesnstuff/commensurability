@@ -67,7 +67,7 @@ class AnalysisBase:
         backend: Optional[Union[str, Backend]] = None,
         chunksize: int = 1,
         progressbar: bool = True,
-        _blank_image: bool = False,
+        _blank_measures: bool = False,
     ) -> None:
         """
         Initialize AnalysisBase instance.
@@ -123,8 +123,8 @@ class AnalysisBase:
             chunksize = self.size
             # raise ValueError("chunksize must be less than total number of starting coordinates")
 
-        self.image = np.zeros(self.shape)
-        if not _blank_image:
+        self.measures = np.zeros(self.shape)
+        if not _blank_measures:
             self._construct_image(chunksize, progressbar)
 
     def _construct_image(self, chunksize: int = 1, progressbar: bool = True):
@@ -162,7 +162,7 @@ class AnalysisBase:
                 disable=not progressbar,
                 leave=False,
             ):
-                self.image[pixel] = self.evaluate(orbit).measure
+                self.measures[pixel] = self.evaluate(orbit).measure
 
     def save(self, path: Any):
         """
@@ -193,7 +193,7 @@ class AnalysisBase:
             backend=np.void(self.backend.__class__.__name__.encode("utf8")),
         )
         with h5py.File(path, "w") as f:
-            dset = f.create_dataset(self.__class__.__name__, data=self.image)
+            dset = f.create_dataset(self.__class__.__name__, data=self.measures)
             for attr, value in attrs.items():
                 dset.attrs[attr] = value
             for attr, value in self.values.items():
@@ -247,9 +247,9 @@ class AnalysisBase:
                 steps=dset.attrs["steps"],
                 pattern_speed=dset.attrs["pattern_speed"],
                 backend=backend_cls(),
-                _blank_image=True,
+                _blank_measures=True,
             )
-            analysis.image = dset[()]
+            analysis.measures = dset[()]
         return analysis
 
 
@@ -273,7 +273,7 @@ class MPAnalysisBase(AnalysisBase):
         chunksize: int = 1,
         mpchunksize: int = 1,
         progressbar: bool = True,
-        _blank_image: bool = False,
+        _blank_measures: bool = False,
     ) -> None:
         super().__init__(
             ic_function,
@@ -285,9 +285,9 @@ class MPAnalysisBase(AnalysisBase):
             backend=backend,
             chunksize=chunksize,
             progressbar=progressbar,
-            _blank_image=True,
+            _blank_measures=True,
         )
-        if not _blank_image:
+        if not _blank_measures:
             self._construct_image(chunksize, mpchunksize, progressbar)
 
     def _construct_image(self, chunksize: int = 1, mpchunksize: int = 1, progressbar: bool = True):
@@ -320,7 +320,7 @@ class MPAnalysisBase(AnalysisBase):
                     )
                 )
             for pixel, value in zip(pixels, values):
-                self.image[pixel] = value
+                self.measures[pixel] = value
 
 
 class AnalysisBase2D(MPAnalysisBase):

@@ -95,7 +95,7 @@ class InteractivePlotBase:
         ]
         self.ax_phase.set_title(", ".join(info))
 
-        image = self.image_slice(self.analysis.image, self.indices).T
+        image = self.image_slice(self.analysis.measures, self.indices).T
         self.im_phase.set_data(image)
 
         # reset the rest
@@ -297,7 +297,7 @@ class InteractivePlot2D(InteractivePlotBase):
             aspect=self.aspect,
         )
         kwargs.update(**imshow_kwargs)
-        image = self.image_slice(self.analysis.image, self.indices).T
+        image = self.image_slice(self.analysis.measures, self.indices).T
         self.im_phase = self.ax_phase.imshow(image, **kwargs)
         (self.dot_phase,) = self.ax_phase.plot([self.extent[0]], self.extent[2])
 
@@ -420,7 +420,7 @@ class InteractivePlot3D(InteractivePlotBase):
             aspect=self.aspect,
         )
         kwargs.update(**imshow_kwargs)
-        image = self.image_slice(self.analysis.image, self.indices).T
+        image = self.image_slice(self.analysis.measures, self.indices).T
         self.im_phase = self.ax_phase.imshow(image, **kwargs)
         (self.dot_phase,) = self.ax_phase.plot([self.extent[0]], self.extent[2])
 
