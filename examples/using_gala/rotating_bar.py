@@ -26,7 +26,10 @@ def pot():
     pot["disk"] = disk
     pot["halo"] = halo
     pot["bar"] = bar
-    return pot
+
+    frame = gp.ConstantRotatingFrame(Omega=[0, 0, 30] * u.km / u.s / u.kpc, units=galactic)
+    ham = gp.Hamiltonian(pot, frame=frame)
+    return ham
 
 
 SIZE = 5
