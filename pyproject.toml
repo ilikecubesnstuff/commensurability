@@ -72,3 +72,6 @@ docs = [
     "mkdocstrings>=0.25.1",
     "mkdocstrings-python>=1.10.0",
 ]
+github = [
+    "tox-gh-actions>=3.2.0",
+]
