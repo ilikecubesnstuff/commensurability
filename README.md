@@ -18,3 +18,10 @@ Install this package via `pip`:
 ```
 python -m pip install commensurability
 ```
+
+## Usage
+
+See the [documentation](https://commensurability.readthedocs.io/en/latest/) page.
+
+This package is to be used along with one of the galactic dynamics packages [`agama`](https://github.com/GalacticDynamics-Oxford/Agama), [`gala`](https://gala-astro.readthedocs.io/en/latest/), or [`galpy`](https://docs.galpy.org/en/latest/).
+There are scripts for each under the `examples` folder that can be run to test whether everything is working correctly.

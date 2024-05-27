@@ -82,10 +82,14 @@ class TessellationBase(Evaluation):
 
         normalization_class = getattr(self, "Normalization", type("Normalization", (), {}))
         self._normalizations = dict(vars(normalization_class))
-        del self._normalizations["__module__"]
-        del self._normalizations["__dict__"]
-        del self._normalizations["__weakref__"]
-        del self._normalizations["__doc__"]
+        if hasattr(self._normalizations, "__module__"):
+            del self._normalizations["__module__"]
+        if hasattr(self._normalizations, "__dict__"):
+            del self._normalizations["__dict__"]
+        if hasattr(self._normalizations, "__weakref__"):
+            del self._normalizations["__weakref__"]
+        if hasattr(self._normalizations, "__doc__"):
+            del self._normalizations["__doc__"]
 
         try:
             r = self._compute_delaunay(incremental, qhull_options)
