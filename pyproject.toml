@@ -1,29 +1,27 @@
 [project]
 name = "commensurability"
-version = "0.1.0"
+version = "1.0.0"
 description = "A package for analyzing orbit commensurabilities."
 authors = [
     { name = "ilikecubesnstuff", email = "25328250+ilikecubesnstuff@users.noreply.github.com" },
 ]
 dependencies = [
-    "orbit-tessellation>=0.2.0",
-    "pidgey>=0.2.1",
+    "pidgey>=1.0.0",
     "matplotlib>=3.8.2",
     "tqdm>=4.66.1",
     "h5py>=3.10.0",
     "more_itertools>=10.2.0",
+    "scipy>=1.13.0",
 ]
 classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Physics",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 readme = "README.md"
 
 [project.license]
@@ -38,8 +36,6 @@ build-backend = "pdm.backend"
 [tool.black]
 line-length = 100
 target-version = [
-    "py39",
-    "py310",
     "py311",
     "py312",
 ]
@@ -47,16 +43,35 @@ target-version = [
 [tool.isort]
 profile = "black"
 
-[tool.ruff]
-line-length = 100
-
-[tool.ruff.per-file-ignores]
-"__init__.py" = [
-    "F401",
-]
-
 [tool.mypy]
 ignore_missing_imports = true
 
 [tool.pdm]
-package-type = "library"
+distribution = true
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "tox-pdm>=0.7.2",
+    "tox>=4.15.0",
+]
+test = [
+    "pytest>=8.2.0",
+]
+type = [
+    "mypy>=1.10.0",
+]
+lint = [
+    "black>=24.4.2",
+    "isort>=5.13.2",
+]
+docs = [
+    "mkdocs>=1.6.0",
+    "mkdocs-gen-files>=0.5.0",
+    "mkdocs-literate-nav>=0.6.1",
+    "mkdocs-material>=9.5.21",
+    "mkdocstrings>=0.25.1",
+    "mkdocstrings-python>=1.10.0",
+]
+github = [
+    "tox-gh-actions>=3.2.0",
+]

@@ -26,7 +26,10 @@ def pot():
     pot["disk"] = disk
     pot["halo"] = halo
     pot["bar"] = bar
-    return pot
+
+    frame = gp.ConstantRotatingFrame(Omega=[0, 0, 30] * u.km / u.s / u.kpc, units=galactic)
+    ham = gp.Hamiltonian(pot, frame=frame)
+    return ham
 
 
 SIZE = 5
@@ -53,7 +56,9 @@ def ic_function(x, vy, z):
 
 dt = 0.01 * u.Gyr
 steps = 500
-tanal = TessellationAnalysis(ic_function, values, pot, dt, steps, pattern_speed=omega, chunksize=50)
+tanal = TessellationAnalysis(
+    ic_function, values, pot, dt, steps, pattern_speed=omega, pidgey_chunksize=50
+)
 tanal.launch_interactive_plot("x", "vy")
 
 tanal.save(f"examples/using_galpy/bar_{SIZE}_{FRAMES}.hdf5")

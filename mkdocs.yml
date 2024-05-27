@@ -1,0 +1,99 @@
+site_name: Commensurability
+repo_url: https://github.com/ilikecubesnstuff/commensurability/
+
+theme:
+  name: 'material'
+  language: en
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep-purple
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep-purple
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Atkinson Hyperlegible
+    code: Ubuntu Mono
+  features:
+    - content.code.copy
+    - content.tabs.link
+    - navigation.indexes
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.share
+    - search.suggest
+    # - toc.integrate  # NOTE: undecided, can be unwieldy
+
+plugins:
+- search:
+    lang: en
+    # taken from https://squidfunk.github.io/mkdocs-material/setup/setting-up-site-search/#+search.separator
+    separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+- gen-files:
+    scripts:
+    - docs/gen_ref_pages.py
+- literate-nav:
+    nav_file: SUMMARY.md
+- mkdocstrings
+
+nav:
+- Home: index.md
+- Motivation: motivation.md
+- Installation: installation.md
+- Quickstart: quickstart.md
+- Tessellation:
+  - tessellation/index.md
+  - Implementation: tessellation/implementation.md
+  - Usage:
+    - tessellation/usage/index.md
+    - Quickstart: tessellation/usage/quickstart.md
+    - Tessellation:
+      - Milky Way Orbit: tessellation/usage/tessellation/mw_orbit.md
+      - Using Pidgey: tessellation/usage/tessellation/pidgey.md
+      - Using Multiprocessing: tessellation/usage/tessellation/multiprocessing.md
+    - Analysis:
+      - Rotating Bar: tessellation/usage/analysis/rotating_bar.md
+      - Solar Neighborhood: tessellation/usage/analysis/solar_neighborhood.md
+- API Reference: reference/
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+      permalink_title: Anchor link to this section for reference
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

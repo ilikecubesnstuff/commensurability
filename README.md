@@ -8,7 +8,6 @@
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 A Python package for performing analysis on orbit commensurabilities.
-[`orbit-tessellation`](https://github.com/ilikecubesnstuff/orbit-tessellation) is used for commensurability evaluation.
 
 This package uses [`pidgey`](https://github.com/ilikecubesnstuff/pidgey) as its orbit integration backend.
 
@@ -22,4 +21,7 @@ python -m pip install commensurability
 
 ## Usage
 
-See the `examples` folder for usage cases. `examples/demo` provides a walkthrough of the features.
+See the [documentation](https://commensurability.readthedocs.io/en/latest/) page.
+
+This package is to be used along with one of the galactic dynamics packages [`agama`](https://github.com/GalacticDynamics-Oxford/Agama), [`gala`](https://gala-astro.readthedocs.io/en/latest/), or [`galpy`](https://docs.galpy.org/en/latest/).
+There are scripts for each under the `examples` folder that can be run to test whether everything is working correctly.

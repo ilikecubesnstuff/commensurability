@@ -1,14 +1,9 @@
-# PDM
-.pdm-python
-
 # Data files
-*.txt
-*.png
-*.gif
-*.npy
-*.npz
 *.hdf5
 
+# PDM
+.pdm-python
+None
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
