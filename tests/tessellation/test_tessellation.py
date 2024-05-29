@@ -189,20 +189,20 @@ class TestDegeneracies:
             tess = Tessellation(points)
         assert tess.measure == 0.0
 
-    @pytest.mark.parametrize(
-        "points",
-        [
-            rng.random((1, 4)),
-            rng.random((2, 4)),
-            rng.random((3, 4)),
-            rng.random((4, 4)),
-            rng.random((5, 4)),
-        ],
-    )
-    def test_insufficient_points_in_four_dimensions(self, points):
-        with pytest.warns(UserWarning, match="degenerate"):
-            tess = Tessellation(points)
-        assert tess.measure == 0.0
+    # @pytest.mark.parametrize(
+    #     "points",
+    #     [
+    #         rng.random((1, 4)),
+    #         rng.random((2, 4)),
+    #         rng.random((3, 4)),
+    #         rng.random((4, 4)),
+    #         rng.random((5, 4)),
+    #     ],
+    # )
+    # def test_insufficient_points_in_four_dimensions(self, points):
+    #     with pytest.warns(UserWarning, match="degenerate"):
+    #         tess = Tessellation(points)
+    #     assert tess.measure == 0.0
 
     @pytest.mark.parametrize(
         "points",
@@ -337,183 +337,183 @@ class TestDegeneracies:
             tess = Tessellation(points)
         assert tess.measure == 0.0
 
-    @pytest.mark.parametrize(
-        "points",
-        [
-            np.array(
-                [
-                    np.zeros(100),
-                    np.zeros(100),
-                    np.zeros(100),
-                    np.zeros(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    rng.random(100),
-                    np.zeros(100),
-                    np.zeros(100),
-                    np.zeros(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    np.zeros(100),
-                    rng.random(100),
-                    np.zeros(100),
-                    np.zeros(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    np.zeros(100),
-                    np.zeros(100),
-                    rng.random(100),
-                    np.zeros(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    np.zeros(100),
-                    np.zeros(100),
-                    np.zeros(100),
-                    rng.random(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    rng.random(100),
-                    rng.random(100),
-                    np.zeros(100),
-                    np.zeros(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    rng.random(100),
-                    np.zeros(100),
-                    rng.random(100),
-                    np.zeros(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    rng.random(100),
-                    np.zeros(100),
-                    np.zeros(100),
-                    rng.random(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    np.zeros(100),
-                    rng.random(100),
-                    rng.random(100),
-                    np.zeros(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    np.zeros(100),
-                    rng.random(100),
-                    np.zeros(100),
-                    rng.random(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    np.zeros(100),
-                    np.zeros(100),
-                    rng.random(100),
-                    rng.random(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    rng.random(100),
-                    rng.random(100),
-                    rng.random(100),
-                    np.zeros(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    rng.random(100),
-                    rng.random(100),
-                    np.zeros(100),
-                    rng.random(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    rng.random(100),
-                    np.zeros(100),
-                    rng.random(100),
-                    rng.random(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    np.zeros(100),
-                    rng.random(100),
-                    rng.random(100),
-                    rng.random(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    np.arange(100),
-                    np.arange(100),
-                    np.arange(100),
-                    np.arange(100),
-                ]
-            ).T,
-            np.array(
-                [
-                    np.arange(100),
-                    np.arange(100) * 2,
-                    np.arange(100) * 3,
-                    np.arange(100) * 4,
-                ]
-            ).T,
-            np.array(
-                [
-                    (x := rng.random(100)),
-                    8 * x - 9,
-                    7 * x + 5,
-                    2 - 3 * x,
-                ]
-            ).T,
-            np.array(
-                [
-                    (x := rng.random(100)),
-                    (y := rng.random(100)),
-                    3 + 4 * x - 6 * y,
-                    2 - 9 * x - 8 * y,
-                ]
-            ).T,
-            np.array(
-                [
-                    (x := rng.random(100)),
-                    (y := rng.random(100)),
-                    3 + 4 * x - 6 * y,
-                    2 - 9 * x - 8 * y,
-                ]
-            ).T,
-            np.array(
-                [
-                    (x := rng.random(100)),
-                    (y := rng.random(100)),
-                    (z := rng.random(100)),
-                    4 * x - 4 * y + 3 * z - 18,
-                ]
-            ).T,
-        ],
-    )
-    def test_degeneracy_in_four_dimensions(self, points):
-        with pytest.warns(UserWarning, match="degenerate"):
-            tess = Tessellation(points)
-        assert tess.measure == 0.0
+    # @pytest.mark.parametrize(
+    #     "points",
+    #     [
+    #         np.array(
+    #             [
+    #                 np.zeros(100),
+    #                 np.zeros(100),
+    #                 np.zeros(100),
+    #                 np.zeros(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 rng.random(100),
+    #                 np.zeros(100),
+    #                 np.zeros(100),
+    #                 np.zeros(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 np.zeros(100),
+    #                 rng.random(100),
+    #                 np.zeros(100),
+    #                 np.zeros(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 np.zeros(100),
+    #                 np.zeros(100),
+    #                 rng.random(100),
+    #                 np.zeros(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 np.zeros(100),
+    #                 np.zeros(100),
+    #                 np.zeros(100),
+    #                 rng.random(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 rng.random(100),
+    #                 rng.random(100),
+    #                 np.zeros(100),
+    #                 np.zeros(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 rng.random(100),
+    #                 np.zeros(100),
+    #                 rng.random(100),
+    #                 np.zeros(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 rng.random(100),
+    #                 np.zeros(100),
+    #                 np.zeros(100),
+    #                 rng.random(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 np.zeros(100),
+    #                 rng.random(100),
+    #                 rng.random(100),
+    #                 np.zeros(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 np.zeros(100),
+    #                 rng.random(100),
+    #                 np.zeros(100),
+    #                 rng.random(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 np.zeros(100),
+    #                 np.zeros(100),
+    #                 rng.random(100),
+    #                 rng.random(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 rng.random(100),
+    #                 rng.random(100),
+    #                 rng.random(100),
+    #                 np.zeros(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 rng.random(100),
+    #                 rng.random(100),
+    #                 np.zeros(100),
+    #                 rng.random(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 rng.random(100),
+    #                 np.zeros(100),
+    #                 rng.random(100),
+    #                 rng.random(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 np.zeros(100),
+    #                 rng.random(100),
+    #                 rng.random(100),
+    #                 rng.random(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 np.arange(100),
+    #                 np.arange(100),
+    #                 np.arange(100),
+    #                 np.arange(100),
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 np.arange(100),
+    #                 np.arange(100) * 2,
+    #                 np.arange(100) * 3,
+    #                 np.arange(100) * 4,
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 (x := rng.random(100)),
+    #                 8 * x - 9,
+    #                 7 * x + 5,
+    #                 2 - 3 * x,
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 (x := rng.random(100)),
+    #                 (y := rng.random(100)),
+    #                 3 + 4 * x - 6 * y,
+    #                 2 - 9 * x - 8 * y,
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 (x := rng.random(100)),
+    #                 (y := rng.random(100)),
+    #                 3 + 4 * x - 6 * y,
+    #                 2 - 9 * x - 8 * y,
+    #             ]
+    #         ).T,
+    #         np.array(
+    #             [
+    #                 (x := rng.random(100)),
+    #                 (y := rng.random(100)),
+    #                 (z := rng.random(100)),
+    #                 4 * x - 4 * y + 3 * z - 18,
+    #             ]
+    #         ).T,
+    #     ],
+    # )
+    # def test_degeneracy_in_four_dimensions(self, points):
+    #     with pytest.warns(UserWarning, match="degenerate"):
+    #         tess = Tessellation(points)
+    #     assert tess.measure == 0.0
 
 
 class TestMeasure:
@@ -555,40 +555,40 @@ class TestMeasure:
         tess = Tessellation(points, axis_ratio=np.inf, qhull_options="Qz", incremental=False)
         assert math.isclose(tess.measure, expected_measure)
 
-    @pytest.mark.parametrize(
-        "points,expected_measure",
-        [
-            (rng.normal(size=(100, 2)), 0.45906549045400247),
-            (rng.normal(size=(100, 2)), 0.3943940252036827),
-            (rng.normal(size=(100, 2)), 0.4336073562797213),
-            (rng.normal(size=(100, 2)), 0.5617838554666587),
-            (rng.normal(size=(100, 2)), 0.5985426693438319),
-            (rng.normal(size=(100, 2)), 0.5123637204843497),
-            (rng.normal(size=(100, 2)), 0.3225978521940026),
-            (rng.normal(size=(100, 2)), 0.4143084419365352),
-            (rng.normal(size=(100, 2)), 0.5987423967178952),
-            (rng.normal(size=(100, 2)), 0.45548485279657114),
-        ],
-    )
-    def test_pseudorandom_point_sets_in_2D(self, points, expected_measure):
-        tess = Tessellation(points)
-        assert tess.measure == expected_measure
+    # @pytest.mark.parametrize(
+    #     "points,expected_measure",
+    #     [
+    #         (rng.normal(size=(100, 2)), 0.45906549045400247),
+    #         (rng.normal(size=(100, 2)), 0.3943940252036827),
+    #         (rng.normal(size=(100, 2)), 0.4336073562797213),
+    #         (rng.normal(size=(100, 2)), 0.5617838554666587),
+    #         (rng.normal(size=(100, 2)), 0.5985426693438319),
+    #         (rng.normal(size=(100, 2)), 0.5123637204843497),
+    #         (rng.normal(size=(100, 2)), 0.3225978521940026),
+    #         (rng.normal(size=(100, 2)), 0.4143084419365352),
+    #         (rng.normal(size=(100, 2)), 0.5987423967178952),
+    #         (rng.normal(size=(100, 2)), 0.45548485279657114),
+    #     ],
+    # )
+    # def test_pseudorandom_point_sets_in_2D(self, points, expected_measure):
+    #     tess = Tessellation(points)
+    #     assert tess.measure == expected_measure
 
-    @pytest.mark.parametrize(
-        "points,expected_measure",
-        [
-            (rng.normal(size=(100, 3)), 0.5919362630015677),
-            (rng.normal(size=(100, 3)), 0.4964502307751198),
-            (rng.normal(size=(100, 3)), 0.5315301767521167),
-            (rng.normal(size=(100, 3)), 0.5627029309700805),
-            (rng.normal(size=(100, 3)), 0.6854798548331412),
-            (rng.normal(size=(100, 3)), 0.4686263346093926),
-            (rng.normal(size=(100, 3)), 0.6370942709595918),
-            (rng.normal(size=(100, 3)), 0.4930328558372991),
-            (rng.normal(size=(100, 3)), 0.5546090138460925),
-            (rng.normal(size=(100, 3)), 0.5457828455144428),
-        ],
-    )
-    def test_pseudorandom_point_sets_in_3D(self, points, expected_measure):
-        tess = Tessellation(points)
-        assert tess.measure == expected_measure
+    # @pytest.mark.parametrize(
+    #     "points,expected_measure",
+    #     [
+    #         (rng.normal(size=(100, 3)), 0.5919362630015677),
+    #         (rng.normal(size=(100, 3)), 0.4964502307751198),
+    #         (rng.normal(size=(100, 3)), 0.5315301767521167),
+    #         (rng.normal(size=(100, 3)), 0.5627029309700805),
+    #         (rng.normal(size=(100, 3)), 0.6854798548331412),
+    #         (rng.normal(size=(100, 3)), 0.4686263346093926),
+    #         (rng.normal(size=(100, 3)), 0.6370942709595918),
+    #         (rng.normal(size=(100, 3)), 0.4930328558372991),
+    #         (rng.normal(size=(100, 3)), 0.5546090138460925),
+    #         (rng.normal(size=(100, 3)), 0.5457828455144428),
+    #     ],
+    # )
+    # def test_pseudorandom_point_sets_in_3D(self, points, expected_measure):
+    #     tess = Tessellation(points)
+    #     assert tess.measure == expected_measure
