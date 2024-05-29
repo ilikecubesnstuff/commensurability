@@ -1,3 +1,6 @@
+# Data files
+*.hdf5
+
 # PDM
 .pdm-python
 None

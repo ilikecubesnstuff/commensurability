@@ -58,6 +58,11 @@ tanal.save("sol_neighborhood.hdf5")
 
 This step will take quite a while. It is recommended to save analysis objects immediately after finishing computation. Analysis objects are saved using the [HDF5](https://www.hdfgroup.org/solutions/hdf5/) format. The analysis object can be recovered entirely from this file, using [`Analysis.read_from_hdf5`](../../../reference/commensurability/analysis.md#commensurability.analysis.AnalysisBase.read_from_hdf5).
 
+```py
+# to read from disk
+tanal = TessellationAnalysis.read_from_hdf5("sol_neighborhood.hdf5")
+```
+
 ## Phase Space
 
 Once the setup is done, we should have a `TessellationAnalysis` object populated with data on the solar neighborhood. The rest of this guide will focus on the interactive plot, which can be launched by doing the following:

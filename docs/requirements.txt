@@ -1,4 +1,4 @@
-commensurability @ git+https://github.com/ilikecubesnstuff/commensurability.git@merge_tessellation
+commensurability @ git+https://github.com/ilikecubesnstuff/commensurability.git
 mkdocs==1.5.2
 mkdocs-gen-files==0.5.0
 mkdocs-literate-nav==0.6.0
