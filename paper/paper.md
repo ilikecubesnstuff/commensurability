@@ -7,8 +7,10 @@ authors:
   - name: Subhadeep Sarkar
     corresponding: true
     affiliation: "1"
-  - name: Michael Petersen
+    orcid: 0000-0000-0000-0000
+  - name: Michael S. Petersen
     affiliation: "1"
+    orcid: 0000-0003-1517-3935
 affiliations:
  - name: University of Edinburgh
    index: 1
