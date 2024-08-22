@@ -57,8 +57,16 @@ dt = 0.01 * u.Gyr
 steps = 500
 omega = 30 * u.km / u.s / u.kpc
 
-tanal = TessellationAnalysis2D(initial_condition, values, potential_definition,
-                             dt, steps, pattern_speed=omega, chunksize=500, mpchunksize=20)
+tanal = TessellationAnalysis2D(
+    initial_condition,
+    values,
+    potential_definition,
+    dt,
+    steps,
+    pattern_speed=omega,
+    pidgey_chunksize=500,
+    mp_chunksize=20,
+)
 tanal.save("no_bar_example.hdf5")
 ```
 
@@ -116,8 +124,16 @@ def potential_definition():
 The remaining parameters will all be kept the same. The code blocks are omitted from this section since they are identical to before.
 
 ```py
-tanal = TessellationAnalysis2D(initial_condition, values, potential_definition,
-                             dt, steps, pattern_speed=omega, chunksize=500, mpchunksize=20)
+tanal = TessellationAnalysis2D(
+    initial_condition,
+    values,
+    potential_definition,
+    dt,
+    steps,
+    pattern_speed=omega,
+    pidgey_chunksize=500,
+    mp_chunksize=20,
+)
 tanal.save("bar_example.hdf5")
 
 # to read from disk
@@ -165,8 +181,16 @@ def potential_definition():
 As before, the remaining parameters will all be kept the same. The code blocks are omitted from this section since they are identical to before.
 
 ```py
-tanal = TessellationAnalysis2D(initial_condition, values, potential_definition,
-                             dt, steps, pattern_speed=omega, chunksize=500, mpchunksize=20)
+tanal = TessellationAnalysis2D(
+    initial_condition,
+    values,
+    potential_definition,
+    dt,
+    steps,
+    pattern_speed=omega,
+    pidgey_chunksize=500,
+    mp_chunksize=20,
+)
 tanal.save("big_bar_example.hdf5")
 
 # to read from disk
