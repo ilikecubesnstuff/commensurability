@@ -83,7 +83,7 @@ class AnalysisBase(MappingABC):
         pattern_speed: Union[float, u.Quantity] = 0.0,
         backend: Optional[Union[str, Backend]] = None,
         progressbar: bool = True,
-        pidgey_chunksize: int = None,
+        pidgey_chunksize: Optional[int] = None,
         _blank_measures: bool = False,
     ) -> None:
         """
@@ -344,8 +344,8 @@ class MPAnalysisBase(AnalysisBase):
         pattern_speed: Union[float, u.Quantity] = 0.0,
         backend: Optional[Union[str, Backend]] = None,
         progressbar: bool = True,
-        pidgey_chunksize: int = None,
-        mp_chunksize: int = None,
+        pidgey_chunksize: Optional[int] = None,
+        mp_chunksize: Optional[int] = None,
         _blank_measures: bool = False,
     ) -> None:
         super().__init__(
