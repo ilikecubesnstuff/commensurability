@@ -6,7 +6,7 @@ authors = [
     { name = "ilikecubesnstuff", email = "25328250+ilikecubesnstuff@users.noreply.github.com" },
 ]
 dependencies = [
-    "pidgey>=1.0.0",
+    "pidgey>=1.0.1",
     "matplotlib>=3.8.2",
     "tqdm>=4.66.1",
     "h5py>=3.10.0",
