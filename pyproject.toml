@@ -69,6 +69,23 @@ target-version = [
     "py312",
 ]
 
+[tool.coverage.report]
+exclude_also = [
+    "def __repr__",
+    "raise NotImplementedError",
+    "@(abc\\.)?abstractmethod",
+
+    # ignore alternate backends from pidgey
+    "agama",
+    "gala",
+    "galpy",
+
+    # ignore interactive plots for now
+    # NOTE: see testing matplotlib with pytest
+    "InteractivePlot",
+    "def plot",
+]
+
 [tool.isort]
 profile = "black"
 
@@ -77,3 +94,6 @@ ignore_missing_imports = true
 
 [tool.pdm]
 distribution = true
+
+[tool.pdm.scripts]
+coverage = {cmd = "pytest --cov-report=html --cov-report=term-missing --cov=src tests/"}
