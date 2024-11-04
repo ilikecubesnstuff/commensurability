@@ -28,6 +28,7 @@ jobs:
     - name: Prepare Coverage File
       run: |
         pdm run -v coverage xml
+        cat coverage.xml
     - name: Coveralls Parallel
       uses: coverallsapp/github-action@v2
       with:
