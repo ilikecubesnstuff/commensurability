@@ -29,6 +29,7 @@ jobs:
       uses: coverallsapp/github-action@v2
       with:
         flag-name: run-${{ matrix.os }}-${{ matrix.python-version }}
+        format: python
         parallel: true
 
   coverage:
