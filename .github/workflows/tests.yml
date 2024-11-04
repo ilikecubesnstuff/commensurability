@@ -25,11 +25,14 @@ jobs:
     - name: Test with tox
       run: |
         pdm run -v tox
+    - name: Prepare Coverage File
+      run: |
+        pdm run -v coverage xml
     - name: Coveralls Parallel
       uses: coverallsapp/github-action@v2
       with:
         flag-name: run-${{ matrix.os }}-${{ matrix.python-version }}
-        format: python
+        format: cobertura
         parallel: true
 
   coverage:
