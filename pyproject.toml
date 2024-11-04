@@ -96,4 +96,4 @@ ignore_missing_imports = true
 distribution = true
 
 [tool.pdm.scripts]
-coverage = {cmd = "pytest --cov-report=html --cov-report=term-missing --cov=src tests/"}
+covreport = {cmd = "pytest --cov-report=html --cov-report=term-missing --cov=src tests/"}
