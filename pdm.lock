@@ -5,7 +5,7 @@
 groups = ["default", "dev", "docs", "github", "lint", "test", "type"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:33a3e6cf2f3d5a20e45ae3257df932e9869db41ac1bc0b45b55c2579d35eeceb"
+content_hash = "sha256:2ce1aa2f74472a13c9d7da6b94325ec95d88ed0644ad085781a77c3208ed640c"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -291,7 +291,7 @@ name = "coverage"
 version = "7.6.4"
 requires_python = ">=3.9"
 summary = "Code coverage measurement for Python"
-groups = ["test"]
+groups = ["dev", "test"]
 files = [
     {file = "coverage-7.6.4-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:73d2b73584446e66ee633eaad1a56aad577c077f46c35ca3283cd687b7715b0b"},
     {file = "coverage-7.6.4-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:51b44306032045b383a7a8a2c13878de375117946d68dcb54308111f39775a25"},
