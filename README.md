@@ -32,4 +32,4 @@ If you wish to contribute to ``commensurability``, please fork the repository an
 
 If you wish to report bugs, request features or suggest other ideas, please open an [issue](https://github.com/ilikecubesnstuff/commensurability/issues).
 
-For more information, see [contributing] in the documentation.
+For more information, see [contributing](https://commensurability.readthedocs.io/en/latest/contributing/) in the documentation.
