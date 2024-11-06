@@ -39,7 +39,9 @@ def ic_params():
 
 @pytest.fixture
 def dummy_potential_func():
-    return lambda: None
+    def dummy_potential():
+        return 0.0
+    return dummy_potential
 
 
 class TestAnalysis:
@@ -92,6 +94,27 @@ class TestAnalysis:
             TessellationAnalysis(
                 ic_function, ic_values, dummy_potential_func, 1, 1, backend="unknown"
             )
+    
+    def test_negative_pidgey_chunksize(self, ic_params, dummy_potential_func, dummy_backend):
+        ic_function, ic_values = ic_params
+        with pytest.raises(ValueError):
+            TessellationAnalysis(
+                ic_function, ic_values, dummy_potential_func, 1, 1, backend=dummy_backend, pidgey_chunksize=-1
+            )
+    
+    def test_negative_mp_chunksize(self, ic_params, dummy_potential_func, dummy_backend):
+        ic_function, ic_values = ic_params
+        with pytest.raises(ValueError):
+            TessellationAnalysis(
+                ic_function, ic_values, dummy_potential_func, 1, 1, backend=dummy_backend, mp_chunksize=-1
+            )
+
+    def test_large_mp_chunksize(self, ic_params, dummy_potential_func, dummy_backend):
+        ic_function, ic_values = ic_params
+        with pytest.raises(ValueError):
+            TessellationAnalysis(
+                ic_function, ic_values, dummy_potential_func, 1, 1, backend=dummy_backend, pidgey_chunksize=5, mp_chunksize=1e6
+            )
 
     def test_analysis_init(self, ic_params, dummy_potential_func, dummy_backend):
         ic_function, ic_values = ic_params
@@ -103,6 +126,15 @@ class TestAnalysis:
             1,
             backend=dummy_backend,
         )
+        assert analysis.ic_function == ic_function
+        assert analysis.ic_values == ic_values
+        assert analysis.potential_function == dummy_potential_func
+        assert analysis.dt.value == 1
+        assert analysis.steps == 1
+        assert analysis.backend == dummy_backend
+
+        analysis.save("test_files/test_analysis.hdf5")
+        TessellationAnalysis.read_from_hdf5("test_files/test_analysis.hdf5", backend_cls=dummy_backend.__class__)
         assert analysis.ic_function == ic_function
         assert analysis.ic_values == ic_values
         assert analysis.potential_function == dummy_potential_func
@@ -180,6 +212,15 @@ class TestAnalysis2D:
             1,
             backend=dummy_backend,
         )
+        assert analysis.ic_function == ic_function
+        assert analysis.ic_values == ic_values
+        assert analysis.potential_function == dummy_potential_func
+        assert analysis.dt.value == 1
+        assert analysis.steps == 1
+        assert analysis.backend == dummy_backend
+
+        analysis.save("test_files/test_analysis.hdf5")
+        TessellationAnalysis2D.read_from_hdf5("test_files/test_analysis.hdf5", backend_cls=dummy_backend.__class__)
         assert analysis.ic_function == ic_function
         assert analysis.ic_values == ic_values
         assert analysis.potential_function == dummy_potential_func
