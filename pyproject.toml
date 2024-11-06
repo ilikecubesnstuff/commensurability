@@ -83,7 +83,7 @@ exclude_also = [
     # ignore interactive plots for now
     # NOTE: see testing matplotlib with pytest
     "InteractivePlot",
-    "def plot",
+    "def .*plot(.*)",
 ]
 
 [tool.isort]
