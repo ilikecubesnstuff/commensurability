@@ -295,7 +295,9 @@ class AnalysisBase(MappingABC):
                 def potential_function() -> None:
                     pass
 
-            backend_cls = backend_cls or getattr(pidgey, dset.attrs["backend"].tobytes().decode("utf8"))
+            backend_cls = backend_cls or getattr(
+                pidgey, dset.attrs["backend"].tobytes().decode("utf8")
+            )
             analysis = cls(
                 ic_function,
                 values,
