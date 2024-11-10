@@ -1,5 +1,6 @@
-import numpy as np
 import pytest
+from astropy import coordinates as c
+from astropy import units as u
 from pidgey.base import Backend
 
 from commensurability import TessellationAnalysis, TessellationAnalysis2D
@@ -12,22 +13,35 @@ def dummy_backend():
             return list
 
         def _compute_orbit(self, skycoord, pot, dt, steps, pattern_speed):
-            return [(0, 0, 0), (0, 0, 1), (0, 1, 0), (1, 0, 0)]
+            return c.SkyCoord(
+                x=[[0], [0], [0], [1]],
+                y=[[0], [0], [1], [0]],
+                z=[[0], [1], [0], [0]],
+                unit='kpc',
+                representation_type='cartesian'
+            )
 
         def _extract_points(self, orbit, pattern_speed):
-            return [(0, 0, 0), (0, 0, 1), (0, 1, 0), (1, 0, 0)]
+            return orbit.data.T
 
     return DummyBackend()
 
 
 @pytest.fixture
 def ic_params():
-    return lambda x, y: (x, y), {"x": [0, 1, 2], "y": [0, 1, 2]}
+    ic_function = lambda x, y: c.SkyCoord(
+        x=x * u.kpc, y=y * u.kpc, z=0 * u.kpc,
+        v_x=0 * u.km/u.s, v_y=0 * u.km/u.s, v_z=0 * u.km/u.s,
+        representation_type='cartesian'
+    )
+    return ic_function, {"x": [0, 1, 2], "y": [0, 1, 2]}
 
 
 @pytest.fixture
 def dummy_potential_func():
-    return lambda: None
+    def dummy_potential():
+        return 0.0
+    return dummy_potential
 
 
 class TestAnalysis:
@@ -80,6 +94,27 @@ class TestAnalysis:
             TessellationAnalysis(
                 ic_function, ic_values, dummy_potential_func, 1, 1, backend="unknown"
             )
+    
+    def test_negative_pidgey_chunksize(self, ic_params, dummy_potential_func, dummy_backend):
+        ic_function, ic_values = ic_params
+        with pytest.raises(ValueError):
+            TessellationAnalysis(
+                ic_function, ic_values, dummy_potential_func, 1, 1, backend=dummy_backend, pidgey_chunksize=-1
+            )
+    
+    def test_negative_mp_chunksize(self, ic_params, dummy_potential_func, dummy_backend):
+        ic_function, ic_values = ic_params
+        with pytest.raises(ValueError):
+            TessellationAnalysis(
+                ic_function, ic_values, dummy_potential_func, 1, 1, backend=dummy_backend, mp_chunksize=-1
+            )
+
+    def test_large_mp_chunksize(self, ic_params, dummy_potential_func, dummy_backend):
+        ic_function, ic_values = ic_params
+        with pytest.raises(ValueError):
+            TessellationAnalysis(
+                ic_function, ic_values, dummy_potential_func, 1, 1, backend=dummy_backend, pidgey_chunksize=5, mp_chunksize=1e6
+            )
 
     def test_analysis_init(self, ic_params, dummy_potential_func, dummy_backend):
         ic_function, ic_values = ic_params
@@ -90,8 +125,16 @@ class TestAnalysis:
             1,
             1,
             backend=dummy_backend,
-            _blank_measures=True,
         )
+        assert analysis.ic_function == ic_function
+        assert analysis.ic_values == ic_values
+        assert analysis.potential_function == dummy_potential_func
+        assert analysis.dt.value == 1
+        assert analysis.steps == 1
+        assert analysis.backend == dummy_backend
+
+        analysis.save("test_files/test_analysis.hdf5")
+        TessellationAnalysis.read_from_hdf5("test_files/test_analysis.hdf5", backend_cls=dummy_backend.__class__)
         assert analysis.ic_function == ic_function
         assert analysis.ic_values == ic_values
         assert analysis.potential_function == dummy_potential_func
@@ -103,7 +146,6 @@ class TestAnalysis:
         for pixel in analysis:
             ic, measure = analysis[pixel]
             # specifically for these dummy examples
-            assert ic == pixel
             assert measure == 0.0
 
 
@@ -169,8 +211,16 @@ class TestAnalysis2D:
             1,
             1,
             backend=dummy_backend,
-            _blank_measures=True,
         )
+        assert analysis.ic_function == ic_function
+        assert analysis.ic_values == ic_values
+        assert analysis.potential_function == dummy_potential_func
+        assert analysis.dt.value == 1
+        assert analysis.steps == 1
+        assert analysis.backend == dummy_backend
+
+        analysis.save("test_files/test_analysis.hdf5")
+        TessellationAnalysis2D.read_from_hdf5("test_files/test_analysis.hdf5", backend_cls=dummy_backend.__class__)
         assert analysis.ic_function == ic_function
         assert analysis.ic_values == ic_values
         assert analysis.potential_function == dummy_potential_func
@@ -182,5 +232,4 @@ class TestAnalysis2D:
         for pixel in analysis_2d:
             ic, measure = analysis_2d[pixel]
             # specifically for these dummy examples
-            assert ic == pixel
             assert measure == 0.0

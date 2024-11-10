@@ -10,6 +10,7 @@ commensurability analysis using the tessellation subpackage.
 from __future__ import annotations
 
 import inspect
+import textwrap
 import warnings
 from abc import abstractmethod
 from collections.abc import Mapping as MappingABC
@@ -231,10 +232,12 @@ class AnalysisBase(MappingABC):
 
         # store image mapping function source
         icsource = inspect.getsource(self.ic_function)
+        icsource = textwrap.dedent(icsource)
         icsource = icsource.replace(self.ic_function.__name__, "ic_function", 1)
 
         # store potential function source
         potsource = inspect.getsource(self.potential_function)
+        potsource = textwrap.dedent(potsource)
         potsource = potsource.replace(self.potential_function.__name__, "potential_function", 1)
 
         attrs = dict(
@@ -253,7 +256,7 @@ class AnalysisBase(MappingABC):
                 dset.attrs[attr] = value
 
     @classmethod
-    def read_from_hdf5(cls, path: Any) -> AnalysisBase:
+    def read_from_hdf5(cls, path: Any, backend_cls: Optional[Backend] = None) -> AnalysisBase:
         """
         Read analysis data from an HDF5 file.
 
@@ -283,6 +286,7 @@ class AnalysisBase(MappingABC):
             if "potfunc" in dset.attrs:
                 potsource = dset.attrs["potfunc"].tobytes().decode("utf8")
                 namespace = {}
+                print(potsource)
                 exec(potsource, {"u": u, "c": c}, namespace)
                 potential_function = namespace["potential_function"]
             else:
@@ -291,7 +295,9 @@ class AnalysisBase(MappingABC):
                 def potential_function() -> None:
                     pass
 
-            backend_cls = getattr(pidgey, dset.attrs["backend"].tobytes().decode("utf8"))
+            backend_cls = backend_cls or getattr(
+                pidgey, dset.attrs["backend"].tobytes().decode("utf8")
+            )
             analysis = cls(
                 ic_function,
                 values,

@@ -36,7 +36,7 @@ class TessellationGeneric(TessellationBase):
         Note:
             This method uses a combinatoric approach, which may not be practical in most cases.
         """
-        return [v2 - v1 for v1, v2 in combinations(vertices, 2)]
+        return [np.linalg.norm(v2 - v1) for v1, v2 in combinations(vertices, 2)]
 
     @staticmethod
     def simplex_measure(*vertices: np.ndarray) -> float:

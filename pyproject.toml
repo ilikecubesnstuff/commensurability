@@ -33,29 +33,15 @@ requires = [
 ]
 build-backend = "pdm.backend"
 
-[tool.black]
-line-length = 100
-target-version = [
-    "py311",
-    "py312",
-]
-
-[tool.isort]
-profile = "black"
-
-[tool.mypy]
-ignore_missing_imports = true
-
-[tool.pdm]
-distribution = true
-
-[tool.pdm.dev-dependencies]
+[dependency-groups]
 dev = [
     "tox-pdm>=0.7.2",
     "tox>=4.15.0",
+    "coverage>=7.6.4"
 ]
 test = [
     "pytest>=8.2.0",
+    "pytest-cov>=6.0.0",
 ]
 type = [
     "mypy>=1.10.0",
@@ -75,3 +61,39 @@ docs = [
 github = [
     "tox-gh-actions>=3.2.0",
 ]
+
+[tool.black]
+line-length = 100
+target-version = [
+    "py311",
+    "py312",
+]
+
+[tool.coverage.report]
+exclude_also = [
+    "def __repr__",
+    "raise NotImplementedError",
+    "@(abc\\.)?abstractmethod",
+
+    # ignore alternate backends from pidgey
+    "agama",
+    "gala",
+    "galpy",
+
+    # ignore interactive plots for now
+    # NOTE: see testing matplotlib with pytest
+    "InteractivePlot",
+    "def .*plot(.*)",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.scripts]
+covreport = {cmd = "pytest --cov-report=html --cov-report=term-missing --cov=src tests/"}
