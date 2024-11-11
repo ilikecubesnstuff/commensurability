@@ -18,7 +18,9 @@ This package is compatible with the galactic dynamics packages [`agama`](https:/
 
 === "Agama"
 
-    ``` py
+    <!-- skip: next -->
+
+    ```python
     def potential_definition():
         import agama
 
@@ -40,7 +42,9 @@ This package is compatible with the galactic dynamics packages [`agama`](https:/
 
 === "Gala"
 
-    ``` py
+    <!-- skip: next -->
+
+    ```python
     import astropy.units as u
 
     def potential_definition():
@@ -66,7 +70,7 @@ This package is compatible with the galactic dynamics packages [`agama`](https:/
 
 === "Galpy"
 
-    ``` py
+    ```python
     import astropy.units as u
 
     def potential_definition():
@@ -79,6 +83,7 @@ This package is compatible with the galactic dynamics packages [`agama`](https:/
             amp=1e9 * u.solMass, a=1.5 * u.kpc, b=0 * u.kpc, c=0.5 * u.kpc, omegab=omega
         )
         pot = [halo, disc, bar]
+        gp.turn_physical_on(pot)  # ensure Astropy units support
         return pot
     ```
 
@@ -95,7 +100,7 @@ The region of phase space is specified by two arguments:
 
 Suppose we want to explore orbits starting between 2 and 8 kiloparsecs with an initial tangential velocity between 200 and 300 kilometers per second, starting 2 to 4 kiloparsecs above the galactic plane. A 30x30x5 data cube for this region in phase space can be defined as follows.
 
-```py
+```python
 import astropy.coordinates as c
 import astropy.units as u
 import numpy as np
@@ -121,7 +126,7 @@ values = dict(
 
 Lastly, the simulation parameters must be defined, namely the time step and number of steps.
 
-```py
+```python
 dt = 0.01 * u.Gyr
 steps = 1000
 ```
@@ -130,13 +135,13 @@ steps = 1000
 
 This region of phase space can be probed for commensurabilities using one of the `Analysis` classes provided in the `commensurability` package.
 
-```py
+```python
 from commensurability import TessellationAnalysis
 ```
 
 Collecting everything, we can pass the above objects in the following order:
 
-```py
+```python
 # tessellation needs to know the pattern speed used to define the potential
 # so that it can perform its analysis in the co-rotating frame
 omega = 30 * u.km / u.s / u.kpc
@@ -146,7 +151,7 @@ tanal = TessellationAnalysis(initial_condition, values, potential_definition,
 
 This step will take a while. Once this is done, it is recommended to write the object to disk—the object is fully recoverable from the disk. All analysis objects are stored using the [HDF5](https://www.hdfgroup.org/solutions/hdf5/) format.
 
-```py
+```python
 # to save to disk
 tanal.save("example_analysis.hdf5")
 
@@ -158,7 +163,9 @@ tanal = TessellationAnalysis.read_from_hdf5("example_analysis.hdf5")
 
 Analysis objects can launch interactive plots to explore the generated data. Currently, interactive plots work with up to 3 dimensions of the generated data. Specify two variables for the plotting axes, and optionally specify a third to vary using the scroll wheel. For 3 dimensional data, the scroll wheel varies the remaining variable by default.
 
-```py
+<!-- skip: next -->
+
+```python
 tanal.launch_interactive_plot("x", "vy")
 ```
 

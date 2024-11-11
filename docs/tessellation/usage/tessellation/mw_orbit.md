@@ -1,14 +1,14 @@
 # Tessellating a Milky Way Orbit
 
-```
-from tessellation import Tessellation
+```python
+from commensurability.tessellation import Tessellation
 ```
 
 Define a Milky Way potential with your package of choice.
 
 === "Agama"
 
-    ``` py
+    ```python
     import agama
     from example_mw_bar_potential_new import makePotentialModel
 
@@ -21,7 +21,7 @@ Define a Milky Way potential with your package of choice.
 
 === "Gala"
 
-    ``` py
+    ```python
     import gala.potential as gp
 
     potential = gp.MilkyWayPotential()
@@ -29,7 +29,7 @@ Define a Milky Way potential with your package of choice.
 
 === "Galpy"
 
-    ``` py
+    ```python
     from galpy.potential import MWPotential2014
 
     potential = MWPotential2014
@@ -39,7 +39,7 @@ Perform an orbit integration routine.
 
 === "Agama"
 
-    ``` py
+    ```python
     # x = 4 kpc, z = 1 kpc, vy = 250 km/s
     ic = [4, 0, 1, 0, 250, 0]
     ts, orbit = agama.orbit(potential=potential, ic=ic, time=1, trajsize=200)
@@ -47,7 +47,7 @@ Perform an orbit integration routine.
 
 === "Gala"
 
-    ``` py
+    ```python
     import astropy.units as u
     import gala.dynamics as gd
 
@@ -58,7 +58,7 @@ Perform an orbit integration routine.
 
 === "Galpy"
 
-    ``` py
+    ```python
     import numpy as np
     import astropy.units as u
     from galpy.orbit import Orbit
@@ -75,7 +75,7 @@ Perform an orbit integration routine.
 
 === "Agama"
 
-    ``` py
+    ```python
     # agama.orbit returns numpy arrays
     # extract point set in configuration space here
     points = orbit[:,:3]
@@ -85,19 +85,19 @@ Perform an orbit integration routine.
 
 === "Gala"
 
-    ``` py
+    ```python
     tess = Tessellation(orbit, ('x', 'y', 'z'))
     ```
 
 === "Galpy"
 
-    ``` py
+    ```python
     tess = Tessellation(orbit, ('x', 'y', 'z'))
     ```
 
 The tessellation can then be plotted.
 
-``` py
+```python
 tess.plot(plot_removed=True)
 ```
 

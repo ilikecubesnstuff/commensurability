@@ -42,7 +42,12 @@ dev = [
 test = [
     "pytest>=8.2.0",
     "pytest-cov>=6.0.0",
-    "astropy>=6.0.0"
+    "astropy>=6.0.0",
+]
+doctest = [
+    "astropy>=6.1.0",
+    "galpy>=1.10.1",
+    "sybil>=8.0.1",
 ]
 type = [
     "mypy>=1.10.0",

@@ -3,8 +3,8 @@
 This tutorial is the same as [Milky Way Orbit](mw_orbit.md).
 It uses [`pidgey`](https://github.com/ilikecubesnstuff/pidgey) to streamline the interface to the galactic dynamics packages.
 
-```
-from tessellation import Tessellation
+```python
+from commensurability.tessellation import Tessellation
 ```
 
 Define a Milky Way potential with your package of choice.
@@ -12,7 +12,7 @@ Initialize the corresponding backend with `pidgey`.
 
 === "Agama"
 
-    ``` py
+    ```python
     import pidgey
     backend = pidgey.AgamaBackend()
 
@@ -28,7 +28,7 @@ Initialize the corresponding backend with `pidgey`.
 
 === "Gala"
 
-    ``` py
+    ```python
     import pidgey
     backend = pidgey.GalaBackend()
 
@@ -38,7 +38,7 @@ Initialize the corresponding backend with `pidgey`.
 
 === "Galpy"
 
-    ``` py
+    ```python
     import pidgey
     backend = pidgey.GalpyBackend()
 
@@ -48,7 +48,7 @@ Initialize the corresponding backend with `pidgey`.
 
 Define initial conditions using [`astropy`](https://www.astropy.org/) and perform the orbit integration routine.
 
-``` py
+```python
 import astropy.coordinates as c
 import astropy.units as u
 
@@ -67,7 +67,7 @@ coords = backend.compute_orbit(ics, potential, 0.005 * u.Gyr, 200)
 
 Extract the orbit points and plug them into `Tessellation`.
 
-``` py
+```python
 # extract points from SkyCoord object
 points = coords.xyz.T
 tess = Tessellation(points)
@@ -75,7 +75,7 @@ tess = Tessellation(points)
 
 The tessellation can then be plotted.
 
-``` py
+```python
 tess.plot(plot_removed=True)
 ```
 

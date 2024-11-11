@@ -22,7 +22,7 @@ This package uses [`pidgey`](https://github.com/ilikecubesnstuff/pidgey) as its 
 
 This package is available on [PyPI](https://pypi.org/project/commensurability/). Install the package via `pip`:
 
-```
+```bash
 python -m pip install commensurability
 ```
 

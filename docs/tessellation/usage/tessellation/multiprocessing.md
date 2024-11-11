@@ -4,10 +4,10 @@ This tutoral is similar to [Milky Way Orbit](mw_orbit.md) and [Using Pidgey](pid
 It uses [`pidgey`](https://github.com/ilikecubesnstuff/pidgey) to streamline the interface to the galactic dynamics packages.
 However, this will explore executing these routines on multiple orbits at once using Python's [multiprocessing](https://docs.python.org/3/library/multiprocessing.html) module.
 
-```
+```python
 from multiprocessing import Pool
 
-from tessellation import Tessellation
+from commensurability.tessellation import Tessellation
 ```
 
 Define a Milky Way potential with your package of choice.
@@ -15,7 +15,7 @@ Initialize the corresponding backend with `pidgey`.
 
 === "Agama"
 
-    ``` py
+    ```python
     import pidgey
     backend = pidgey.AgamaBackend()
 
@@ -31,7 +31,7 @@ Initialize the corresponding backend with `pidgey`.
 
 === "Gala"
 
-    ``` py
+    ```python
     import pidgey
     backend = pidgey.GalaBackend()
 
@@ -41,7 +41,7 @@ Initialize the corresponding backend with `pidgey`.
 
 === "Galpy"
 
-    ``` py
+    ```python
     import pidgey
     backend = pidgey.GalpyBackend()
 
@@ -52,7 +52,7 @@ Initialize the corresponding backend with `pidgey`.
 Define initial conditions using [`astropy`](https://www.astropy.org/) and perform the orbit integration routine.
 Here a list of $N=500$ orbits is defined.
 
-``` py
+```python
 import astropy.coordinates as c
 import astropy.units as u
 
@@ -75,14 +75,14 @@ orbits = backend.compute_orbit(ics, potential, 0.01 * u.Gyr, 200)
 To speed up the commensurability evaluation, we can use [`multiprocessing.Pool`](https://docs.python.org/3/library/multiprocessing.html#multiprocessing.pool.Pool) (specifically [`multiprocessing.Pool.map`](https://docs.python.org/3/library/multiprocessing.html#multiprocessing.pool.Pool.map)) to parallelize tessellation.
 First, we have to define a function to map over all orbit points.
 
-``` py
+```python
 def evaluate(points):
     return Tessellation(points).measure
 ```
 
 Then within a `Pool()` context, map `Tessellation` over the orbit points.
 
-``` py
+```python
 point_sets = orbits.xyz.transpose(1, 2, 0)  # change to shape (norbits, npoints, ndims)
 with Pool() as p:
     values = p.map(evaluate, point_sets)
@@ -91,7 +91,7 @@ with Pool() as p:
 After leaving this running, a list of commensurability values should remain.
 We can plot a histogram to see their distribution for the chosen area of the phase space:
 
-``` py
+```python
 import matplotlib.pyplot as plt
 
 plt.hist(values, bins=50, range=(0, 1))

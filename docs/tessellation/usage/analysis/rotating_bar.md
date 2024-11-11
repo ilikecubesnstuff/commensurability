@@ -4,7 +4,7 @@ The following examples will be using [`agama`](https://github.com/GalacticDynami
 
 ## Initial Imports
 
-```py
+```python
 import astropy.coordinates as c
 import astropy.units as u
 import numpy as np
@@ -16,7 +16,7 @@ from commensurability import TessellationAnalysis2D
 
 Start by setting up a regular NFW potential in a function. Make sure to include the agama import as part of the function.
 
-```py
+```python
 def potential_definition():
     import agama
 
@@ -27,7 +27,7 @@ def potential_definition():
 
 This potential is spherically symmetric. Let's take the x-y plane to be the "galactic plane", and observe how 2D orbits behave over a range of a few kiloparsecs. For this example, the initial positions range from 0.1 to 8 kiloparsecs and the initial velocities range from 20 to 400 kilometers per second. This is done by defining an initial conditions function that takes in `x` and `vy` values, and outputs the corresponding coordinate with a `astropy.coordinates.SkyCoord` object.
 
-```py
+```python
 def initial_condition(x, vy):
     return c.SkyCoord(
         x=x * u.kpc,
@@ -52,7 +52,7 @@ Later on, we will be introducing a rotating bar with a fixed pattern speed of 30
 Orbit commensurabilities will have to be analyzed in the co-rotating frame.
 To compare these examples appropriately, we will impose the same co-rotating frame here.
 
-```py
+```python
 dt = 0.01 * u.Gyr
 steps = 500
 omega = 30 * u.km / u.s / u.kpc
@@ -70,11 +70,11 @@ tanal = TessellationAnalysis2D(
 tanal.save("no_bar_example.hdf5")
 ```
 
-Note that there are 2 chunksize parameters. `chunksize` determines how many orbit calculations are done in a call. Once computed, `mpchunksize` determines how to chunk the commensurability evaluation over these orbits.
+Note that there are 2 chunksize parameters. `pidgey_chunksize` determines how many orbit calculations are done in a call. Once computed, `mp_chunksize` determines how to chunk the commensurability evaluation over these orbits.
 
 It is recommended to save analysis objects immediately after finishing computation. Analysis objects are saved using the [HDF5](https://www.hdfgroup.org/solutions/hdf5/) format. The analysis object can be recovered entirely from this file, using [`Analysis.read_from_hdf5`](../../../reference/commensurability/analysis.md#commensurability.analysis.AnalysisBase.read_from_hdf5).
 
-```py
+```python
 # to read from disk
 tanal = TessellationAnalysis.read_from_hdf5("no_bar_example.hdf5")
 ```
@@ -85,7 +85,9 @@ tanal = TessellationAnalysis.read_from_hdf5("no_bar_example.hdf5")
 
 Once this step is done, launch the interactive plot to view the structure of the phase space.
 
-```py
+<!-- skip: next -->
+
+```python
 tanal.launch_interactive_plot("x", "vy")
 ```
 
@@ -103,7 +105,7 @@ This plot shows various "tracks" that correspond with orbits of low commensurabi
 
 We can modify the original potential by adding a bar.
 
-```py
+```python
 def potential_definition():
     import agama
 
@@ -123,7 +125,7 @@ def potential_definition():
 
 The remaining parameters will all be kept the same. The code blocks are omitted from this section since they are identical to before.
 
-```py
+```python
 tanal = TessellationAnalysis2D(
     initial_condition,
     values,
@@ -144,7 +146,9 @@ tanal = TessellationAnalysis.read_from_hdf5("bar_example.hdf5")
 
 As before, this step will take some time to run. Once completed, we can launch the interactive plot and observe the differences present in the phase space structure.
 
-```py
+<!-- skip: next -->
+
+```python
 tanal.launch_interactive_plot("x", "vy")
 ```
 
@@ -160,7 +164,7 @@ The addition of the bar appears to have distorted the commensurate tracks presen
 
 To take this to the extreme, we can try adding a very massive bar and observe its effects on the commensurate tracks. Let's recycle the code from the previous section, but increase the bar's mass ten-fold.
 
-```py
+```python
 def potential_definition():
     import agama
 
@@ -180,7 +184,7 @@ def potential_definition():
 
 As before, the remaining parameters will all be kept the same. The code blocks are omitted from this section since they are identical to before.
 
-```py
+```python
 tanal = TessellationAnalysis2D(
     initial_condition,
     values,
@@ -201,7 +205,9 @@ tanal = TessellationAnalysis.read_from_hdf5("big_bar_example.hdf5")
 
 As before, this step will take some time to run. This may be slightly slower than the previous runs. Launch the interactive plot once completed.
 
-```py
+<!-- skip: next -->
+
+```python
 tanal.launch_interactive_plot("x", "vy")
 ```
 

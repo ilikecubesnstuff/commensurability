@@ -6,7 +6,7 @@ The preferred installation method is via `pip` from [PyPI](installation.md#from-
 
 This package is available on [PyPI](https://pypi.org/project/commensurability/). Install the package via `pip`:
 
-```
+```bash
 python -m pip install commensurability
 ```
 
@@ -14,7 +14,7 @@ python -m pip install commensurability
 
 Clone the GitHub repository, and install the package via `pip`:
 
-```
+```bash
 git clone https://github.com/ilikecubesnstuff/commensurability.git
 cd commensurability
 pip install .
