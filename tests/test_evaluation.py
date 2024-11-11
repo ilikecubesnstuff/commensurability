@@ -4,12 +4,10 @@ import pytest
 
 from commensurability.evaluation import Evaluation
 
+
 class TestEvaluation:
-
     def test_subclass(self):
-
         class TestEvaluation(Evaluation):
-
             @property
             def measure(self):
                 return 0.0
@@ -17,7 +15,7 @@ class TestEvaluation:
             def plot(self):
                 pass
 
-        obj = type('obj', (), {})()
+        obj = type("obj", (), {})()
         ev = TestEvaluation(obj)
         assert ev.measure == 0.0
         assert ev.orbit == obj

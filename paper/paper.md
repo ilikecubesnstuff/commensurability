@@ -19,11 +19,11 @@ authors:
 affiliations:
  - name: Insitute for Astronomy, University of Edinburgh
    index: 1
-date: 
+date:
 bibliography: paper.bib
 
 # Arxiv information
-arxiv-doi: 
+arxiv-doi:
 ---
 
 # Summary
@@ -34,7 +34,7 @@ To study the orbital content of galaxies, astronomers often use models for galax
 
 Given their importance, astronomers have developed techniques to identify commensurate orbits. One technique involves tessellating orbital coordinates to estimate the (sub-)volume of the toroid traversed [@Petersen.Weinberg.Katz.2021]. This "orbit tessellation" method aims to pick out commensurate orbits over relatively short orbit integration times, as well as pick out commensurabilities in cases where the kinematic frequencies need not stay constant (such as in a potential with multiple pattern frequencies from multiple causes).
 
-The Python package presented here, `commensurability`, provides a straightforward Python framework and connection to powerful tools for modeling potentials to estimate the volume of a toroid that a given orbit fills. 
+The Python package presented here, `commensurability`, provides a straightforward Python framework and connection to powerful tools for modeling potentials to estimate the volume of a toroid that a given orbit fills.
 
 
 # Statement of need
