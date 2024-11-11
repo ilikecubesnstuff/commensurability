@@ -43,6 +43,7 @@ test = [
     "pytest>=8.2.0",
     "pytest-cov>=6.0.0",
     "astropy>=6.0.0",
+    "sybil>=8.0.1",
 ]
 doctest = [
     "astropy>=6.1.0",
