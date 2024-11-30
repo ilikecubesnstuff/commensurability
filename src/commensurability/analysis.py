@@ -366,11 +366,10 @@ class MPAnalysisBase(AnalysisBase):
             total=self.size // pidgey_chunksize,
             disable=not progressbar,
         ):
-            coords = []
-            for pixel in pixels:
-                params = [self.ic_values[ax][i] for i, ax in zip(pixel, self.axis_names)]
-                coord = self.ic_function(*params)
-                coords.append(coord)
+            coords = [
+                self.ic_function(*(self.ic_values[ax][i] for i, ax in zip(pixel, self.axis_names)))
+                for pixel in pixels
+            ]
             coords = collapse_coords(coords)
 
             # TODO: this is a hack that should be fixed in pidgey
