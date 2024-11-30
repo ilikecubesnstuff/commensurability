@@ -7,6 +7,7 @@ authors = [
 ]
 dependencies = [
     "pidgey>=1.0.0",
+    "astropy>=6.1",
     "matplotlib>=3.8.2",
     "tqdm>=4.66.1",
     "h5py>=3.10.0",
