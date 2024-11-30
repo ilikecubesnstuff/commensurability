@@ -373,13 +373,15 @@ class MPAnalysisBase(AnalysisBase):
                 coords.append(coord)
             coords = collapse_coords(coords)
 
-            orbits = self.backend.compute_orbit(
-                coords,
-                self.potential,
-                self.dt,
-                self.steps,
-                pattern_speed=self.pattern_speed,
-            )
+            # TODO: this is a hack that should be fixed in pidgey
+            with u.add_enabled_equivalencies(u.dimensionless_angles()):
+                orbits = self.backend.compute_orbit(
+                    coords,
+                    self.potential,
+                    self.dt,
+                    self.steps,
+                    pattern_speed=self.pattern_speed,
+                )
             with Pool() as p:
                 values = list(
                     tqdm(
