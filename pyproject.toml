@@ -38,18 +38,15 @@ dev = [
     "tox-pdm>=0.7.2",
     "tox>=4.15.0",
     "coverage>=7.6.4",
-    "sybil>=8.0.1",
 ]
 test = [
     "pytest>=8.2.0",
     "pytest-cov>=6.0.0",
-    "astropy>=6.0.0",
     "sybil>=8.0.1",
 ]
 doctest = [
     "astropy>=6.1.0",
     "galpy>=1.10.1",
-    "sybil>=8.0.1",
 ]
 type = [
     "mypy>=1.10.0",
