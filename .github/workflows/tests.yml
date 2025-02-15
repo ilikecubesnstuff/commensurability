@@ -53,11 +53,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Setup Miniconda with Python ${{ matrix.python-version }}
+    - name: Setup Miniconda with Python 3.12
       uses: conda-incubator/setup-miniconda@v3
       with:
         auto-update-conda: true
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.12
 
     - name: Install Packages
       # "bash -el {0}" required with conda-incubator/setup-miniconda@v3
