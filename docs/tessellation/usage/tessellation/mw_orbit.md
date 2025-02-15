@@ -1,3 +1,32 @@
+<!-- invisible-code-block: python
+try:
+    import agama
+    AGAMA_AVAILABLE = True
+except ModuleNotFoundError:
+    AGAMA_AVAILABLE = False
+
+try:
+    import gala
+    GALA_AVAILABLE = True
+except ModuleNotFoundError:
+    GALA_AVAILABLE = False
+
+try:
+    import galpy
+    GALPY_AVAILABLE = True
+except ModuleNotFoundError:
+    GALPY_AVAILABLE = False
+
+# NOTE: agama potential is not defined in scope, skip even if agama is available
+AGAMA_AVAILABLE = False
+
+# guarantee that exactly one is used
+USE_AGAMA = AGAMA_AVAILABLE
+USE_GALA = not AGAMA_AVAILABLE and GALA_AVAILABLE
+USE_GALPY = not AGAMA_AVAILABLE and not GALA_AVAILABLE and GALPY_AVAILABLE
+RUN = USE_AGAMA or USE_GALA or USE_GALPY
+-->
+
 # Tessellating a Milky Way Orbit
 
 ```python
@@ -7,6 +36,8 @@ from commensurability.tessellation import Tessellation
 Define a Milky Way potential with your package of choice.
 
 === "Agama"
+
+    <!-- skip: next if(not USE_AGAMA) -->
 
     ```python
     import agama
@@ -21,6 +52,8 @@ Define a Milky Way potential with your package of choice.
 
 === "Gala"
 
+    <!-- skip: next if(not USE_GALA) -->
+
     ```python
     import gala.potential as gp
 
@@ -28,6 +61,8 @@ Define a Milky Way potential with your package of choice.
     ```
 
 === "Galpy"
+
+    <!-- skip: next if(not USE_GALPY) -->
 
     ```python
     from galpy.potential import MWPotential2014
@@ -39,6 +74,8 @@ Perform an orbit integration routine.
 
 === "Agama"
 
+    <!-- skip: next if(not USE_AGAMA) -->
+
     ```python
     # x = 4 kpc, z = 1 kpc, vy = 250 km/s
     ic = [4, 0, 1, 0, 250, 0]
@@ -46,6 +83,8 @@ Perform an orbit integration routine.
     ```
 
 === "Gala"
+
+    <!-- skip: next if(not USE_GALA) -->
 
     ```python
     import astropy.units as u
@@ -57,6 +96,8 @@ Perform an orbit integration routine.
     ```
 
 === "Galpy"
+
+    <!-- skip: next if(not USE_GALPY) -->
 
     ```python
     import numpy as np
@@ -75,6 +116,8 @@ Perform an orbit integration routine.
 
 === "Agama"
 
+    <!-- skip: next if(not USE_AGAMA) -->
+
     ```python
     # agama.orbit returns numpy arrays
     # extract point set in configuration space here
@@ -85,17 +128,23 @@ Perform an orbit integration routine.
 
 === "Gala"
 
+    <!-- skip: next if(not USE_GALA) -->
+
     ```python
     tess = Tessellation(orbit, ('x', 'y', 'z'))
     ```
 
 === "Galpy"
 
+    <!-- skip: next if(not USE_GALPY) -->
+
     ```python
     tess = Tessellation(orbit, ('x', 'y', 'z'))
     ```
 
 The tessellation can then be plotted.
+
+<!-- skip: next -->
 
 ```python
 tess.plot(plot_removed=True)

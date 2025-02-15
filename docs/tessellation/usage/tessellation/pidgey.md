@@ -1,3 +1,32 @@
+<!-- invisible-code-block: python
+try:
+    import agama
+    AGAMA_AVAILABLE = True
+except ModuleNotFoundError:
+    AGAMA_AVAILABLE = False
+
+try:
+    import gala
+    GALA_AVAILABLE = True
+except ModuleNotFoundError:
+    GALA_AVAILABLE = False
+
+try:
+    import galpy
+    GALPY_AVAILABLE = True
+except ModuleNotFoundError:
+    GALPY_AVAILABLE = False
+
+# NOTE: agama potential is not defined in scope, skip even if agama is available
+AGAMA_AVAILABLE = False
+
+# guarantee that exactly one is used
+USE_AGAMA = AGAMA_AVAILABLE
+USE_GALA = not AGAMA_AVAILABLE and GALA_AVAILABLE
+USE_GALPY = not AGAMA_AVAILABLE and not GALA_AVAILABLE and GALPY_AVAILABLE
+RUN = USE_AGAMA or USE_GALA or USE_GALPY
+-->
+
 # Using Pidgey
 
 This tutorial is the same as [Milky Way Orbit](mw_orbit.md).
@@ -11,6 +40,8 @@ Define a Milky Way potential with your package of choice.
 Initialize the corresponding backend with `pidgey`.
 
 === "Agama"
+
+    <!-- skip: next if(not USE_AGAMA) -->
 
     ```python
     import pidgey
@@ -28,6 +59,8 @@ Initialize the corresponding backend with `pidgey`.
 
 === "Gala"
 
+    <!-- skip: next if(not USE_GALA) -->
+
     ```python
     import pidgey
     backend = pidgey.GalaBackend()
@@ -38,6 +71,8 @@ Initialize the corresponding backend with `pidgey`.
 
 === "Galpy"
 
+    <!-- skip: next if(not USE_GALPY) -->
+
     ```python
     import pidgey
     backend = pidgey.GalpyBackend()
@@ -47,6 +82,8 @@ Initialize the corresponding backend with `pidgey`.
     ```
 
 Define initial conditions using [`astropy`](https://www.astropy.org/) and perform the orbit integration routine.
+
+<!-- skip: next if(not RUN) -->
 
 ```python
 import astropy.coordinates as c
@@ -67,6 +104,8 @@ coords = backend.compute_orbit(ics, potential, 0.005 * u.Gyr, 200)
 
 Extract the orbit points and plug them into `Tessellation`.
 
+<!-- skip: next if(not RUN) -->
+
 ```python
 # extract points from SkyCoord object
 points = coords.xyz.T
@@ -74,6 +113,8 @@ tess = Tessellation(points)
 ```
 
 The tessellation can then be plotted.
+
+<!-- skip: next -->
 
 ```python
 tess.plot(plot_removed=True)

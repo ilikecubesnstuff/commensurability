@@ -1,3 +1,29 @@
+<!-- invisible-code-block: python
+try:
+    import agama
+    AGAMA_AVAILABLE = True
+except ModuleNotFoundError:
+    AGAMA_AVAILABLE = False
+
+try:
+    import gala
+    GALA_AVAILABLE = True
+except ModuleNotFoundError:
+    GALA_AVAILABLE = False
+
+try:
+    import galpy
+    GALPY_AVAILABLE = True
+except ModuleNotFoundError:
+    GALPY_AVAILABLE = False
+
+# guarantee that exactly one is used
+USE_AGAMA = AGAMA_AVAILABLE
+USE_GALA = not AGAMA_AVAILABLE and GALA_AVAILABLE
+USE_GALPY = not AGAMA_AVAILABLE and not GALA_AVAILABLE and GALPY_AVAILABLE
+RUN = USE_AGAMA or USE_GALA or USE_GALPY
+-->
+
 # Commensurability Quickstart
 
 `commensurability` is a package that provides tools for analyzing commensurabilities within galactic potentials. It contains subpackages that implement particular algorithms for evaluating an orbit's commensurability.
@@ -18,7 +44,7 @@ This package is compatible with the galactic dynamics packages [`agama`](https:/
 
 === "Agama"
 
-    <!-- skip: next -->
+    <!-- skip: next if(not USE_AGAMA) -->
 
     ```python
     def potential_definition():
@@ -42,7 +68,7 @@ This package is compatible with the galactic dynamics packages [`agama`](https:/
 
 === "Gala"
 
-    <!-- skip: next -->
+    <!-- skip: next if(not USE_GALA) -->
 
     ```python
     import astropy.units as u
@@ -69,6 +95,8 @@ This package is compatible with the galactic dynamics packages [`agama`](https:/
     ```
 
 === "Galpy"
+
+    <!-- skip: next if(not USE_GALPY) -->
 
     ```python
     import astropy.units as u
@@ -100,6 +128,8 @@ The region of phase space is specified by two arguments:
 
 Suppose we want to explore orbits starting between 2 and 8 kiloparsecs with an initial tangential velocity between 200 and 300 kilometers per second, starting 2 to 4 kiloparsecs above the galactic plane. A 30x30x5 data cube for this region in phase space can be defined as follows.
 
+<!-- skip: next if(not RUN) -->
+
 ```python
 import astropy.coordinates as c
 import astropy.units as u
@@ -126,6 +156,8 @@ values = dict(
 
 Lastly, the simulation parameters must be defined, namely the time step and number of steps.
 
+<!-- skip: next if(not RUN) -->
+
 ```python
 dt = 0.01 * u.Gyr
 steps = 1000
@@ -135,11 +167,15 @@ steps = 1000
 
 This region of phase space can be probed for commensurabilities using one of the `Analysis` classes provided in the `commensurability` package.
 
+<!-- skip: next if(not RUN) -->
+
 ```python
 from commensurability import TessellationAnalysis
 ```
 
 Collecting everything, we can pass the above objects in the following order:
+
+<!-- skip: next -->
 
 ```python
 # tessellation needs to know the pattern speed used to define the potential
@@ -150,6 +186,8 @@ tanal = TessellationAnalysis(initial_condition, values, potential_definition,
 ```
 
 This step will take a while. Once this is done, it is recommended to write the object to disk—the object is fully recoverable from the disk. All analysis objects are stored using the [HDF5](https://www.hdfgroup.org/solutions/hdf5/) format.
+
+<!-- skip: next -->
 
 ```python
 # to save to disk

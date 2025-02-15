@@ -1,8 +1,18 @@
+<!-- invisible-code-block: python
+try:
+    import galpy
+    GALPY_AVAILABLE = True
+except ModuleNotFoundError:
+    GALPY_AVAILABLE = False
+-->
+
 # Analysing the Solar Neighborhood
 
 The following example will be using [`galpy`](https://docs.galpy.org/en/latest/). This will explore commensurabilities in the solar neighborhood of a Milky-Way-like galactic potential.
 
 ## Initial Imports
+
+<!-- skip: start if(not GALPY_AVAILABLE) -->
 
 ```python
 import astropy.coordinates as c
@@ -46,6 +56,9 @@ values = dict(
 
 Finally, we can set up the simulation parameters and commence the tessellation analysis.
 
+<!-- skip: end -->
+<!-- skip: next -->
+
 ```python
 dt = 0.01 * u.Gyr
 steps = 500
@@ -57,6 +70,8 @@ tanal.save("sol_neighborhood.hdf5")
 ```
 
 This step will take quite a while. It is recommended to save analysis objects immediately after finishing computation. Analysis objects are saved using the [HDF5](https://www.hdfgroup.org/solutions/hdf5/) format. The analysis object can be recovered entirely from this file, using [`Analysis.read_from_hdf5`](../../../reference/commensurability/analysis.md#commensurability.analysis.AnalysisBase.read_from_hdf5).
+
+<!-- skip: next -->
 
 ```python
 # to read from disk

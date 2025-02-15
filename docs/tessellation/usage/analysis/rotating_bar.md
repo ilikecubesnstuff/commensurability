@@ -1,8 +1,22 @@
+<!-- invisible-code-block: python
+AGAMA_AVAILABLE = False
+try:
+    import agama
+    AGAMA_AVAILABLE = True
+except ModuleNotFoundError:
+    pass
+
+# NOTE: agama potential breaks in latest version, skip even if agama is available
+AGAMA_AVAILABLE = False
+-->
+
 # Adding a Rotating Bar to a Potential
 
 The following examples will be using [`agama`](https://github.com/GalacticDynamics-Oxford/Agama). These examples will explore the effect of adding a bar on commensurate tracks in an NFW potential.
 
 ## Initial Imports
+
+<!-- skip: start if(not AGAMA_AVAILABLE) -->
 
 ```python
 import astropy.coordinates as c
@@ -85,6 +99,7 @@ tanal = TessellationAnalysis.read_from_hdf5("no_bar_example.hdf5")
 
 Once this step is done, launch the interactive plot to view the structure of the phase space.
 
+<!-- skip: end -->
 <!-- skip: next -->
 
 ```python
@@ -104,6 +119,8 @@ This plot shows various "tracks" that correspond with orbits of low commensurabi
 ## Adding a Bar
 
 We can modify the original potential by adding a bar.
+
+<!-- skip: start if(not AGAMA_AVAILABLE) -->
 
 ```python
 def potential_definition():
@@ -146,6 +163,7 @@ tanal = TessellationAnalysis.read_from_hdf5("bar_example.hdf5")
 
 As before, this step will take some time to run. Once completed, we can launch the interactive plot and observe the differences present in the phase space structure.
 
+<!-- skip: end -->
 <!-- skip: next -->
 
 ```python
@@ -163,6 +181,8 @@ The addition of the bar appears to have distorted the commensurate tracks presen
 ## Adding a Big Bar
 
 To take this to the extreme, we can try adding a very massive bar and observe its effects on the commensurate tracks. Let's recycle the code from the previous section, but increase the bar's mass ten-fold.
+
+<!-- skip: start if(not AGAMA_AVAILABLE) -->
 
 ```python
 def potential_definition():
@@ -205,6 +225,7 @@ tanal = TessellationAnalysis.read_from_hdf5("big_bar_example.hdf5")
 
 As before, this step will take some time to run. This may be slightly slower than the previous runs. Launch the interactive plot once completed.
 
+<!-- skip: end -->
 <!-- skip: next -->
 
 ```python

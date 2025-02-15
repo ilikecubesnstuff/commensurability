@@ -1,8 +1,13 @@
+<!-- invisible-code-block: python 
+
+-->
+
 # Tessellation Quickstart
 
 To get started, import `commensurability.tessellation.Tessellation` and call it by passing in your point array or orbit object.
 
-<!-- skip: next -->
+<!-- TODO: restructure this page -->
+<!-- skip: start -->
 
 ```python
 from commensurability.tessellation import Tessellation
@@ -85,6 +90,8 @@ This returns an object with four attributes of note:
     - `tess.tri` will be set to a [`FailedDelaunay`](../../reference/commensurability/tessellation/base.md#commensurability.tessellation.base.FailedDelaunay) instance.
     - `tess.mask` will be set to `None`.
     - `tess.measure` will be set to `0.0`.
+
+<!-- skip: end -->
 
 ### Plotting Simplices
 
