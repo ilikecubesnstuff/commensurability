@@ -47,7 +47,7 @@ jobs:
         carryforward: "run-windows-latest-3.11,run-windows-latest-3.12,run-ubuntu-latest-3.11,run-ubuntu-latest-3.12,run-macos-latest-3.11,run-macos-latest-3.12"
 
   doctests:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'doctests')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'documentation')
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
