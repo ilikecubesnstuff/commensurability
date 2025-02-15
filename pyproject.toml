@@ -42,7 +42,6 @@ dev = [
 test = [
     "pytest>=8.2.0",
     "pytest-cov>=6.0.0",
-    "coverage>=7.6.4",
     "sybil>=8.0.1",
 ]
 type = [
@@ -62,6 +61,7 @@ docs = [
 ]
 github = [
     "tox-gh-actions>=3.2.0",
+    "coverage>=7.6.4",
 ]
 
 [tool.black]
