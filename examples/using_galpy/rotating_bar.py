@@ -42,8 +42,8 @@ def ic_function(x, vy, z):
         representation_type="cartesian",
     )
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     dt = 0.01 * u.Gyr
     steps = 500
     tanal = TessellationAnalysis(
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     tanal.save(f"bar_{SIZE}_{FRAMES}.hdf5")
     tanal.launch_interactive_plot("x", "vy")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     tanal = TessellationAnalysis(
         ic_function, values, pot, dt, steps, pattern_speed=omega, pidgey_chunksize=50
     )

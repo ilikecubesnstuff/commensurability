@@ -17,8 +17,8 @@ def dummy_backend():
                 x=[[0], [0], [0], [1]],
                 y=[[0], [0], [1], [0]],
                 z=[[0], [1], [0], [0]],
-                unit='kpc',
-                representation_type='cartesian'
+                unit="kpc",
+                representation_type="cartesian",
             )
 
         def _extract_points(self, orbit, pattern_speed):
@@ -30,9 +30,13 @@ def dummy_backend():
 @pytest.fixture
 def ic_params():
     ic_function = lambda x, y: c.SkyCoord(
-        x=x * u.kpc, y=y * u.kpc, z=0 * u.kpc,
-        v_x=0 * u.km/u.s, v_y=0 * u.km/u.s, v_z=0 * u.km/u.s,
-        representation_type='cartesian'
+        x=x * u.kpc,
+        y=y * u.kpc,
+        z=0 * u.kpc,
+        v_x=0 * u.km / u.s,
+        v_y=0 * u.km / u.s,
+        v_z=0 * u.km / u.s,
+        representation_type="cartesian",
     )
     return ic_function, {"x": [0, 1, 2], "y": [0, 1, 2]}
 
@@ -41,6 +45,7 @@ def ic_params():
 def dummy_potential_func():
     def dummy_potential():
         return 0.0
+
     return dummy_potential
 
 
@@ -94,26 +99,45 @@ class TestAnalysis:
             TessellationAnalysis(
                 ic_function, ic_values, dummy_potential_func, 1, 1, backend="unknown"
             )
-    
+
     def test_negative_pidgey_chunksize(self, ic_params, dummy_potential_func, dummy_backend):
         ic_function, ic_values = ic_params
         with pytest.raises(ValueError):
             TessellationAnalysis(
-                ic_function, ic_values, dummy_potential_func, 1, 1, backend=dummy_backend, pidgey_chunksize=-1
+                ic_function,
+                ic_values,
+                dummy_potential_func,
+                1,
+                1,
+                backend=dummy_backend,
+                pidgey_chunksize=-1,
             )
-    
+
     def test_negative_mp_chunksize(self, ic_params, dummy_potential_func, dummy_backend):
         ic_function, ic_values = ic_params
         with pytest.raises(ValueError):
             TessellationAnalysis(
-                ic_function, ic_values, dummy_potential_func, 1, 1, backend=dummy_backend, mp_chunksize=-1
+                ic_function,
+                ic_values,
+                dummy_potential_func,
+                1,
+                1,
+                backend=dummy_backend,
+                mp_chunksize=-1,
             )
 
     def test_large_mp_chunksize(self, ic_params, dummy_potential_func, dummy_backend):
         ic_function, ic_values = ic_params
         with pytest.raises(ValueError):
             TessellationAnalysis(
-                ic_function, ic_values, dummy_potential_func, 1, 1, backend=dummy_backend, pidgey_chunksize=5, mp_chunksize=1e6
+                ic_function,
+                ic_values,
+                dummy_potential_func,
+                1,
+                1,
+                backend=dummy_backend,
+                pidgey_chunksize=5,
+                mp_chunksize=1e6,
             )
 
     def test_analysis_init(self, ic_params, dummy_potential_func, dummy_backend):
@@ -134,7 +158,9 @@ class TestAnalysis:
         assert analysis.backend == dummy_backend
 
         analysis.save("test_files/test_analysis.hdf5")
-        TessellationAnalysis.read_from_hdf5("test_files/test_analysis.hdf5", backend_cls=dummy_backend.__class__)
+        TessellationAnalysis.read_from_hdf5(
+            "test_files/test_analysis.hdf5", backend_cls=dummy_backend.__class__
+        )
         assert analysis.ic_function == ic_function
         assert analysis.ic_values == ic_values
         assert analysis.potential_function == dummy_potential_func
@@ -220,7 +246,9 @@ class TestAnalysis2D:
         assert analysis.backend == dummy_backend
 
         analysis.save("test_files/test_analysis.hdf5")
-        TessellationAnalysis2D.read_from_hdf5("test_files/test_analysis.hdf5", backend_cls=dummy_backend.__class__)
+        TessellationAnalysis2D.read_from_hdf5(
+            "test_files/test_analysis.hdf5", backend_cls=dummy_backend.__class__
+        )
         assert analysis.ic_function == ic_function
         assert analysis.ic_values == ic_values
         assert analysis.potential_function == dummy_potential_func

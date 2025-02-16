@@ -1,0 +1,195 @@
+name: Full Package Testing
+
+# test all aspects of the package bi-monthly
+on:
+  schedule:
+    - cron: '0 0 1 */2 *'  # "At 00:00 on day-of-month 1 in every 2nd month."
+  workflow_dispatch:
+
+jobs:
+  tox:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [3.11, 3.12, 3.13]
+    name: Tox on ${{ matrix.os }}, Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # only sync is required, no need to update lock file
+      # https://pdm-project.org/latest/usage/hooks/#dependencies-management
+      - name: Install Dependencies
+        run: |
+          pdm sync -G dev, -G github
+
+      - name: Run Tox
+        run: |
+          pdm run -v tox
+
+  galpy:
+    strategy:
+      matrix:
+        python-version: [3.11, 3.12, 3.13]
+    name: Galpy Scripts on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest  # no windows or macOS testing currently
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Miniconda with Python ${{ matrix.python-version }}
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Packages
+        # "bash -el {0}" required with conda-incubator/setup-miniconda@v3
+        # see: https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#important
+        shell: bash -el {0}
+        # test environment is set up by conda-incubator/setup-miniconda@v3
+        # dependencies to install:
+        # - galpy: the orbit integration backend
+        # - gsl: used by galpy for fast integration
+        # - pytest/sybil: testing framework to run the test scripts
+        run: |
+          conda activate test
+          conda install -c conda-forge gsl galpy pytest sybil
+          python -m pip install --upgrade pip
+          python -m pip install .
+
+      - name: Test Docs
+        # "bash -el {0}" required with conda-incubator/setup-miniconda@v3
+        # see: https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#important
+        shell: bash -el {0}
+        run: pytest docs
+
+      # TBA: test galpy scripts inside examples
+
+  gala:
+    strategy:
+      matrix:
+        python-version: [3.11, 3.12, 3.13]
+    name: Gala Scripts on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest  # no windows or macOS testing currently
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Miniconda with Python ${{ matrix.python-version }}
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Packages
+        # "bash -el {0}" required with conda-incubator/setup-miniconda@v3
+        # see: https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#important
+        shell: bash -el {0}
+        # test environment is set up by conda-incubator/setup-miniconda@v3
+        # dependencies to install:
+        # - gala: the orbit integration backend
+        # - gsl: used by gala for fast integration
+        # - pytest/sybil: testing framework to run the test scripts
+        run: |
+          conda activate test
+          conda install -c conda-forge gsl gala pytest sybil
+          python -m pip install --upgrade pip
+          python -m pip install .
+
+      - name: Test Docs
+        # "bash -el {0}" required with conda-incubator/setup-miniconda@v3
+        # see: https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#important
+        shell: bash -el {0}
+        run: pytest docs
+
+      # TBA: test gala scripts inside examples
+
+  agama:
+    strategy:
+      matrix:
+        python-version: [3.11, 3.12, 3.13]
+    name: Agama Scripts on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest  # no windows or macOS testing currently
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Miniconda with Python ${{ matrix.python-version }}
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Packages
+        # "bash -el {0}" required with conda-incubator/setup-miniconda@v3
+        # see: https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#important
+        shell: bash -el {0}
+        # test environment is set up by conda-incubator/setup-miniconda@v3
+        # dependencies to install:
+        # - numpy: agama dependency
+        # - six: agama dependency
+        # - pytest/sybil: testing framework to run the test scripts
+        # - agama: orbit integration backend
+        # NOTE: agama's latest version is not hosted on PyPI
+        #       installation through pip also proves to be buggy
+        #       git clone and setuptools is the most reliable option
+        run: |
+          conda activate test
+          conda install -c conda-forge numpy six pytest sybil
+          python -m pip install --upgrade pip
+          git clone https://github.com/GalacticDynamics-Oxford/Agama.git ../Agama
+          cd ../Agama
+          python setup.py install --yes
+          cd ../commensurability
+          python -m pip install .
+
+      - name: Test Docs
+        # "bash -el {0}" required with conda-incubator/setup-miniconda@v3
+        # see: https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#important
+        shell: bash -el {0}
+        run: pytest docs
+
+      # TBA: test agama scripts inside examples
+
+  build-docs:
+    name: Build Documentation with MkDocs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # only sync is required, no need to update lock file
+      # https://pdm-project.org/latest/usage/hooks/#dependencies-management
+      - name: Install Dependencies
+        run: |
+          pdm sync -G docs
+      
+      - name: Build Documentation
+        run: |
+          pdm run -v mkdocs build -v
+
+  install:
+    name: Install from PyPI
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+
+    - name: Install from PyPI
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install commensurability

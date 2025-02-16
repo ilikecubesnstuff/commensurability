@@ -6,12 +6,13 @@ authors = [
     { name = "ilikecubesnstuff", email = "25328250+ilikecubesnstuff@users.noreply.github.com" },
 ]
 dependencies = [
-    "pidgey>=1.0.1",
+    "pidgey>=1.0.2",
     "matplotlib>=3.8.2",
     "tqdm>=4.66.1",
     "h5py>=3.10.0",
     "more_itertools>=10.2.0",
     "scipy>=1.13.0",
+    "astropy>=6.1.0",
 ]
 classifiers = [
     "Intended Audience :: Science/Research",
@@ -37,11 +38,11 @@ build-backend = "pdm.backend"
 dev = [
     "tox-pdm>=0.7.2",
     "tox>=4.15.0",
-    "coverage>=7.6.4"
 ]
 test = [
     "pytest>=8.2.0",
     "pytest-cov>=6.0.0",
+    "sybil>=8.0.1",
 ]
 type = [
     "mypy>=1.10.0",
@@ -60,6 +61,7 @@ docs = [
 ]
 github = [
     "tox-gh-actions>=3.2.0",
+    "coverage>=7.6.4",
 ]
 
 [tool.black]

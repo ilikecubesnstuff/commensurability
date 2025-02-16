@@ -17,7 +17,21 @@ permissions:
   contents: read
 
 jobs:
+  doctests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup PDM
+      uses: pdm-project/setup-pdm@v4
+    - name: Install dependencies
+      run: |
+        pdm sync -G dev, -G github, -G doctest
+    - name: Run doctests
+      run: |
+        pdm run -v pytest docs
+
   testpypi-publish:
+    needs: doctests
     name: upload release to TestPyPI
     runs-on: ubuntu-latest
     permissions:

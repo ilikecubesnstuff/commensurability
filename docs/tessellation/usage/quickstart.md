@@ -1,8 +1,15 @@
+<!-- invisible-code-block: python 
+
+-->
+
 # Tessellation Quickstart
 
 To get started, import `commensurability.tessellation.Tessellation` and call it by passing in your point array or orbit object.
 
-```py
+<!-- TODO: restructure this page -->
+<!-- skip: start -->
+
+```python
 from commensurability.tessellation import Tessellation
 tess = Tessellation(points_or_orbit)
 ```
@@ -15,7 +22,7 @@ For more thorough walkthroughs, see the [usage guides](index.md).
 
 This example will use `numpy` to create arrays of data. The package also uses `matplotlib` for plotting.
 
-```
+```python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -31,7 +38,7 @@ For demonstration, a random set of points will be generated here.
 
 === "2D Example"
 
-    ``` py
+    ```python
     # sample points around a circle
     rng = np.random.default_rng(0)
     theta = rng.uniform(-np.pi, np.pi, 100)
@@ -43,7 +50,7 @@ For demonstration, a random set of points will be generated here.
 
 === "3D Example"
 
-    ``` py
+    ```python
     # sample points near the equator of a sphere
     rng = np.random.default_rng(0)
     phi = rng.uniform(-np.pi, np.pi, 200)
@@ -64,7 +71,7 @@ For demonstration, a random set of points will be generated here.
 
 This random point set can then be passed into [`Tessellation`](../../reference/commensurability/tessellation/constructor.md#commensurability.tessellation.constructor.Tessellation).
 
-``` py
+```python
 tess = Tessellation(points)
 ```
 
@@ -84,13 +91,18 @@ This returns an object with four attributes of note:
     - `tess.mask` will be set to `None`.
     - `tess.measure` will be set to `0.0`.
 
+<!-- skip: end -->
+
 ### Plotting Simplices
 
 For 2 and 3 dimensional tessellations specifically, you can display a plot of the tessellation using [`tess.plot()`](../../reference/commensurability/tessellation/base.md#commensurability.tessellation.base.TessellationBase.plot).
 
 === "2D Example"
 
-    ```py
+    <!-- TODO: make a testable example -->
+    <!-- skip: next -->
+
+    ```python
     fig, ax = plt.subplots()
     tess.plot(ax, plot_included=True, plot_removed=True, plot_points=True)
     plt.show()
@@ -100,7 +112,10 @@ For 2 and 3 dimensional tessellations specifically, you can display a plot of th
 
 === "3D Example"
 
-    ```py
+    <!-- TODO: make a testable example -->
+    <!-- skip: next -->
+
+    ```python
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
     tess.plot(ax, plot_included=True, plot_removed=True, plot_points=True)
     plt.show()
