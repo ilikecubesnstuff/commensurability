@@ -39,7 +39,16 @@ from multiprocessing import Pool
 import numpy as np
 
 from commensurability.tessellation import Tessellation
+
+# plotting
+from matplotlib import pyplot as plt
 ```
+
+<!-- invisible-code-block: python
+# don't keep plot windows open
+from matplotlib import pyplot as plt
+plt.ion()
+-->
 
 Define a Milky Way potential with your package of choice.
 Initialize the corresponding backend with `pidgey`.
@@ -123,7 +132,7 @@ def evaluate(points):
 
 Then within a `Pool()` context, map `Tessellation` over the orbit points.
 
-<!-- skip: next "multiprocessing does not work here, evaulate is not pickleable" -->
+<!-- skip: start "multiprocessing does not work here, evaluate is not pickleable" -->
 
 ```python
 point_sets = orbits.xyz.transpose(1, 2, 0)  # change to shape (norbits, npoints, ndims)
@@ -134,11 +143,7 @@ with Pool() as p:
 After leaving this running, a list of commensurability values should remain.
 We can plot a histogram to see their distribution for the chosen area of the phase space:
 
-<!-- skip: next -->
-
 ```python
-import matplotlib.pyplot as plt
-
 plt.hist(values, bins=50, range=(0, 1))
 plt.show()
 ```

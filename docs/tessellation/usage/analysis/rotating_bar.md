@@ -5,9 +5,6 @@ try:
     AGAMA_AVAILABLE = True
 except ModuleNotFoundError:
     pass
-
-# NOTE: agama potential breaks in latest version, skip even if agama is available
-AGAMA_AVAILABLE = False
 -->
 
 # Adding a Rotating Bar to a Potential
@@ -34,7 +31,7 @@ Start by setting up a regular NFW potential in a function. Make sure to include 
 def potential_definition():
     import agama
 
-    nfw_pot = dict(type="NFW", mass=1e12, scaleRadius=20, axisRatioZ=0.8)
+    nfw_pot = dict(type="NFW", mass=1e12, scaleRadius=20)
     potential = agama.Potential(nfw_pot)
     return potential
 ```
@@ -65,6 +62,9 @@ Finally, let us set up the integration parameters and run a tessellation analysi
 Later on, we will be introducing a rotating bar with a fixed pattern speed of 30 kilometers per second per kiloparsec.
 Orbit commensurabilities will have to be analyzed in the co-rotating frame.
 To compare these examples appropriately, we will impose the same co-rotating frame here.
+
+<!-- skip: end -->
+<!-- skip: start -->
 
 ```python
 dt = 0.01 * u.Gyr
@@ -99,9 +99,6 @@ tanal = TessellationAnalysis.read_from_hdf5("no_bar_example.hdf5")
 
 Once this step is done, launch the interactive plot to view the structure of the phase space.
 
-<!-- skip: end -->
-<!-- skip: next -->
-
 ```python
 tanal.launch_interactive_plot("x", "vy")
 ```
@@ -120,6 +117,7 @@ This plot shows various "tracks" that correspond with orbits of low commensurabi
 
 We can modify the original potential by adding a bar.
 
+<!-- skip: end -->
 <!-- skip: start if(not AGAMA_AVAILABLE) -->
 
 ```python
@@ -132,15 +130,16 @@ def potential_definition():
         scaleRadius=3.0,
         axisRatioY=0.5,
         axisratioz=0.4,
-        cutoffStrength=2.0,
-        patternSpeed=30,
     )
-    nfw_pot = dict(type="NFW", mass=1e12, scaleRadius=20, axisRatioZ=0.8)
+    nfw_pot = dict(type="NFW", mass=1e12, scaleRadius=20)
     potential = agama.Potential(nfw_pot, bar_pot)
     return potential
 ```
 
 The remaining parameters will all be kept the same. The code blocks are omitted from this section since they are identical to before.
+
+<!-- skip: end -->
+<!-- skip: start -->
 
 ```python
 tanal = TessellationAnalysis2D(
@@ -163,9 +162,6 @@ tanal = TessellationAnalysis.read_from_hdf5("bar_example.hdf5")
 
 As before, this step will take some time to run. Once completed, we can launch the interactive plot and observe the differences present in the phase space structure.
 
-<!-- skip: end -->
-<!-- skip: next -->
-
 ```python
 tanal.launch_interactive_plot("x", "vy")
 ```
@@ -182,6 +178,7 @@ The addition of the bar appears to have distorted the commensurate tracks presen
 
 To take this to the extreme, we can try adding a very massive bar and observe its effects on the commensurate tracks. Let's recycle the code from the previous section, but increase the bar's mass ten-fold.
 
+<!-- skip: end -->
 <!-- skip: start if(not AGAMA_AVAILABLE) -->
 
 ```python
@@ -194,15 +191,16 @@ def potential_definition():
         scaleRadius=3.0,
         axisRatioY=0.5,
         axisratioz=0.4,
-        cutoffStrength=2.0,
-        patternSpeed=30,
     )
-    nfw_pot = dict(type="NFW", mass=1e12, scaleRadius=20, axisRatioZ=0.8)
+    nfw_pot = dict(type="NFW", mass=1e12, scaleRadius=20)
     potential = agama.Potential(nfw_pot, bar_pot)
     return potential
 ```
 
 As before, the remaining parameters will all be kept the same. The code blocks are omitted from this section since they are identical to before.
+
+<!-- skip: end -->
+<!-- skip: start -->
 
 ```python
 tanal = TessellationAnalysis2D(
@@ -224,9 +222,6 @@ tanal = TessellationAnalysis.read_from_hdf5("big_bar_example.hdf5")
 ![](big_bar.PNG){ width=40% align=right }
 
 As before, this step will take some time to run. This may be slightly slower than the previous runs. Launch the interactive plot once completed.
-
-<!-- skip: end -->
-<!-- skip: next -->
 
 ```python
 tanal.launch_interactive_plot("x", "vy")
