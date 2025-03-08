@@ -1,9 +1,8 @@
 name: Full Package Testing
 
-# test all aspects of the package bi-monthly
 on:
   schedule:
-    - cron: '0 0 1 */2 *'  # "At 00:00 on day-of-month 1 in every 2nd month."
+    - cron: '0 0 1 */2 *'
   workflow_dispatch:
 
 jobs:
@@ -175,7 +174,7 @@ jobs:
       - name: Install Dependencies
         run: |
           pdm sync -G docs
-      
+
       - name: Build Documentation
         run: |
           pdm run -v mkdocs build -v

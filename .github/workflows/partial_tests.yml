@@ -1,9 +1,8 @@
 name: Partial Package Testing
 
-# test the unit tests and docs weekly only using the "primary backend"
 on:
   schedule:
-    - cron: '0 0 * * 1'  # "At 00:00 on Monday."
+    - cron: '0 0 * * 1'
   workflow_dispatch:
 
 jobs:
@@ -70,6 +69,7 @@ jobs:
         # "bash -el {0}" required with conda-incubator/setup-miniconda@v3
         # see: https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#important
         shell: bash -el {0}
-        run: pytest docs
+        # ignore computationally intensive tests
+        run: pytest docs --ignore=docs/tessellation/implementation_ar_test.py --ignore=docs/tessellation/implementation_norm_test.py --ignore=docs/tessellation/usage/analysis/rotating_bar_test.py --ignore=docs/tessellation/usage/analysis/solar_neighborhood_test.py
 
       # TBA: test galpy scripts inside examples
