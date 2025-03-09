@@ -34,7 +34,16 @@ It uses [`pidgey`](https://github.com/ilikecubesnstuff/pidgey) to streamline the
 
 ```python
 from commensurability.tessellation import Tessellation
+
+# plotting
+from matplotlib import pyplot as plt
 ```
+
+<!-- invisible-code-block: python
+# don't keep plot windows open
+from matplotlib import pyplot as plt
+plt.ion()
+-->
 
 Define a Milky Way potential with your package of choice.
 Initialize the corresponding backend with `pidgey`.
@@ -114,10 +123,13 @@ tess = Tessellation(points)
 
 The tessellation can then be plotted.
 
-<!-- skip: next -->
+<!-- skip: next if(not RUN) -->
 
 ```python
-tess.plot(plot_removed=True)
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+tess.plot(ax, plot_removed=True)
+plt.show()
 ```
 
 === "Agama"
