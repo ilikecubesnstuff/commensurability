@@ -121,12 +121,18 @@ jobs:
   agama:
     strategy:
       matrix:
-        python-version: [3.12]  # 3.13 not supported yet?
+        python-version: [3.13]  # only test on latest Python version
     name: Agama Scripts on Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest  # no windows or macOS testing currently
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set up GCC
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: latest
+          platform: x64
 
       - name: Setup Miniconda with Python ${{ matrix.python-version }}
         uses: conda-incubator/setup-miniconda@v3
@@ -149,11 +155,11 @@ jobs:
         #       git clone and setuptools is the most reliable option
         run: |
           conda activate test
+          conda install -c conda-forge numpy six pytest sybil
           python -m pip install --upgrade pip
-          python -m pip install numpy six pytest sybil
           git clone https://github.com/GalacticDynamics-Oxford/Agama.git ../Agama
           cd ../Agama
-          python setup.py install --user --yes
+          python setup.py install --yes
           cd ../commensurability
           python -m pip install .
 
