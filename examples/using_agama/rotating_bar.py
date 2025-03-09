@@ -17,12 +17,10 @@ def pot():
         scaleRadius=1.0,
         axisRatioY=0.5,
         axisratioz=0.4,
-        cutoffStrength=2.0,
-        patternSpeed=30,
     )
     disk_par = dict(type="Disk", mass=5e10, scaleRadius=3, scaleHeight=0.4)
     bulge_par = dict(type="Sersic", mass=1e10, scaleRadius=1, axisRatioZ=0.6)
-    halo_par = dict(type="NFW", mass=1e12, scaleRadius=20, axisRatioZ=0.8)
+    halo_par = dict(type="NFW", mass=1e12, scaleRadius=20)
     potgal = agama.Potential(disk_par, bulge_par, halo_par, bar_par)
     return potgal
 
