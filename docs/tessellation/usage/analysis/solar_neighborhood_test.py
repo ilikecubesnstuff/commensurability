@@ -25,10 +25,6 @@ tanal = (
 )
 
 
-# skip, revert later
-GALPY_AVAILABLE = False
-
-
 @pytest.mark.skipif(not GALPY_AVAILABLE, reason="Galpy not available")
 def test_hdf_output():
     def potential_definition():
