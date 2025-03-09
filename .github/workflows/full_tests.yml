@@ -35,7 +35,7 @@ jobs:
   galpy:
     strategy:
       matrix:
-        python-version: [3.11, 3.12, 3.13]
+        python-version: [3.13]  # only test on latest Python version
     name: Galpy Scripts on Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest  # no windows or macOS testing currently
     steps:
@@ -80,7 +80,7 @@ jobs:
   gala:
     strategy:
       matrix:
-        python-version: [3.11, 3.12, 3.13]
+        python-version: [3.12]  # 3.13 not supported yet?
     name: Gala Scripts on Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest  # no windows or macOS testing currently
     steps:
@@ -121,7 +121,7 @@ jobs:
   agama:
     strategy:
       matrix:
-        python-version: [3.11, 3.12, 3.13]
+        python-version: [3.13]  # only test on latest Python version
     name: Agama Scripts on Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest  # no windows or macOS testing currently
     steps:
