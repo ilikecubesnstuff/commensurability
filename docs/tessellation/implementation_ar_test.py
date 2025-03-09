@@ -82,7 +82,7 @@ class AR20(_TessellationAnalysis):
 @pytest.mark.parametrize("cls", [AR0, AR5, AR10, AR15, AR20])
 def test_axis_ratio_images(cls):
     folder = Path(__file__).parent
-    tanal = _TessellationAnalysis.read_from_hdf5(folder / f"ar{cls.ar}.hdf5")
+    tanal = cls.read_from_hdf5(folder / f"ar{cls.ar}.hdf5")
 
     def potential_definition():
         import agama
