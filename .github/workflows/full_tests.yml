@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: '0 0 1 */2 *'
   workflow_dispatch:
+    inputs:
+      compute-figures:
+        type: boolean
+        description: Compute HDF5 output for documentation figures.
+        required: true
+        default: true
 
 jobs:
   tox:
@@ -70,6 +76,7 @@ jobs:
         run: pytest docs --ignore=docs/tessellation/implementation_ar_test.py --ignore=docs/tessellation/implementation_norm_test.py --ignore=docs/tessellation/usage/analysis/rotating_bar_test.py --ignore=docs/tessellation/usage/analysis/solar_neighborhood_test.py
 
       - name: Test Figures
+        if: ${{ github.event.inputs.compute-figures == 'true' }}
         # "bash -el {0}" required with conda-incubator/setup-miniconda@v3
         # see: https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#important
         shell: bash -el {0}
@@ -170,6 +177,7 @@ jobs:
         run: pytest docs --ignore=docs/tessellation/implementation_ar_test.py --ignore=docs/tessellation/implementation_norm_test.py --ignore=docs/tessellation/usage/analysis/rotating_bar_test.py --ignore=docs/tessellation/usage/analysis/solar_neighborhood_test.py
 
       - name: Test Figures
+        if: ${{ github.event.inputs.compute-figures == 'true' }}
         # "bash -el {0}" required with conda-incubator/setup-miniconda@v3
         # see: https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#important
         shell: bash -el {0}
