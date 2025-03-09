@@ -149,11 +149,11 @@ jobs:
         #       git clone and setuptools is the most reliable option
         run: |
           conda activate test
-          conda install -c conda-forge "numpy<2" six pytest sybil
           python -m pip install --upgrade pip
+          python -m pip install numpy six pytest sybil
           git clone https://github.com/GalacticDynamics-Oxford/Agama.git ../Agama
           cd ../Agama
-          python setup.py install --yes
+          python setup.py install --user --yes
           cd ../commensurability
           python -m pip install .
 
