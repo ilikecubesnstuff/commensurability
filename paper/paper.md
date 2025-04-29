@@ -11,7 +11,7 @@ tags:
 authors:
   - name: Subhadeep Sarkar
     corresponding: true
-    affiliation: "1"
+    affiliation: "1, 2"
     orcid: 0009-0006-9454-5141
   - name: Michael S. Petersen
     affiliation: "1"
@@ -19,6 +19,8 @@ authors:
 affiliations:
  - name: Insitute for Astronomy, University of Edinburgh
    index: 1
+ - name: Institut de Ciències del Cosmos, Universitat de Barcelona
+   index: 2
 date:
 bibliography: paper.bib
 
