@@ -51,7 +51,7 @@ jobs:
         run: pytest docs --ignore=docs/tessellation/implementation_ar_test.py --ignore=docs/tessellation/implementation_norm_test.py --ignore=docs/tessellation/usage/analysis/rotating_bar_test.py --ignore=docs/tessellation/usage/analysis/solar_neighborhood_test.py
 
   testpypi-publish:
-    needs: doctests
+    needs: doctests-galpy
     name: upload release to TestPyPI
     runs-on: ubuntu-latest
     permissions:
