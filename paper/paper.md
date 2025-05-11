@@ -61,13 +61,6 @@ Additionally, computing the orbit volume provides an opportunity to efficiently 
 `commensurability` depends on the Python package [pidgey](https://github.com/ilikecubesnstuff/pidgey) for orbit integration. Pidgey is a standalone package that asserts a uniform interface to three major galactic dynamics packages—AGAMA [@agama.paper], `gala` [@gala.paper], and galpy [@galpy.paper]—and its interface can be extended to more packages trivially. Pidgey uses Astropy [@astropy.paper] SkyCoord objects to store orbit coordinates, a format familiar to most astronomers. Pidgey depends on [iext](https://github.com/ilikecubesnstuff/iext), a defensive framework for extending the dependencies associated with a class without requiring the dependencies to be present. This enables pidgey to operate in the absence of a complete suite of orbit integration packages; the user need only have one of AGAMA, `gala`, or galpy installed to use commensurability (but may have all three).
 
 
-# Provided example workflows and usage
-
-To help users begin using the software in their research, we provide a [Read the Docs](https://commensurability.readthedocs.io) page with pip-based [installation](https://commensurability.readthedocs.io/en/stable/tessellation/usage/) instructions, a [quickstart](https://commensurability.readthedocs.io/en/latest/quickstart/), and examples drawn from real scientific applications. First, we feature a demonstration of orbital classification in a model of a [rotating bar](https://commensurability.readthedocs.io/en/latest/tessellation/usage/analysis/rotating_bar/), where a bar orbit is detected by tracing a curve of vanishing toroid volume as shown in \autoref{fig:x1orbit}. Second, we demonstrate orbital classification in the [solar neighborhood](https://commensurability.readthedocs.io/en/latest/tessellation/usage/analysis/solar_neighborhood/) for a standard Milky Way potential, revealing a rich dynamical structure of commensurate orbits.
-
-The Read the Docs page also hosts an extensive API reference, with all code adhering to [the Black code style](https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html) for ease of readability.
-
-
 # Acknowledgements
 
 We thank Aneesh Naik and Eugene Vasiliev for discussions regarding early versions of the software.
