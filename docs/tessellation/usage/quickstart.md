@@ -2,7 +2,9 @@
 
 To get started, import `commensurability.tessellation.Tessellation` and call it by passing in your point array or orbit object.
 
-```py
+<!-- skip: next -->
+
+```python
 from commensurability.tessellation import Tessellation
 tess = Tessellation(points_or_orbit)
 ```
@@ -15,12 +17,16 @@ For more thorough walkthroughs, see the [usage guides](index.md).
 
 This example will use `numpy` to create arrays of data. The package also uses `matplotlib` for plotting.
 
-```
+```python
 import numpy as np
 import matplotlib.pyplot as plt
 
 from commensurability.tessellation import Tessellation
 ```
+
+<!-- invisible-code-block: python
+plt.ion()
+-->
 
 ### Tessellating Points
 
@@ -31,7 +37,7 @@ For demonstration, a random set of points will be generated here.
 
 === "2D Example"
 
-    ``` py
+    ```python
     # sample points around a circle
     rng = np.random.default_rng(0)
     theta = rng.uniform(-np.pi, np.pi, 100)
@@ -41,9 +47,13 @@ For demonstration, a random set of points will be generated here.
     points += rng.normal(0, 0.05, points.shape)
     ```
 
+<!-- invisible-code-block: python
+points_2d = points
+-->
+
 === "3D Example"
 
-    ``` py
+    ```python
     # sample points near the equator of a sphere
     rng = np.random.default_rng(0)
     phi = rng.uniform(-np.pi, np.pi, 200)
@@ -58,15 +68,26 @@ For demonstration, a random set of points will be generated here.
     points += rng.normal(0, 0.05, points.shape)
     ```
 
+<!-- invisible-code-block: python
+points_3d = points
+-->
+
 !!! warning "Degeneracy"
     The Delaunay triangulation fails when the point set is degenerate or co-spherical.
     The above example would fail if no random noise was added.
 
 This random point set can then be passed into [`Tessellation`](../../reference/commensurability/tessellation/constructor.md#commensurability.tessellation.constructor.Tessellation).
 
-``` py
+<!-- skip: next -->
+
+```python
 tess = Tessellation(points)
 ```
+
+<!-- invisible-code-block: python
+tess_2d = Tessellation(points_2d)
+tess_3d = Tessellation(points_3d)
+-->
 
 This returns an object with four attributes of note:
 
@@ -88,9 +109,13 @@ This returns an object with four attributes of note:
 
 For 2 and 3 dimensional tessellations specifically, you can display a plot of the tessellation using [`tess.plot()`](../../reference/commensurability/tessellation/base.md#commensurability.tessellation.base.TessellationBase.plot).
 
+<!-- invisible-code-block: python
+tess = tess_2d
+-->
+
 === "2D Example"
 
-    ```py
+    ```python
     fig, ax = plt.subplots()
     tess.plot(ax, plot_included=True, plot_removed=True, plot_points=True)
     plt.show()
@@ -98,9 +123,13 @@ For 2 and 3 dimensional tessellations specifically, you can display a plot of th
 
     ![2D tessellation example plot](2d.PNG)
 
+<!-- invisible-code-block: python
+tess = tess_3d
+-->
+
 === "3D Example"
 
-    ```py
+    ```python
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
     tess.plot(ax, plot_included=True, plot_removed=True, plot_points=True)
     plt.show()

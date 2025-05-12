@@ -1,8 +1,16 @@
 # Home Page for `commensurability`
 
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07009/status.svg)](https://doi.org/10.21105/joss.07009)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15350426.svg)](https://doi.org/10.5281/zenodo.15350426)
+\
+[![Package Testing](https://github.com/ilikecubesnstuff/commensurability/actions/workflows/tests.yml/badge.svg)](https://github.com/ilikecubesnstuff/commensurability/actions/workflows/tests.yml)
+[![Coverage Status](https://coveralls.io/repos/github/ilikecubesnstuff/commensurability/badge.svg?branch=main)](https://coveralls.io/github/ilikecubesnstuff/commensurability?branch=main)
+[![Read The Docs Status](https://readthedocs.org/projects/<project-slug>/badge/?version=<version>&style=<style>)](https://commensurability.readthedocs.io/en/stable/)
+\
 [![PyPI - Version](https://img.shields.io/pypi/v/commensurability)](https://pypi.org/project/commensurability/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/commensurability)](https://pypi.org/project/commensurability/)
-![PyPI - License](https://img.shields.io/pypi/l/commensurability)
+[![PyPI - License](https://img.shields.io/pypi/l/commensurability)](https://github.com/ilikecubesnstuff/commensurability/blob/main/LICENSE)
+\
 [![pdm-managed](https://img.shields.io/badge/pdm-managed-blueviolet)](https://pdm.fming.dev)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -21,7 +29,7 @@ This package uses [`pidgey`](https://github.com/ilikecubesnstuff/pidgey) as its 
 
 This package is available on [PyPI](https://pypi.org/project/commensurability/). Install the package via `pip`:
 
-```
+```bash
 python -m pip install commensurability
 ```
 

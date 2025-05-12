@@ -17,17 +17,15 @@ def pot():
         scaleRadius=1.0,
         axisRatioY=0.5,
         axisratioz=0.4,
-        cutoffStrength=2.0,
-        patternSpeed=30,
     )
     disk_par = dict(type="Disk", mass=5e10, scaleRadius=3, scaleHeight=0.4)
     bulge_par = dict(type="Sersic", mass=1e10, scaleRadius=1, axisRatioZ=0.6)
-    halo_par = dict(type="NFW", mass=1e12, scaleRadius=20, axisRatioZ=0.8)
+    halo_par = dict(type="NFW", mass=1e12, scaleRadius=20)
     potgal = agama.Potential(disk_par, bulge_par, halo_par, bar_par)
     return potgal
 
 
-SIZE = 5
+SIZE = 20
 FRAMES = 5
 values = dict(
     x=np.linspace(0, 10, SIZE + 1)[1:],
@@ -49,15 +47,13 @@ def ic_function(x, vy, z):
     )
 
 
-dt = 0.01 * u.Gyr
-steps = 500
+if __name__ == "__main__":
+    from pathlib import Path
 
-if __name__ == '__main__':
-
-    tanal = TessellationAnalysis(
-        ic_function, values, pot, dt, steps, pattern_speed=omega, pidgey_chunksize=50
-    )
+    dt = 0.01 * u.Gyr
+    steps = 500
+    tanal = TessellationAnalysis(ic_function, values, pot, dt, steps, pattern_speed=omega)
     tanal.launch_interactive_plot("x", "vy")
 
-    tanal.save(f"examples/using_galpy/bar_{SIZE}_{FRAMES}.hdf5")
+    tanal.save(Path(__file__).parent / f"bar_{SIZE}_{FRAMES}.hdf5")
     tanal.launch_interactive_plot("x", "vy")

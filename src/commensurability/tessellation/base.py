@@ -19,7 +19,9 @@ MISSING = object()
 
 
 def MISSING_METHOD() -> None:
-    pass
+    """
+    A missing method for the normalization routine.
+    """
 
 
 class FailedDelaunay:

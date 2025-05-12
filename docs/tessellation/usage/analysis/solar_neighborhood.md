@@ -1,10 +1,20 @@
+<!-- invisible-code-block: python
+try:
+    import galpy
+    GALPY_AVAILABLE = True
+except ModuleNotFoundError:
+    GALPY_AVAILABLE = False
+-->
+
 # Analysing the Solar Neighborhood
 
 The following example will be using [`galpy`](https://docs.galpy.org/en/latest/). This will explore commensurabilities in the solar neighborhood of a Milky-Way-like galactic potential.
 
 ## Initial Imports
 
-```py
+<!-- skip: start if(not GALPY_AVAILABLE) -->
+
+```python
 import astropy.coordinates as c
 import astropy.units as u
 import numpy as np
@@ -16,7 +26,7 @@ from commensurability import TessellationAnalysis
 
 Start by setting up a potential definition for the Milky Way. [`galpy`](https://docs.galpy.org/en/latest/) comes with some pre-defined Milky Way potentials—this example uses the `Irrgang13I` definition.
 
-```py
+```python
 def potential_definition():
     from galpy.potential.mwpotentials import Irrgang13I as potential
     return potential
@@ -24,7 +34,7 @@ def potential_definition():
 
 The Sun orbits the Milky Way at approximately 8 kiloparsecs and approximately 240 kilometers per second. The Sun's orbit will be near circular, and should exist within the corresponding commensurate track in phase space. To explore its neighborhood in phase space, we can explore distances in the range 6 to 10 kiloparsecs and velocities in the range 150 to 300 kilometers per second. It would also be interesting to explore any vertical structures in the commensurate tracks, the z-value is varied from 0 to 2 kiloparsecs.
 
-```py
+```python
 def initial_condition(x, vy, z):
     return c.SkyCoord(
         x=x * u.kpc,
@@ -46,19 +56,24 @@ values = dict(
 
 Finally, we can set up the simulation parameters and commence the tessellation analysis.
 
-```py
+<!-- skip: end -->
+<!-- skip: next -->
+
+```python
 dt = 0.01 * u.Gyr
 steps = 500
 omega = 50 * u.km / u.s / u.kpc
 
 tanal = TessellationAnalysis(initial_condition, values, potential_definition,
-                             dt, steps, pattern_speed=omega, chunksize=500, mpchunksize=20)
+                             dt, steps, pattern_speed=omega, pidgey_chunksize=500, mp_chunksize=20)
 tanal.save("sol_neighborhood.hdf5")
 ```
 
 This step will take quite a while. It is recommended to save analysis objects immediately after finishing computation. Analysis objects are saved using the [HDF5](https://www.hdfgroup.org/solutions/hdf5/) format. The analysis object can be recovered entirely from this file, using [`Analysis.read_from_hdf5`](../../../reference/commensurability/analysis.md#commensurability.analysis.AnalysisBase.read_from_hdf5).
 
-```py
+<!-- skip: next -->
+
+```python
 # to read from disk
 tanal = TessellationAnalysis.read_from_hdf5("sol_neighborhood.hdf5")
 ```
@@ -67,7 +82,9 @@ tanal = TessellationAnalysis.read_from_hdf5("sol_neighborhood.hdf5")
 
 Once the setup is done, we should have a `TessellationAnalysis` object populated with data on the solar neighborhood. The rest of this guide will focus on the interactive plot, which can be launched by doing the following:
 
-```py
+<!-- skip: next -->
+
+```python
 tanal.launch_interactive_plot("x", "vy")
 # plot vy vs x
 # z will be controlled by scrolling

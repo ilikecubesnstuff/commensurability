@@ -17,7 +17,41 @@ permissions:
   contents: read
 
 jobs:
+  # galpy is quick to install, sufficient for doctests before release
+  doctests-galpy:
+    name: Doctests with Galpy
+    runs-on: ubuntu-latest  # no windows or macOS testing currently
+    steps:
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: 3.12
+
+      - name: Install Packages
+        # "bash -el {0}" required with conda-incubator/setup-miniconda@v3
+        # see: https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#important
+        shell: bash -el {0}
+        # test environment is set up by conda-incubator/setup-miniconda@v3
+        # dependencies to install:
+        # - galpy: the orbit integration backend
+        # - gsl: used by galpy for fast integration
+        # - pytest: testing framework to run the test scripts
+        run: |
+          conda activate test
+          conda install -c conda-forge gsl galpy pytest sybil
+          python -m pip install --upgrade pip
+          python -m pip install .
+
+      - name: Test Docs
+        # "bash -el {0}" required with conda-incubator/setup-miniconda@v3
+        # see: https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#important
+        shell: bash -el {0}
+        # ignore computationally intensive tests
+        run: pytest docs --ignore=docs/tessellation/implementation_ar_test.py --ignore=docs/tessellation/implementation_norm_test.py --ignore=docs/tessellation/usage/analysis/rotating_bar_test.py --ignore=docs/tessellation/usage/analysis/solar_neighborhood_test.py
+
   testpypi-publish:
+    needs: doctests-galpy
     name: upload release to TestPyPI
     runs-on: ubuntu-latest
     permissions:

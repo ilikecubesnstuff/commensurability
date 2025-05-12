@@ -1,10 +1,21 @@
+<!-- invisible-code-block: python
+AGAMA_AVAILABLE = False
+try:
+    import agama
+    AGAMA_AVAILABLE = True
+except ModuleNotFoundError:
+    pass
+-->
+
 # Adding a Rotating Bar to a Potential
 
 The following examples will be using [`agama`](https://github.com/GalacticDynamics-Oxford/Agama). These examples will explore the effect of adding a bar on commensurate tracks in an NFW potential.
 
 ## Initial Imports
 
-```py
+<!-- skip: start if(not AGAMA_AVAILABLE) -->
+
+```python
 import astropy.coordinates as c
 import astropy.units as u
 import numpy as np
@@ -16,18 +27,18 @@ from commensurability import TessellationAnalysis2D
 
 Start by setting up a regular NFW potential in a function. Make sure to include the agama import as part of the function.
 
-```py
+```python
 def potential_definition():
     import agama
 
-    nfw_pot = dict(type="NFW", mass=1e12, scaleRadius=20, axisRatioZ=0.8)
+    nfw_pot = dict(type="NFW", mass=1e12, scaleRadius=20)
     potential = agama.Potential(nfw_pot)
     return potential
 ```
 
 This potential is spherically symmetric. Let's take the x-y plane to be the "galactic plane", and observe how 2D orbits behave over a range of a few kiloparsecs. For this example, the initial positions range from 0.1 to 8 kiloparsecs and the initial velocities range from 20 to 400 kilometers per second. This is done by defining an initial conditions function that takes in `x` and `vy` values, and outputs the corresponding coordinate with a `astropy.coordinates.SkyCoord` object.
 
-```py
+```python
 def initial_condition(x, vy):
     return c.SkyCoord(
         x=x * u.kpc,
@@ -52,21 +63,32 @@ Later on, we will be introducing a rotating bar with a fixed pattern speed of 30
 Orbit commensurabilities will have to be analyzed in the co-rotating frame.
 To compare these examples appropriately, we will impose the same co-rotating frame here.
 
-```py
+<!-- skip: end -->
+<!-- skip: start -->
+
+```python
 dt = 0.01 * u.Gyr
 steps = 500
 omega = 30 * u.km / u.s / u.kpc
 
-tanal = TessellationAnalysis2D(initial_condition, values, potential_definition,
-                             dt, steps, pattern_speed=omega, chunksize=500, mpchunksize=20)
+tanal = TessellationAnalysis2D(
+    initial_condition,
+    values,
+    potential_definition,
+    dt,
+    steps,
+    pattern_speed=omega,
+    pidgey_chunksize=500,
+    mp_chunksize=20,
+)
 tanal.save("no_bar_example.hdf5")
 ```
 
-Note that there are 2 chunksize parameters. `chunksize` determines how many orbit calculations are done in a call. Once computed, `mpchunksize` determines how to chunk the commensurability evaluation over these orbits.
+Note that there are 2 chunksize parameters. `pidgey_chunksize` determines how many orbit calculations are done in a call. Once computed, `mp_chunksize` determines how to chunk the commensurability evaluation over these orbits.
 
 It is recommended to save analysis objects immediately after finishing computation. Analysis objects are saved using the [HDF5](https://www.hdfgroup.org/solutions/hdf5/) format. The analysis object can be recovered entirely from this file, using [`Analysis.read_from_hdf5`](../../../reference/commensurability/analysis.md#commensurability.analysis.AnalysisBase.read_from_hdf5).
 
-```py
+```python
 # to read from disk
 tanal = TessellationAnalysis.read_from_hdf5("no_bar_example.hdf5")
 ```
@@ -77,7 +99,7 @@ tanal = TessellationAnalysis.read_from_hdf5("no_bar_example.hdf5")
 
 Once this step is done, launch the interactive plot to view the structure of the phase space.
 
-```py
+```python
 tanal.launch_interactive_plot("x", "vy")
 ```
 
@@ -95,7 +117,10 @@ This plot shows various "tracks" that correspond with orbits of low commensurabi
 
 We can modify the original potential by adding a bar.
 
-```py
+<!-- skip: end -->
+<!-- skip: start if(not AGAMA_AVAILABLE) -->
+
+```python
 def potential_definition():
     import agama
 
@@ -105,19 +130,28 @@ def potential_definition():
         scaleRadius=3.0,
         axisRatioY=0.5,
         axisratioz=0.4,
-        cutoffStrength=2.0,
-        patternSpeed=30,
     )
-    nfw_pot = dict(type="NFW", mass=1e12, scaleRadius=20, axisRatioZ=0.8)
+    nfw_pot = dict(type="NFW", mass=1e12, scaleRadius=20)
     potential = agama.Potential(nfw_pot, bar_pot)
     return potential
 ```
 
 The remaining parameters will all be kept the same. The code blocks are omitted from this section since they are identical to before.
 
-```py
-tanal = TessellationAnalysis2D(initial_condition, values, potential_definition,
-                             dt, steps, pattern_speed=omega, chunksize=500, mpchunksize=20)
+<!-- skip: end -->
+<!-- skip: start -->
+
+```python
+tanal = TessellationAnalysis2D(
+    initial_condition,
+    values,
+    potential_definition,
+    dt,
+    steps,
+    pattern_speed=omega,
+    pidgey_chunksize=500,
+    mp_chunksize=20,
+)
 tanal.save("bar_example.hdf5")
 
 # to read from disk
@@ -128,7 +162,7 @@ tanal = TessellationAnalysis.read_from_hdf5("bar_example.hdf5")
 
 As before, this step will take some time to run. Once completed, we can launch the interactive plot and observe the differences present in the phase space structure.
 
-```py
+```python
 tanal.launch_interactive_plot("x", "vy")
 ```
 
@@ -144,7 +178,10 @@ The addition of the bar appears to have distorted the commensurate tracks presen
 
 To take this to the extreme, we can try adding a very massive bar and observe its effects on the commensurate tracks. Let's recycle the code from the previous section, but increase the bar's mass ten-fold.
 
-```py
+<!-- skip: end -->
+<!-- skip: start if(not AGAMA_AVAILABLE) -->
+
+```python
 def potential_definition():
     import agama
 
@@ -154,19 +191,28 @@ def potential_definition():
         scaleRadius=3.0,
         axisRatioY=0.5,
         axisratioz=0.4,
-        cutoffStrength=2.0,
-        patternSpeed=30,
     )
-    nfw_pot = dict(type="NFW", mass=1e12, scaleRadius=20, axisRatioZ=0.8)
+    nfw_pot = dict(type="NFW", mass=1e12, scaleRadius=20)
     potential = agama.Potential(nfw_pot, bar_pot)
     return potential
 ```
 
 As before, the remaining parameters will all be kept the same. The code blocks are omitted from this section since they are identical to before.
 
-```py
-tanal = TessellationAnalysis2D(initial_condition, values, potential_definition,
-                             dt, steps, pattern_speed=omega, chunksize=500, mpchunksize=20)
+<!-- skip: end -->
+<!-- skip: start -->
+
+```python
+tanal = TessellationAnalysis2D(
+    initial_condition,
+    values,
+    potential_definition,
+    dt,
+    steps,
+    pattern_speed=omega,
+    pidgey_chunksize=500,
+    mp_chunksize=20,
+)
 tanal.save("big_bar_example.hdf5")
 
 # to read from disk
@@ -177,7 +223,7 @@ tanal = TessellationAnalysis.read_from_hdf5("big_bar_example.hdf5")
 
 As before, this step will take some time to run. This may be slightly slower than the previous runs. Launch the interactive plot once completed.
 
-```py
+```python
 tanal.launch_interactive_plot("x", "vy")
 ```
 

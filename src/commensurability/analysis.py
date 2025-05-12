@@ -10,6 +10,7 @@ commensurability analysis using the tessellation subpackage.
 from __future__ import annotations
 
 import inspect
+import textwrap
 import warnings
 from abc import abstractmethod
 from collections.abc import Mapping as MappingABC
@@ -31,6 +32,10 @@ from tqdm import tqdm
 from .evaluation import Evaluation
 from .interactive import InteractivePlot2D, InteractivePlot3D, InteractivePlotBase
 from .utils import collapse_coords, make_quantity
+
+# define default chunk size for orbit integration
+# unsure how necessary this is, revise exact value as needed
+DEFAULT_MAX_CHUNKSIZE = 1000
 
 
 class AnalysisBase(MappingABC):
@@ -79,7 +84,7 @@ class AnalysisBase(MappingABC):
         pattern_speed: Union[float, u.Quantity] = 0.0,
         backend: Optional[Union[str, Backend]] = None,
         progressbar: bool = True,
-        pidgey_chunksize: int = 1,
+        pidgey_chunksize: Optional[int] = None,
         _blank_measures: bool = False,
     ) -> None:
         """
@@ -130,8 +135,10 @@ class AnalysisBase(MappingABC):
         if not self.backend:
             raise TypeError(f"Unrecognized potential: {self.potential}")
 
+        if pidgey_chunksize is None:
+            pidgey_chunksize = min(int(self.size**0.5), DEFAULT_MAX_CHUNKSIZE)
         if pidgey_chunksize <= 0:
-            raise ValueError("chunksize must be greater than 0")
+            raise ValueError("pidgey_chunksize must be greater than 0")
         if pidgey_chunksize >= self.size:
             pidgey_chunksize = self.size
             # raise ValueError("chunksize must be less than total number of starting coordinates")
@@ -225,10 +232,12 @@ class AnalysisBase(MappingABC):
 
         # store image mapping function source
         icsource = inspect.getsource(self.ic_function)
+        icsource = textwrap.dedent(icsource)
         icsource = icsource.replace(self.ic_function.__name__, "ic_function", 1)
 
         # store potential function source
         potsource = inspect.getsource(self.potential_function)
+        potsource = textwrap.dedent(potsource)
         potsource = potsource.replace(self.potential_function.__name__, "potential_function", 1)
 
         attrs = dict(
@@ -247,7 +256,7 @@ class AnalysisBase(MappingABC):
                 dset.attrs[attr] = value
 
     @classmethod
-    def read_from_hdf5(cls, path: Any) -> AnalysisBase:
+    def read_from_hdf5(cls, path: Any, backend_cls: Optional[Backend] = None) -> AnalysisBase:
         """
         Read analysis data from an HDF5 file.
 
@@ -277,6 +286,7 @@ class AnalysisBase(MappingABC):
             if "potfunc" in dset.attrs:
                 potsource = dset.attrs["potfunc"].tobytes().decode("utf8")
                 namespace = {}
+                print(potsource)
                 exec(potsource, {"u": u, "c": c}, namespace)
                 potential_function = namespace["potential_function"]
             else:
@@ -285,7 +295,9 @@ class AnalysisBase(MappingABC):
                 def potential_function() -> None:
                     pass
 
-            backend_cls = getattr(pidgey, dset.attrs["backend"].tobytes().decode("utf8"))
+            backend_cls = backend_cls or getattr(
+                pidgey, dset.attrs["backend"].tobytes().decode("utf8")
+            )
             analysis = cls(
                 ic_function,
                 values,
@@ -338,8 +350,8 @@ class MPAnalysisBase(AnalysisBase):
         pattern_speed: Union[float, u.Quantity] = 0.0,
         backend: Optional[Union[str, Backend]] = None,
         progressbar: bool = True,
-        pidgey_chunksize: int = 1,
-        mp_chunksize: int = 1,
+        pidgey_chunksize: Optional[int] = None,
+        mp_chunksize: Optional[int] = None,
         _blank_measures: bool = False,
     ) -> None:
         super().__init__(
@@ -354,6 +366,23 @@ class MPAnalysisBase(AnalysisBase):
             pidgey_chunksize=pidgey_chunksize,
             _blank_measures=True,
         )
+        if pidgey_chunksize is None:
+            # set default chunk size for pidgey if not provided
+            pidgey_chunksize = min(int(self.size**0.5), DEFAULT_MAX_CHUNKSIZE)
+        if pidgey_chunksize <= 0:
+            raise ValueError("pidgey_chunksize must be greater than 0")
+        if pidgey_chunksize >= self.size:
+            pidgey_chunksize = self.size
+            # raise ValueError("chunksize must be less than total number of starting coordinates")
+
+        if mp_chunksize is None:
+            # set default chunk size for multiprocessing if not provided
+            mp_chunksize = int(pidgey_chunksize**0.5)
+        if mp_chunksize <= 0:
+            raise ValueError("mp_chunksize must be greater than 0")
+        if mp_chunksize > pidgey_chunksize:
+            raise ValueError("mp_chunksize must not be greater than pidgey_chunksize")
+
         if not _blank_measures:
             self._construct_image_with_mp(pidgey_chunksize, mp_chunksize, progressbar)
 
@@ -384,6 +413,7 @@ class MPAnalysisBase(AnalysisBase):
                 values = list(
                     tqdm(
                         p.imap(self.__eval__, orbits, chunksize=mp_chunksize),
+                        desc=f"with {mp_chunksize=}",
                         total=pidgey_chunksize,
                         leave=False,
                     )

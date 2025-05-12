@@ -55,6 +55,7 @@ nav:
 - Motivation: motivation.md
 - Installation: installation.md
 - Quickstart: quickstart.md
+- Contributing: contributing.md
 - Tessellation:
   - tessellation/index.md
   - Implementation: tessellation/implementation.md
