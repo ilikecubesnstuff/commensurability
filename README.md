@@ -5,6 +5,7 @@
 \
 [![Package Testing](https://github.com/ilikecubesnstuff/commensurability/actions/workflows/tests.yml/badge.svg)](https://github.com/ilikecubesnstuff/commensurability/actions/workflows/tests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/ilikecubesnstuff/commensurability/badge.svg?branch=main)](https://coveralls.io/github/ilikecubesnstuff/commensurability?branch=main)
+[![Read The Docs Status](https://readthedocs.org/projects/<project-slug>/badge/?version=<version>&style=<style>)](https://commensurability.readthedocs.io/en/stable/)
 \
 [![PyPI - Version](https://img.shields.io/pypi/v/commensurability)](https://pypi.org/project/commensurability/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/commensurability)](https://pypi.org/project/commensurability/)
