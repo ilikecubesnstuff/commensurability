@@ -65,5 +65,7 @@ Additionally, computing the orbit volume provides an opportunity to efficiently 
 
 We thank Aneesh Naik and Eugene Vasiliev for discussions regarding early versions of the software.
 
+Funded by the European Union (MSCA EDUCADO, GA 101119830). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union. Neither the European Union nor the granting authority can be held responsible for them.
+
 
 # References
