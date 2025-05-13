@@ -30,7 +30,7 @@ from pidgey.base import Backend
 from tqdm import tqdm
 
 from .evaluation import Evaluation
-from .interactive import InteractivePlot2D, InteractivePlot3D, InteractivePlotBase
+from .viewer import Viewer, AnalysisViewer2D, AnalysisViewer3D
 from .utils import collapse_coords, make_quantity
 
 # define default chunk size for orbit integration
@@ -446,7 +446,7 @@ class AnalysisBase2D(MPAnalysisBase):
             y_axis (str): Name of the y-axis parameter.
             var_axis (Optional[str]): Name of the axis varied by scrolling (optional).
         """
-        iplot: InteractivePlotBase = InteractivePlot2D(self, x_axis, y_axis, var_axis)
+        iplot: Viewer = AnalysisViewer2D(self, x_axis, y_axis, var_axis)
         iplot.show()
 
 
@@ -478,7 +478,7 @@ class AnalysisBase3D(MPAnalysisBase):
             y_axis (str): Name of the y-axis parameter.
             var_axis (Optional[str]): Name of the variable axis (optional).
         """
-        iplot: InteractivePlotBase = InteractivePlot3D(self, x_axis, y_axis, var_axis)
+        iplot: Viewer = AnalysisViewer3D(self, x_axis, y_axis, var_axis)
         iplot.show()
 
 
