@@ -30,8 +30,8 @@ from pidgey.base import Backend
 from tqdm import tqdm
 
 from .evaluation import Evaluation
-from .viewer import Viewer, AnalysisViewer2D, AnalysisViewer3D
 from .utils import collapse_coords, make_quantity
+from .viewer import AnalysisViewer2D, AnalysisViewer3D, Viewer
 
 # define default chunk size for orbit integration
 # unsure how necessary this is, revise exact value as needed
@@ -395,7 +395,12 @@ class MPAnalysisBase(AnalysisBase):
             total=self.size // pidgey_chunksize,
             disable=not progressbar,
         ):
-            params = np.array([[self.ic_values[ax][i] for i, ax in zip(pixel, self.axis_names)] for pixel in pixels])
+            params = np.array(
+                [
+                    [self.ic_values[ax][i] for i, ax in zip(pixel, self.axis_names)]
+                    for pixel in pixels
+                ]
+            )
             coords = self.ic_function(*params.T)
 
             orbits = self.backend.compute_orbit(

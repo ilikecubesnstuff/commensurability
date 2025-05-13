@@ -1,9 +1,8 @@
-from typing import Any, Optional, Callable
 import gc
+from typing import Any, Callable, Optional
 
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
 import pidgey
 
 FULL_AXIS = slice(None)
@@ -11,17 +10,17 @@ FULL_AXIS = slice(None)
 
 class Viewer:
     def __init__(
-            self,
-            nd_image: np.ndarray,
-            axlims: dict[str: list[float, float]],
-            x_axis: Optional[str] = None,
-            y_axis: Optional[str] = None,
-            s_axis: Optional[str] = None,
+        self,
+        nd_image: np.ndarray,
+        axlims: dict[str : list[float, float]],
+        x_axis: Optional[str] = None,
+        y_axis: Optional[str] = None,
+        s_axis: Optional[str] = None,
     ):
         self.im: np.ndarray = nd_image
         self.shape = nd_image.shape
         if len(self.shape) < 2:
-            return ValueError('Cannot display plot for image with less than 2 dimensions.')
+            return ValueError("Cannot display plot for image with less than 2 dimensions.")
 
         self.axnames = list(axlims.keys())
         self.axvalues = [
@@ -36,7 +35,7 @@ class Viewer:
             y_axis = 1
             s_axis = 2 if len(self.shape) > 2 else None
         elif any(ax == None for ax in [x_axis, y_axis, s_axis]):
-            raise ValueError('All of x_axis, y_axis, and s_axis must be given.')
+            raise ValueError("All of x_axis, y_axis, and s_axis must be given.")
 
         self.ihax = x_axis
         self.ivax = y_axis
@@ -48,18 +47,20 @@ class Viewer:
 
         self.scroll_plane = self.slice_for_scroll()
 
-
     # === SLICING METHODS ===
 
     def slice_for_scroll(self):
         cursor = self.cursor.copy()
         cursor[self.ihax] = FULL_AXIS
         cursor[self.ivax] = FULL_AXIS
-        if self.isax: cursor[self.isax] = FULL_AXIS
+        if self.isax:
+            cursor[self.isax] = FULL_AXIS
         if sum(i == FULL_AXIS for i in cursor) > 3:
-            raise ValueError('pivot not set!')
+            raise ValueError("pivot not set!")
 
-        axes = np.argsort([self.ihax, self.ivax, self.isax] if self.isax else [self.ihax, self.ivax])
+        axes = np.argsort(
+            [self.ihax, self.ivax, self.isax] if self.isax else [self.ihax, self.ivax]
+        )
         axes = np.argsort(axes)  # require inverse permutation
         return self.im[tuple(cursor)].transpose(axes)
 
@@ -67,7 +68,6 @@ class Viewer:
         if not self.isax:
             return self.scroll_plane
         return self.scroll_plane[..., self.cursor[self.isax]]
-
 
     # === EVENT METHODS ===
 
@@ -89,7 +89,6 @@ class Viewer:
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
 
-
     def on_left_click(self, event):
         x = event.xdata
         y = event.ydata
@@ -101,8 +100,8 @@ class Viewer:
         xstep = self.axsteps[self.ihax]
         ystep = self.axsteps[self.ivax]
 
-        xi = np.searchsorted(xlims, x - xstep/2)
-        yi = np.searchsorted(ylims, y - ystep/2)
+        xi = np.searchsorted(xlims, x - xstep / 2)
+        yi = np.searchsorted(ylims, y - ystep / 2)
 
         self.cursor[self.ihax] = xi
         self.cursor[self.ivax] = yi
@@ -118,7 +117,7 @@ class Viewer:
 
     def on_keypress(self, event):
         log = []
-        log.append(f'keypress {event.key}')
+        log.append(f"keypress {event.key}")
 
         if event.key.isdigit() and self.isax is not None:
             axis_index = int(event.key) - 1
@@ -132,43 +131,42 @@ class Viewer:
 
             self.isax = axis_index
             self.scroll_plane = self.slice_for_scroll()
-            log.append(f'scroll axis set to {self.axnames[self.isax]}')
+            log.append(f"scroll axis set to {self.axnames[self.isax]}")
 
-        if event.key.count('+') == 1:
-            key1, key2 = event.key.split('+')
+        if event.key.count("+") == 1:
+            key1, key2 = event.key.split("+")
             if not key2.isdigit():
                 return
-            if key1 not in ['ctrl', 'alt']:
+            if key1 not in ["ctrl", "alt"]:
                 return
             if any(i == FULL_AXIS for i in self.cursor):
-                raise ValueError('pivot not set, click on the plotting region to set a pivot')
+                raise ValueError("pivot not set, click on the plotting region to set a pivot")
 
             axis_index = int(key2) - 1
-            if key1 == 'ctrl':
+            if key1 == "ctrl":
                 if self.isax == axis_index:
                     self.isax = self.ihax  # swap axes
-                    log.append(f'scroll axis set to {self.axnames[self.isax]}')
+                    log.append(f"scroll axis set to {self.axnames[self.isax]}")
                 if self.ivax == axis_index:
                     self.ivax = self.ihax  # swap axes
-                    log.append(f'y axis set to {self.axnames[self.ivax]}')
+                    log.append(f"y axis set to {self.axnames[self.ivax]}")
                 self.ihax = axis_index
                 self.scroll_plane = self.slice_for_scroll()
-                log.append(f'x axis set to {self.axnames[self.ihax]}')
+                log.append(f"x axis set to {self.axnames[self.ihax]}")
 
-            if key1 == 'alt':
+            if key1 == "alt":
                 if self.isax == axis_index:
                     self.isax = self.ivax  # swap axes
-                    log.append(f'scroll axis set to {self.axnames[self.isax]}')
+                    log.append(f"scroll axis set to {self.axnames[self.isax]}")
                 if self.ihax == axis_index:
                     self.ihax = self.ivax  # swap axes
-                    log.append(f'x axis set to {self.axnames[self.ihax]}')
+                    log.append(f"x axis set to {self.axnames[self.ihax]}")
                 self.ivax = axis_index
                 self.scroll_plane = self.slice_for_scroll()
-                log.append(f'y axis set to {self.axnames[self.ivax]}')
-        print(', '.join(log))
+                log.append(f"y axis set to {self.axnames[self.ivax]}")
+        print(", ".join(log))
 
         self.update_plot()
-
 
     # === MPL CONFIGURATION METHODS ===
 
@@ -236,7 +234,6 @@ class Viewer:
         self._add_connections()
         plt.show()
 
-
     # === INITIAL PLOTTING METHOD ===
 
     def plot_axes(self, **imshow_kwargs: dict[str, Any]):
@@ -266,7 +263,7 @@ class Viewer:
             cmap="inferno",
             vmin=0,
             vmax=1,
-            extent=(xmin - xstep/2, xmax + xstep/2, ymin - ystep/2, ymax + ystep/2),
+            extent=(xmin - xstep / 2, xmax + xstep / 2, ymin - ystep / 2, ymax + ystep / 2),
             aspect=(xmax - xmin) / (ymax - ymin),
         )
         kwargs.update(imshow_kwargs)
@@ -278,11 +275,11 @@ class Viewer:
 
 class AnalysisViewer2D(Viewer):
     def __init__(
-            self,
-            analysis,
-            x_axis: Optional[str] = None,
-            y_axis: Optional[str] = None,
-            s_axis: Optional[str] = None,
+        self,
+        analysis,
+        x_axis: Optional[str] = None,
+        y_axis: Optional[str] = None,
+        s_axis: Optional[str] = None,
     ):
         self.analysis = analysis
         axlims = {name: [values[0], values[-1]] for name, values in analysis.ic_values.items()}
@@ -309,7 +306,7 @@ class AnalysisViewer2D(Viewer):
             cmap="inferno",
             vmin=0,
             vmax=1,
-            extent=(xmin - xstep/2, xmax + xstep/2, ymin - ystep/2, ymax + ystep/2),
+            extent=(xmin - xstep / 2, xmax + xstep / 2, ymin - ystep / 2, ymax + ystep / 2),
             aspect=(xmax - xmin + xstep) / (ymax - ymin + ystep),
         )
         kwargs.update(**imshow_kwargs)
@@ -317,7 +314,7 @@ class AnalysisViewer2D(Viewer):
         self.ax_phase.set_xlabel(self.axnames[self.ihax])
         self.ax_phase.set_ylabel(self.axnames[self.ivax])
         self.im_phase = self.ax_phase.imshow(plot_plane.T, **kwargs)
-        (self.dot_phase,) = self.ax_phase.plot([xmin - xstep/2], ymin - ystep/2, color='green')
+        (self.dot_phase,) = self.ax_phase.plot([xmin - xstep / 2], ymin - ystep / 2, color="green")
 
         info = [
             f"{ax}={values[vi]}"
@@ -348,7 +345,9 @@ class AnalysisViewer2D(Viewer):
         ymin, *_, ymax = self.axvalues[self.ivax]
         xstep = self.axsteps[self.ihax]
         ystep = self.axsteps[self.ivax]
-        self.im_phase.set_extent((xmin - xstep/2, xmax + xstep/2, ymin - ystep/2, ymax + ystep/2))
+        self.im_phase.set_extent(
+            (xmin - xstep / 2, xmax + xstep / 2, ymin - ystep / 2, ymax + ystep / 2)
+        )
         self.ax_phase.set_aspect((xmax - xmin + xstep) / (ymax - ymin + ystep))
 
         # update figure
@@ -450,11 +449,11 @@ class AnalysisViewer2D(Viewer):
 
 class AnalysisViewer3D(Viewer):
     def __init__(
-            self,
-            analysis,
-            x_axis: Optional[str] = None,
-            y_axis: Optional[str] = None,
-            s_axis: Optional[str] = None,
+        self,
+        analysis,
+        x_axis: Optional[str] = None,
+        y_axis: Optional[str] = None,
+        s_axis: Optional[str] = None,
     ):
         self.analysis = analysis
         axlims = {name: [values[0], values[-1]] for name, values in analysis.ic_values.items()}
@@ -465,15 +464,15 @@ class AnalysisViewer3D(Viewer):
             y_axis=y_axis,
             s_axis=s_axis,
         )
-    
+
     def set_pivot(self, x, y):
         xlims = self.axvalues[self.ihax]
         ylims = self.axvalues[self.ivax]
         xstep = self.axsteps[self.ihax]
         ystep = self.axsteps[self.ivax]
 
-        xi = np.searchsorted(xlims, x - xstep/2)
-        yi = np.searchsorted(ylims, y - ystep/2)
+        xi = np.searchsorted(xlims, x - xstep / 2)
+        yi = np.searchsorted(ylims, y - ystep / 2)
 
         self.cursor[self.ihax] = xi
         self.cursor[self.ivax] = yi
@@ -493,7 +492,7 @@ class AnalysisViewer3D(Viewer):
             cmap="inferno",
             vmin=0,
             vmax=1,
-            extent=(xmin - xstep/2, xmax + xstep/2, ymin - ystep/2, ymax + ystep/2),
+            extent=(xmin - xstep / 2, xmax + xstep / 2, ymin - ystep / 2, ymax + ystep / 2),
             aspect=(xmax - xmin + xstep) / (ymax - ymin + ystep),
         )
         kwargs.update(**imshow_kwargs)
@@ -501,7 +500,7 @@ class AnalysisViewer3D(Viewer):
         self.ax_phase.set_xlabel(self.axnames[self.ihax])
         self.ax_phase.set_ylabel(self.axnames[self.ivax])
         self.im_phase = self.ax_phase.imshow(plot_plane.T, **kwargs)
-        (self.dot_phase,) = self.ax_phase.plot([xmin - xstep/2], ymin - ystep/2, color='green')
+        (self.dot_phase,) = self.ax_phase.plot([xmin - xstep / 2], ymin - ystep / 2, color="green")
 
         info = [
             f"{ax}={values[vi]}"
@@ -532,7 +531,9 @@ class AnalysisViewer3D(Viewer):
         ymin, *_, ymax = self.axvalues[self.ivax]
         xstep = self.axsteps[self.ihax]
         ystep = self.axsteps[self.ivax]
-        self.im_phase.set_extent((xmin - xstep/2, xmax + xstep/2, ymin - ystep/2, ymax + ystep/2))
+        self.im_phase.set_extent(
+            (xmin - xstep / 2, xmax + xstep / 2, ymin - ystep / 2, ymax + ystep / 2)
+        )
         self.ax_phase.set_aspect((xmax - xmin + xstep) / (ymax - ymin + ystep))
 
         # update figure
