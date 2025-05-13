@@ -395,12 +395,8 @@ class MPAnalysisBase(AnalysisBase):
             total=self.size // pidgey_chunksize,
             disable=not progressbar,
         ):
-            coords = []
-            for pixel in pixels:
-                params = [self.ic_values[ax][i] for i, ax in zip(pixel, self.axis_names)]
-                coord = self.ic_function(*params)
-                coords.append(coord)
-            coords = collapse_coords(coords)
+            params = np.array([[self.ic_values[ax][i] for i, ax in zip(pixel, self.axis_names)] for pixel in pixels])
+            coords = self.ic_function(*params.T)
 
             orbits = self.backend.compute_orbit(
                 coords,
@@ -410,7 +406,7 @@ class MPAnalysisBase(AnalysisBase):
                 pattern_speed=self.pattern_speed,
             )
             with Pool() as p:
-                values = list(
+                values = tuple(
                     tqdm(
                         p.imap(self.__eval__, orbits, chunksize=mp_chunksize),
                         desc=f"with {mp_chunksize=}",
