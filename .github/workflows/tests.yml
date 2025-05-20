@@ -46,9 +46,7 @@ jobs:
 
   coveralls:
     needs: tox
-    if: >-
-      github.event_name != 'workflow_dispatch' ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.coveralls == 'true')
+    if: github.event_name != 'workflow_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.coveralls)
     runs-on: ubuntu-latest
     steps:
     - name: coveralls
