@@ -26,7 +26,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
-      - uses: pdm-project/setup-pdm@v3
+      - uses: pdm-project/setup-pdm@v4
       - name: Publish package distributions to PyPI
         run: pdm publish --repository testpypi
 
@@ -40,7 +40,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
-      - uses: pdm-project/setup-pdm@v3
+      - uses: pdm-project/setup-pdm@v4
       - name: Publish package distributions to PyPI
         run: pdm publish
 
