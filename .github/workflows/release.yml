@@ -1,4 +1,4 @@
-name: Package Release
+name: release
 
 on:
   release:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       skip_testpypi:
-        description: 'Skip uploading to TestPyPI'
+        description: skip uploading to TestPyPI
         default: 'no'
         type: choice
         options:
@@ -18,6 +18,7 @@ permissions:
 
 jobs:
   testpypi-publish:
+    if: github.event.inputs.skip_testpypi == 'no'
     name: upload release to TestPyPI
     runs-on: ubuntu-latest
     permissions:
@@ -31,6 +32,7 @@ jobs:
 
   pypi-publish:
     needs: testpypi-publish
+    if: always() && !failure()
     name: upload release to PyPI
     runs-on: ubuntu-latest
     permissions:
