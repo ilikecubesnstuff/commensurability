@@ -16,38 +16,38 @@ on:
     inputs:
       galpy:
         description: galpy doctests
-        type: choice
-        default: 'yes'
-        options:
-        - 'yes'
-        - 'no'
+        type: boolean
+        default: true
       gala:
         description: gala doctests
-        type: choice
-        default: 'yes'
-        options:
-        - 'yes'
-        - 'no'
+        type: boolean
+        default: true
       agama:
         description: agama doctests
-        type: choice
-        default: 'yes'
-        options:
-        - 'yes'
-        - 'no'
+        type: boolean
+        default: true
       figures:
-        description: (computationally expensive) figure tests
-        type: choice
-        default: 'no'
-        options:
-        - 'yes'
-        - 'no'
+        description: figure tests (computationally expensive)
+        type: boolean
+        default: false
 
 jobs:
+  mkdocs:
+    name: build with mkdocs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: pdm sync
+        run: pdm sync -G docs
+      - name: mkdocs build
+        run: pdm run -v mkdocs build -v
+
   galpy:
-    if: >-
-      github.event_name != 'workflow_dispatch' ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.galpy == 'true')
+    needs: mkdocs
+    if: github.event_name != 'workflow_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.galpy)
     strategy:
       matrix:  # matrix for easy edits, but no need to run more than once right now
         os: [ubuntu-latest]
@@ -78,9 +78,7 @@ jobs:
           --ignore=docs/tessellation/usage/analysis/rotating_bar_test.py
           --ignore=docs/tessellation/usage/analysis/solar_neighborhood_test.py
       - name: test figures
-        if: >-
-          github.event.inputs.figures == 'true' ||
-          (github.event_name == 'schedule' && github.event.schedule == '0 0 1 */2 *')
+        if: inputs.figures || (github.event_name == 'schedule' && github.event.schedule == '0 0 1 */2 *')
         shell: bash -el {0}
         run: >-
           pytest
@@ -95,10 +93,11 @@ jobs:
           python examples/using_galpy/rotating_bar.py
 
   gala:
+    needs: mkdocs
     if: >-  # only run for full tests, or on workflow_dispatch
       (github.event_name != 'schedule' && github.event_name != 'workflow_dispatch') ||
       (github.event_name == 'schedule' && github.event.schedule == '0 0 1 */2 *') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.gala == 'true')
+      (github.event_name == 'workflow_dispatch' && inputs.gala)
     strategy:
       matrix:  # matrix for easy edits, but no need to run more than once right now
         os: [ubuntu-latest]
@@ -131,10 +130,11 @@ jobs:
           python examples/using_gala/rotating_bar.py
 
   agama:
+    needs: mkdocs
     if: >-  # only run for full tests, or on workflow_dispatch
       (github.event_name != 'schedule' && github.event_name != 'workflow_dispatch') ||
       (github.event_name == 'schedule' && github.event.schedule == '0 0 1 */2 *') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.gala == 'true')
+      (github.event_name == 'workflow_dispatch' && inputs.agama)
     strategy:
       matrix:  # matrix for easy edits, but no need to run more than once right now
         os: [ubuntu-latest]
@@ -173,9 +173,7 @@ jobs:
           --ignore=docs/tessellation/usage/analysis/rotating_bar_test.py
           --ignore=docs/tessellation/usage/analysis/solar_neighborhood_test.py
       - name: test figures
-        if: >-
-          github.event.inputs.figures == 'true' ||
-          (github.event_name == 'schedule' && github.event.schedule == '0 0 1 */2 *')
+        if: inputs.figures || (github.event_name == 'schedule' && github.event.schedule == '0 0 1 */2 *')
         shell: bash -el {0}
         run: >-
           pytest
@@ -188,16 +186,3 @@ jobs:
         run: |  # interactive mode so mpl figures don't halt the script
           echo "interactive: true" > matplotlibrc
           python examples/using_agama/rotating_bar.py
-
-  mkdocs:
-    name: build with mkdocs
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pdm-project/setup-pdm@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: pdm sync
-        run: pdm sync -G docs
-      - name: mkdocs build
-        run: pdm run -v mkdocs build -v
