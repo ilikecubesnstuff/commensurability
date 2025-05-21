@@ -20,7 +20,13 @@ class Viewer:
         self.im: np.ndarray = nd_image
         self.shape = nd_image.shape
         if len(self.shape) < 2:
-            return ValueError("Cannot display plot for image with less than 2 dimensions.")
+            raise ValueError("Cannot display plot for image with less than 2 dimensions.")
+        if len(self.shape) != len(axlims):
+            raise ValueError("axlims must correspond with nd_image axes.")
+        if not all(len(ax) == 2 for ax in axlims.values()):
+            raise ValueError(
+                "axlims must only have 2 values per axis, the min and max of the axis."
+            )
 
         self.axnames = list(axlims.keys())
         self.axvalues = [
@@ -36,6 +42,8 @@ class Viewer:
             s_axis = 2 if len(self.shape) > 2 else None
         elif any(ax == None for ax in [x_axis, y_axis, s_axis]):
             raise ValueError("All of x_axis, y_axis, and s_axis must be given.")
+        if x_axis == y_axis or y_axis == s_axis or s_axis == x_axis:
+            raise ValueError("Supplied axes must be distinct.")
 
         self.ihax = x_axis
         self.ivax = y_axis
