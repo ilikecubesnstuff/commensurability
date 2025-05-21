@@ -10,6 +10,6 @@ For standalone use of `tessellation`, see
 
 For usage with `commensurability` analysis tools, see
 
-- [Commensurability Quickstart](../../quickstart.md)
+- [Commensurability Quickstart](../../analysis/quickstart.md)
 - [Adding a Rotating Bar to a Potential](analysis/rotating_bar.md)
 - [Analysing Solar Neighborhood Commensurabilities](analysis/solar_neighborhood.md)

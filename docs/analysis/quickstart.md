@@ -30,7 +30,7 @@ RUN = USE_AGAMA or USE_GALA or USE_GALPY
 
 ### Installation
 
-See [installation](installation.md) for full installation details.
+See [installation](../installation.md) for full installation details.
 
 ```
 pip install commensurability
