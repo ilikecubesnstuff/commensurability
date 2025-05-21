@@ -100,7 +100,7 @@ tanal = TessellationAnalysis.read_from_hdf5("no_bar_example.hdf5")
 Once this step is done, launch the interactive plot to view the structure of the phase space.
 
 ```python
-tanal.launch_interactive_plot("x", "vy")
+tanal.launch_interactive_plot()
 ```
 
 This plot shows various "tracks" that correspond with orbits of low commensurability value. Feel free to click around and explore what kind of orbits each track correspond with. Some of the more prominent tracks include:
@@ -163,7 +163,7 @@ tanal = TessellationAnalysis.read_from_hdf5("bar_example.hdf5")
 As before, this step will take some time to run. Once completed, we can launch the interactive plot and observe the differences present in the phase space structure.
 
 ```python
-tanal.launch_interactive_plot("x", "vy")
+tanal.launch_interactive_plot()
 ```
 
 The addition of the bar appears to have distorted the commensurate tracks present in the NFW potential alone. Some commensurate tracks appear weaker, like the corotation track, while other regions appear more pronounced:
@@ -224,7 +224,7 @@ tanal = TessellationAnalysis.read_from_hdf5("big_bar_example.hdf5")
 As before, this step will take some time to run. This may be slightly slower than the previous runs. Launch the interactive plot once completed.
 
 ```python
-tanal.launch_interactive_plot("x", "vy")
+tanal.launch_interactive_plot()
 ```
 
 The circular orbit track appears to have been chopped in half! The addition of this bar has caused the circular orbit track to no longer be circular for small orbits:

@@ -85,7 +85,7 @@ Once the setup is done, we should have a `TessellationAnalysis` object populated
 <!-- skip: next -->
 
 ```python
-tanal.launch_interactive_plot("x", "vy")
+tanal.launch_interactive_plot()
 # plot vy vs x
 # z will be controlled by scrolling
 ```

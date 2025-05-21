@@ -21,7 +21,7 @@ def pot():
     return pot
 
 
-SIZE = 20
+SIZE = 2
 FRAMES = 5
 values = dict(
     x=np.linspace(0, 10, SIZE + 1)[1:],
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     dt = 0.01 * u.Gyr
     steps = 500
     tanal = TessellationAnalysis(ic_function, values, pot, dt, steps, pattern_speed=omega)
-    tanal.launch_interactive_plot("x", "vy")
+    tanal.launch_interactive_plot()
 
     tanal.save(Path(__file__).parent / f"bar_{SIZE}_{FRAMES}.hdf5")
-    tanal.launch_interactive_plot("x", "vy")
+    tanal.launch_interactive_plot()

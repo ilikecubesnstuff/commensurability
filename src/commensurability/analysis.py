@@ -450,7 +450,12 @@ class AnalysisBase2D(MPAnalysisBase):
         measures (np.ndarray): Array to store orbit measures.
     """
 
-    def launch_interactive_plot(self, x_axis: str, y_axis: str, var_axis: Optional[str] = None):
+    def launch_interactive_plot(
+        self,
+        x_axis: Optional[str] = None,
+        y_axis: Optional[str] = None,
+        var_axis: Optional[str] = None,
+    ):
         """
         Launch an interactive plot for 2D orbits.
 
@@ -482,7 +487,12 @@ class AnalysisBase3D(MPAnalysisBase):
         measures (np.ndarray): Array to store orbit measures.
     """
 
-    def launch_interactive_plot(self, x_axis: str, y_axis: str, var_axis: Optional[str] = None):
+    def launch_interactive_plot(
+        self,
+        x_axis: Optional[str] = None,
+        y_axis: Optional[str] = None,
+        var_axis: Optional[str] = None,
+    ):
         """
         Launch an interactive plot for 3D orbits.
 

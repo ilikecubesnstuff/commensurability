@@ -23,12 +23,12 @@ data = np.random.random((10, 10, 10, 10))
 The data along each axis spans a particular range, and the viewer requires this to be passed in as an argument. It accepts a dictionary with the axis names and limits.
 
 ```python
-axlims = {
-    "x": [0, 100],
-    "y": [0, 100],
-    "z": [-5, 5],
-    "a": [-72, -64],
-}
+axlims = dict(
+    x=[0, 100],
+    y=[0, 100],
+    z=[-5, 5],
+    a=[-72, -64],
+)
 ```
 
 Once these are defined, the data can be viewed by creating a `Viewer` object with these parameters.
@@ -42,7 +42,7 @@ v.show()
 
 ## Using the Interactive Viewer
 
-The axes of the image are mapped to the number keys on your keyboard. The example above would map "x" to `1`, "y" to `2`, and so on.
+The axes of the image are mapped to the number keys on your keyboard. The example above would map `x` to `1`, `y` to `2`, and so on.
 
 By using your scroll wheel, you can change the values for one of the axes, and view the new slice of data accordingly. The viewer has a few keyboard controls to change the axes controlled by scrolling, as well as change the x- and y-axis.
 
