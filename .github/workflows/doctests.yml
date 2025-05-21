@@ -93,7 +93,6 @@ jobs:
   gala:
     needs: mkdocs
     if: >-  # only run for full tests, or on workflow_dispatch
-      (github.event_name != 'schedule' && github.event_name != 'workflow_dispatch') ||
       (github.event_name == 'schedule' && github.event.schedule == '0 0 1 */2 *') ||
       (github.event_name == 'workflow_dispatch' && inputs.gala)
     strategy:
@@ -130,13 +129,12 @@ jobs:
   agama:
     needs: mkdocs
     if: >-  # only run for full tests, or on workflow_dispatch
-      (github.event_name != 'schedule' && github.event_name != 'workflow_dispatch') ||
       (github.event_name == 'schedule' && github.event.schedule == '0 0 1 */2 *') ||
       (github.event_name == 'workflow_dispatch' && inputs.agama)
     strategy:
       matrix:  # matrix for easy edits, but no need to run more than once right now
         os: [ubuntu-latest]
-        pyversion: [3.13]
+        pyversion: [3.11]
     name: agama with python ${{ matrix.pyversion }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
