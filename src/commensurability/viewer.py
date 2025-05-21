@@ -218,7 +218,7 @@ class Viewer:
     def _mpl_key_press_event(self, event):
         self.on_keypress(event)
 
-    def _add_connections(self):
+    def _mpl_add_connections(self):
         self.connections = []
         self.connections.append(
             self.fig.canvas.mpl_connect("button_press_event", self._mpl_button_press_event)
@@ -239,7 +239,7 @@ class Viewer:
         self.garbage: set = set()
 
         # connect methods to figure
-        self._add_connections()
+        self._mpl_add_connections()
         plt.show()
 
     # === INITIAL PLOTTING METHOD ===
