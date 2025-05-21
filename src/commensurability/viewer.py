@@ -36,12 +36,22 @@ class Viewer:
             (vmax - vmin) / (n - 1) for n, (vmin, vmax) in zip(self.shape, axlims.values())
         ]
 
-        if all(ax == None for ax in [x_axis, y_axis, s_axis]):
-            x_axis = 0
-            y_axis = 1
-            s_axis = 2 if len(self.shape) > 2 else None
-        elif any(ax == None for ax in [x_axis, y_axis, s_axis]):
-            raise ValueError("All of x_axis, y_axis, and s_axis must be given.")
+        # bad input handling, treat 2D and 3D+ cases separately
+        if len(self.shape) == 2:
+            if s_axis is not None:
+                raise ValueError("No scroll axis can be set for a 2D image.")
+            if all(ax == None for ax in [x_axis, y_axis]):
+                x_axis = 0
+                y_axis = 1
+            elif any(ax == None for ax in [x_axis, y_axis, s_axis]):
+                raise ValueError("x_axis and y_axis must both be given.")
+        else:
+            if all(ax == None for ax in [x_axis, y_axis, s_axis]):
+                x_axis = 0
+                y_axis = 1
+                s_axis = 2
+            elif any(ax == None for ax in [x_axis, y_axis, s_axis]):
+                raise ValueError("All of x_axis, y_axis, and s_axis must be given.")
         if x_axis == y_axis or y_axis == s_axis or s_axis == x_axis:
             raise ValueError("Supplied axes must be distinct.")
 
