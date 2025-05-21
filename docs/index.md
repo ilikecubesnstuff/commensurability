@@ -3,9 +3,10 @@
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.07009/status.svg)](https://doi.org/10.21105/joss.07009)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15350426.svg)](https://doi.org/10.5281/zenodo.15350426)
 \
-[![Package Testing](https://github.com/ilikecubesnstuff/commensurability/actions/workflows/tests.yml/badge.svg)](https://github.com/ilikecubesnstuff/commensurability/actions/workflows/tests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/ilikecubesnstuff/commensurability/badge.svg?branch=main)](https://coveralls.io/github/ilikecubesnstuff/commensurability?branch=main)
+[![tests](https://github.com/ilikecubesnstuff/commensurability/actions/workflows/tests.yml/badge.svg)](https://github.com/ilikecubesnstuff/commensurability/actions/workflows/tests.yml)
 [![Read The Docs Status](https://readthedocs.org/projects/commensurability/badge/?version=latest&style=flat)](https://commensurability.readthedocs.io/en/stable/)
+[![doctests](https://github.com/ilikecubesnstuff/commensurability/actions/workflows/doctests.yml/badge.svg)](https://github.com/ilikecubesnstuff/commensurability/actions/workflows/doctests.yml)
 \
 [![PyPI - Version](https://img.shields.io/pypi/v/commensurability)](https://pypi.org/project/commensurability/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/commensurability)](https://pypi.org/project/commensurability/)
