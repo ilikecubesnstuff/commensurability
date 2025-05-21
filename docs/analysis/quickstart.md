@@ -30,7 +30,7 @@ RUN = USE_AGAMA or USE_GALA or USE_GALPY
 
 ### Installation
 
-See [installation](installation.md) for full installation details.
+See [installation](../installation.md) for full installation details.
 
 ```
 pip install commensurability
@@ -204,7 +204,7 @@ Analysis objects can launch interactive plots to explore the generated data. Cur
 <!-- skip: next -->
 
 ```python
-tanal.launch_interactive_plot("x", "vy")
+tanal.launch_interactive_plot()
 ```
 
 This should launch a window with two plots side by side: the left is a visualization of the commensurability data within phase space, and the right will display integrated orbits. A left-click in the left plot will generate the corresponding orbit from that initial condition. A right-click in the left plot will do the same, but also compute and visualize a commensurability evaluation.

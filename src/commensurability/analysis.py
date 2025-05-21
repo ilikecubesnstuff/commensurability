@@ -30,8 +30,8 @@ from pidgey.base import Backend
 from tqdm import tqdm
 
 from .evaluation import Evaluation
-from .interactive import InteractivePlot2D, InteractivePlot3D, InteractivePlotBase
 from .utils import collapse_coords, make_quantity
+from .viewer import AnalysisViewer2D, AnalysisViewer3D, Viewer
 
 # define default chunk size for orbit integration
 # unsure how necessary this is, revise exact value as needed
@@ -402,6 +402,15 @@ class MPAnalysisBase(AnalysisBase):
                 coords.append(coord)
             coords = collapse_coords(coords)
 
+            # NOTE: causes weird behavior when velocities are all set to 0
+            # params = np.array(
+            #     [
+            #         [self.ic_values[ax][i] for i, ax in zip(pixel, self.axis_names)]
+            #         for pixel in pixels
+            #     ]
+            # )
+            # coords = self.ic_function(*params.T)
+
             orbits = self.backend.compute_orbit(
                 coords,
                 self.potential,
@@ -410,7 +419,7 @@ class MPAnalysisBase(AnalysisBase):
                 pattern_speed=self.pattern_speed,
             )
             with Pool() as p:
-                values = list(
+                values = tuple(
                     tqdm(
                         p.imap(self.__eval__, orbits, chunksize=mp_chunksize),
                         desc=f"with {mp_chunksize=}",
@@ -441,7 +450,12 @@ class AnalysisBase2D(MPAnalysisBase):
         measures (np.ndarray): Array to store orbit measures.
     """
 
-    def launch_interactive_plot(self, x_axis: str, y_axis: str, var_axis: Optional[str] = None):
+    def launch_interactive_plot(
+        self,
+        x_axis: Optional[str] = None,
+        y_axis: Optional[str] = None,
+        var_axis: Optional[str] = None,
+    ):
         """
         Launch an interactive plot for 2D orbits.
 
@@ -450,7 +464,7 @@ class AnalysisBase2D(MPAnalysisBase):
             y_axis (str): Name of the y-axis parameter.
             var_axis (Optional[str]): Name of the axis varied by scrolling (optional).
         """
-        iplot: InteractivePlotBase = InteractivePlot2D(self, x_axis, y_axis, var_axis)
+        iplot: Viewer = AnalysisViewer2D(self, x_axis, y_axis, var_axis)
         iplot.show()
 
 
@@ -473,7 +487,12 @@ class AnalysisBase3D(MPAnalysisBase):
         measures (np.ndarray): Array to store orbit measures.
     """
 
-    def launch_interactive_plot(self, x_axis: str, y_axis: str, var_axis: Optional[str] = None):
+    def launch_interactive_plot(
+        self,
+        x_axis: Optional[str] = None,
+        y_axis: Optional[str] = None,
+        var_axis: Optional[str] = None,
+    ):
         """
         Launch an interactive plot for 3D orbits.
 
@@ -482,7 +501,7 @@ class AnalysisBase3D(MPAnalysisBase):
             y_axis (str): Name of the y-axis parameter.
             var_axis (Optional[str]): Name of the variable axis (optional).
         """
-        iplot: InteractivePlotBase = InteractivePlot3D(self, x_axis, y_axis, var_axis)
+        iplot: Viewer = AnalysisViewer3D(self, x_axis, y_axis, var_axis)
         iplot.show()
 
 

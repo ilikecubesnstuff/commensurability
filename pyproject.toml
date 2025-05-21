@@ -84,8 +84,13 @@ exclude_also = [
 
     # ignore interactive plots for now
     # NOTE: see testing matplotlib with pytest
-    "InteractivePlot",
-    "def .*plot(.*)",
+    "AnalysisViewer2D",
+    "AnalysisViewer3D",
+    "def on_.*",
+    "def slice_.*",
+    "def _mpl_.*",
+    "def .*plot.*",
+    "def .*show.*",
 ]
 
 [tool.isort]

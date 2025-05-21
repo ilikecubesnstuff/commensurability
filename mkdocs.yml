@@ -54,8 +54,10 @@ nav:
 - Home: index.md
 - Motivation: motivation.md
 - Installation: installation.md
-- Quickstart: quickstart.md
 - Contributing: contributing.md
+- Analysis:
+  - Quickstart: analysis/quickstart.md
+  - Viewer: analysis/viewer.md
 - Tessellation:
   - tessellation/index.md
   - Implementation: tessellation/implementation.md
